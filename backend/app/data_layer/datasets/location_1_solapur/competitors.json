@@ -1,0 +1,30 @@
+{
+  "location_id": "solapur",
+  "categories": {
+    "dairy": [
+      {"name": "Shri Mahalakshmi Dairy", "distance_km": 3.2, "data_origin": "prototype_curated", "source": "local survey estimate"},
+      {"name": "Solapur Milk Centre", "distance_km": 4.8, "data_origin": "prototype_curated", "source": "local survey estimate"},
+      {"name": "Balaji Dairy Products", "distance_km": 6.1, "data_origin": "prototype_curated", "source": "local survey estimate"}
+    ],
+    "retail_kirana": [
+      {"name": "Patil Kirana Store", "distance_km": 0.8, "data_origin": "prototype_curated", "source": "local survey estimate"},
+      {"name": "New Bharat Stores", "distance_km": 1.2, "data_origin": "prototype_curated", "source": "local survey estimate"},
+      {"name": "Ganesh General Store", "distance_km": 1.5, "data_origin": "prototype_curated", "source": "local survey estimate"},
+      {"name": "Sai Provision", "distance_km": 2.3, "data_origin": "prototype_curated", "source": "local survey estimate"},
+      {"name": "Mauli Mart", "distance_km": 3.0, "data_origin": "prototype_curated", "source": "local survey estimate"},
+      {"name": "Sri Ram Kirana", "distance_km": 3.8, "data_origin": "prototype_curated", "source": "local survey estimate"},
+      {"name": "Laxmi General Store", "distance_km": 4.5, "data_origin": "prototype_curated", "source": "local survey estimate"}
+    ],
+    "tailoring": [
+      {"name": "Pushpa Tailors", "distance_km": 2.0, "data_origin": "prototype_curated", "source": "local survey estimate"},
+      {"name": "Modern Stitch Centre", "distance_km": 3.5, "data_origin": "prototype_curated", "source": "local survey estimate"}
+    ],
+    "flour_mill": [
+      {"name": "Ambika Flour Mill", "distance_km": 5.0, "data_origin": "prototype_curated", "source": "local survey estimate"}
+    ],
+    "poultry": [
+      {"name": "Dhanashri Poultry Farm", "distance_km": 7.0, "data_origin": "prototype_curated", "source": "local survey estimate"},
+      {"name": "Mauli Poultry", "distance_km": 8.5, "data_origin": "prototype_curated", "source": "local survey estimate"}
+    ]
+  }
+}

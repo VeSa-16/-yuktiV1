@@ -1,0 +1,14 @@
+{
+  "location_id": "solapur",
+  "district": "Solapur",
+  "state": "Maharashtra",
+  "population": 48000,
+  "households": 9500,
+  "avg_monthly_income": 12000,
+  "literacy_rate_pct": 72.5,
+  "urban_rural": "semi-urban",
+  "data_origin": "prototype_curated",
+  "source": "Census 2011 extrapolation (prototype estimate)",
+  "confidence": "Medium",
+  "notes": "Population figure is for a representative block within Solapur district. Income figure is a prototype estimate based on district-level NSSO data — not a verified household survey."
+}
