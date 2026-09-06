@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { MessageSquare, X, Send, Bot, Loader2 } from "lucide-react";
+import { MessageSquare, X, Send, Bot, Loader2, Mic } from "lucide-react";
 import { api } from "@/lib/api-client";
 import { useStore } from "@/lib/store";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,10 +9,31 @@ export function CopilotOverlay() {
   const { state } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [isListening, setIsListening] = useState(false);
   const [messages, setMessages] = useState<{role: "user"|"ai", content: string, source?: string}[]>([
     { role: "ai", content: "Hi! I'm your YUKTI AI Assistant. Ask me anything about your business plan or financial numbers.", source: "template" }
   ]);
   const [loading, setLoading] = useState(false);
+
+  const startListening = () => {
+    // @ts-ignore
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Your browser does not support voice input.");
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-IN'; // Can be mapped to store preference later
+    recognition.interimResults = false;
+    
+    recognition.onstart = () => setIsListening(true);
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setQuery(transcript);
+    };
+    recognition.onend = () => setIsListening(false);
+    recognition.start();
+  };
 
   const handleSend = async () => {
     if (!query.trim() || !state.sessionId) return;
@@ -119,6 +140,13 @@ export function CopilotOverlay() {
                 </button>
               </div>
               <div className="p-3 flex items-center space-x-2">
+                <button
+                  onClick={startListening}
+                  className={`p-2 rounded-full transition-colors flex items-center justify-center ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                  title="Voice Input"
+                >
+                  <Mic size={18} />
+                </button>
                 <input
                   type="text"
                   placeholder="Ask about financial projections..."

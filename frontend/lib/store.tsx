@@ -29,12 +29,15 @@ export interface SessionState {
   // Persistent Profile
   profileName: string;
   preferredLanguage: string;
+  userMode: 'entrepreneur' | 'advisor';
   savedPlans: BusinessPlan[];
 
   // Actions
   updateState: (updates: Partial<SessionState>) => void;
   resetState: () => void;
   saveCurrentPlan: () => void;
+  toggleUserMode: () => void;
+  setLanguage: (lang: string) => void;
 }
 
 export const useStore = create<SessionState>()(
@@ -51,10 +54,17 @@ export const useStore = create<SessionState>()(
       
       profileName: 'Entrepreneur',
       preferredLanguage: 'EN',
+      userMode: 'entrepreneur',
       savedPlans: [],
 
       updateState: (updates) => set((state) => ({ ...state, ...updates })),
       
+      toggleUserMode: () => set((state) => ({
+        userMode: state.userMode === 'entrepreneur' ? 'advisor' : 'entrepreneur'
+      })),
+
+      setLanguage: (lang: string) => set({ preferredLanguage: lang }),
+
       resetState: () => set((state) => ({
         sessionId: null,
         locationId: null,
