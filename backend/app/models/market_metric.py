@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, Float, ForeignKey
+from sqlalchemy import Column, String, Float, ForeignKey, DateTime
+from datetime import datetime
 from app.core.db import Base
 from app.models.core import uid
 
@@ -9,8 +10,11 @@ class MarketMetric(Base):
     id = Column(String, primary_key=True, default=uid)
     location_id = Column(String, ForeignKey("locations.id"))
     category_id = Column(String, ForeignKey("business_categories.id"))
-    metric_name = Column(String)   # e.g. "consumer_base", "demand_index", "competition_score"
-    value = Column(Float, nullable=True)
-    confidence = Column(String, default="Low")
-    data_origin = Column(String, default="prototype_curated")
-    note = Column(String, nullable=True)
+    metric_name = Column(String, nullable=False)
+    value = Column(Float, nullable=False)
+    unit = Column(String)
+    confidence = Column(String)
+    source_id = Column(String, ForeignKey("data_sources.id"))
+    effective_date = Column(DateTime)
+    retrieved_at = Column(DateTime, default=datetime.utcnow)
+    transformation_note = Column(String)

@@ -16,5 +16,6 @@ class GovernmentScheme(Base):
     tenure_months = Column(Integer)
     moratorium_months = Column(Integer)
     source_url = Column(String)
+    version = Column(String)
     effective_from = Column(DateTime, nullable=True)
     last_verified = Column(DateTime, default=lambda: datetime.now(timezone.utc))

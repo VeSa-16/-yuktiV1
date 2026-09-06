@@ -37,69 +37,69 @@ export default function ReportPage() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto mt-20 flex flex-col items-center justify-center space-y-4">
-        <Loader2 size={48} className="animate-spin text-terminal-cyan" />
-        <p className="text-terminal-cyan font-mono uppercase tracking-widest">Generating your comprehensive business plan...</p>
+      <div className="max-w-4xl mx-auto mt-20 flex flex-col items-center justify-center space-y-4 font-sans">
+        <Loader2 size={48} className="animate-spin text-warm-primary" />
+        <p className="text-warm-primary font-bold text-lg">Generating your comprehensive business plan...</p>
       </div>
     );
   }
 
   if (error) {
-    return <div className="text-red-500 p-4 max-w-4xl mx-auto mt-10">{error}</div>;
+    return <div className="text-red-500 p-4 max-w-4xl mx-auto mt-10 font-bold bg-red-50 rounded-xl border border-red-200">{error}</div>;
   }
 
   const today = new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
 
   return (
-    <div className="max-w-4xl mx-auto mt-6 pb-20">
-      <div className="flex justify-between items-center mb-6 border-b border-zinc-800 pb-4 print:hidden">
-        <h1 className="text-2xl font-mono text-white tracking-widest uppercase">System Execution Report</h1>
-        <Button onClick={() => window.print()} variant="outline" className="text-xs">
-          <Download size={14} className="mr-2" /> EXPORT_PDF
+    <div className="max-w-4xl mx-auto mt-6 pb-20 font-sans">
+      <div className="flex justify-between items-center mb-6 border-b border-warm-border pb-4 print:hidden">
+        <h1 className="text-3xl font-bold text-warm-text">System Execution Report</h1>
+        <Button onClick={() => window.print()} className="bg-warm-primary hover:bg-orange-600 text-white font-bold text-sm shadow-md transition-all">
+          <Download size={16} className="mr-2" /> Export PDF
         </Button>
       </div>
       
-      <div className="bg-warm-surface text-black p-8 md:p-16 min-h-[1056px] shadow-2xl print:shadow-none print:p-0">
+      <div className="bg-white text-slate-800 p-8 md:p-16 min-h-[1056px] shadow-lg rounded-2xl border border-warm-border print:shadow-none print:border-none print:p-0">
         
         {/* Cover Page */}
-        <div className="flex flex-col justify-center min-h-[800px] print:min-h-[100vh] border-b-4 border-black mb-12 pb-12">
+        <div className="flex flex-col justify-center min-h-[800px] print:min-h-[100vh] border-b-4 border-warm-primary mb-12 pb-12">
           <div className="flex items-center space-x-3 mb-16">
-            <div className="w-12 h-12 bg-black text-white flex items-center justify-center font-bold text-2xl">Y</div>
-            <span className="text-2xl font-bold tracking-[0.2em]">YUKTI</span>
+            <div className="w-12 h-12 bg-warm-primary text-white flex items-center justify-center font-bold text-2xl rounded-lg shadow-sm">Y</div>
+            <span className="text-3xl font-extrabold tracking-tight text-warm-text">YUKTI</span>
           </div>
           
-          <h1 className="text-5xl font-black mb-6 uppercase leading-tight">Detailed<br/>Project Report</h1>
-          <h2 className="text-2xl text-slate-600 mb-12">For: {state.categoryName || "Business Implementation"}</h2>
+          <h1 className="text-5xl md:text-6xl font-black mb-6 leading-tight text-warm-text">Detailed<br/>Project Report</h1>
+          <h2 className="text-2xl text-warm-muted mb-12 font-medium">For: {state.categoryName || "Business Implementation"}</h2>
           
-          <div className="mt-auto grid grid-cols-2 gap-8 border-t-2 border-black pt-8">
+          <div className="mt-auto grid grid-cols-2 gap-8 border-t border-warm-border pt-8">
             <div>
-              <p className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-1">Prepared For</p>
-              <p className="font-bold text-lg">{state.profileName || "Entrepreneur"}</p>
+              <p className="text-xs uppercase tracking-wider text-warm-muted font-bold mb-1">Prepared For</p>
+              <p className="font-bold text-lg text-warm-text">{state.profileName || "Entrepreneur"}</p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-1">Location</p>
-              <p className="font-bold text-lg">{state.locationName || "Target Region"}</p>
+              <p className="text-xs uppercase tracking-wider text-warm-muted font-bold mb-1">Location</p>
+              <p className="font-bold text-lg text-warm-text">{state.locationName || "Target Region"}</p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-1">Date</p>
-              <p className="font-bold text-lg">{today}</p>
+              <p className="text-xs uppercase tracking-wider text-warm-muted font-bold mb-1">Date</p>
+              <p className="font-bold text-lg text-warm-text">{today}</p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-1">System Version</p>
-              <p className="font-bold text-lg">YUKTI 2.0 Engine</p>
+              <p className="text-xs uppercase tracking-wider text-warm-muted font-bold mb-1">System Version</p>
+              <p className="font-bold text-lg text-warm-text">YUKTI 2.0 Engine</p>
             </div>
           </div>
         </div>
 
         {/* Executive Summary */}
         <div className="mb-12 print:break-before-page">
-          <h3 className="text-2xl font-black uppercase border-b-2 border-black pb-2 mb-6">Executive Summary</h3>
-          <div className="bg-slate-50 p-6 border border-slate-200">
+          <h3 className="text-2xl font-bold border-b border-warm-border pb-2 mb-6 text-warm-text">Executive Summary</h3>
+          <div className="bg-emerald-50 p-6 border border-emerald-100 rounded-xl">
             <div className="flex items-start">
               <CheckCircle2 size={24} className="text-emerald-600 mr-4 flex-shrink-0 mt-1" />
               <div>
-                <h4 className="font-bold text-lg mb-2">Project Viability: Recommended</h4>
-                <p className="text-slate-700 leading-relaxed">
+                <h4 className="font-bold text-lg mb-2 text-emerald-900">Project Viability: Recommended</h4>
+                <p className="text-emerald-800 leading-relaxed font-medium">
                   Based on algorithmic analysis of local market demographics, competition density, and capital constraints, the proposed <strong>{state.categoryName}</strong> in <strong>{state.locationName}</strong> demonstrates strong financial viability. The business plan is designed to be highly capital-efficient, minimizing upfront expenditure while addressing existing demand gaps.
                 </p>
               </div>
@@ -109,13 +109,13 @@ export default function ReportPage() {
 
         {/* Backend HTML Content (Financials, etc) */}
         <div 
-          className="prose prose-slate max-w-none"
+          className="prose prose-slate max-w-none prose-headings:text-warm-text prose-p:text-slate-700 prose-strong:text-warm-text prose-strong:font-bold prose-table:border-warm-border"
           dangerouslySetInnerHTML={{ __html: html }}
         />
 
         {/* Legal Disclaimer */}
-        <div className="mt-20 pt-8 border-t border-slate-300 text-xs text-slate-500 text-justify leading-relaxed print:break-before-page">
-          <p className="font-bold mb-2 uppercase tracking-widest text-slate-700">Legal Disclaimer</p>
+        <div className="mt-20 pt-8 border-t border-warm-border text-sm text-warm-muted leading-relaxed print:break-before-page">
+          <p className="font-bold mb-2 uppercase tracking-wider text-warm-text">Legal Disclaimer</p>
           <p>
             This Detailed Project Report (DPR) has been auto-generated by the YUKTI AI recommendation engine based on user inputs, public datasets, and algorithmic approximations. The financial projections, demand estimates, and risk assessments are strictly predictive in nature and do not guarantee future performance, profitability, or loan approval.
           </p>

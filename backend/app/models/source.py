@@ -4,9 +4,10 @@ from app.models.core import uid
 
 
 class Source(Base):
-    __tablename__ = "sources"
+    __tablename__ = "data_sources"
     id = Column(String, primary_key=True, default=uid)
-    name = Column(String)
+    name = Column(String, nullable=False)
     url = Column(String)
-    type = Column(String)          # "government", "census", "osm", "prototype_curated"
-    retrieved_at = Column(DateTime, nullable=True)
+    owner_org = Column(String)
+    license = Column(String)
+    reliability = Column(String)

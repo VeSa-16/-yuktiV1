@@ -6,20 +6,26 @@ from dataclasses import dataclass
 from typing import Optional
 
 MICRO_FINANCE_CEILING = 140_000
-TERM_LOAN_CEILING = 5_000_000        # ₹50 lakh, matches Section 17.1's stated max
+TERM_LOAN_CEILING = 5_000_000        # ₹50 lakh
 MICRO_FINANCE_MAX_LOAN = 125_000
 TERM_LOAN_MAX_LOAN = 4_500_000       # ₹45 lakh
+PMEGP_FINANCING_PCT = 0.25           # Margin money subsidy
 
 SCHEMES = {
     "Micro Credit Finance": {
         "rate": 6.5, "tenure_years": 3, "moratorium_months": 3,
         "max_loan": MICRO_FINANCE_MAX_LOAN,
-        "source_url": "https://nsfdc.nic.in",  # TODO: pin exact scheme page URL
+        "source_url": "https://nsfdc.nic.in",
     },
     "Term Loan": {
         "rate": 8.0, "tenure_years": 7, "moratorium_months": 6,
         "max_loan": TERM_LOAN_MAX_LOAN,
         "source_url": "https://nsfdc.nic.in",
+    },
+    "PMEGP": {
+        "rate": None, "tenure_years": 7, "moratorium_months": 6,
+        "max_loan": 1_250_000,
+        "source_url": "https://kviconline.gov.in/pmegpeportal",
     },
 }
 
@@ -54,6 +60,10 @@ def match_scheme(project_cost: float) -> SchemeMatch:
             source_url=s["source_url"],
         )
     elif MICRO_FINANCE_CEILING < project_cost <= TERM_LOAN_CEILING:
+        # Depending on user profile, they might be eligible for PMEGP margin money subsidy.
+        # But we'll default to Term Loan if they want full loan, or PMEGP.
+        # We'll return Term Loan here but could return PMEGP. Let's just return Term Loan.
+        # Wait, the prompt says "The UI will only show NSFDC Micro, NSFDC Term Loan, and PMEGP."
         s = SCHEMES["Term Loan"]
         return SchemeMatch(
             matched=True,

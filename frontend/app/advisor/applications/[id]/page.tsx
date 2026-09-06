@@ -11,23 +11,23 @@ export default function ApplicationReview() {
   const appId = params.id ? (params.id as string).toUpperCase() : 'APP-001';
 
   return (
-    <div className="p-8 bg-black min-h-screen text-terminal-text font-mono animate-in fade-in duration-500">
-      <Link href="/advisor/applications" className="inline-flex items-center text-xs text-zinc-500 hover:text-terminal-cyan mb-6 transition-colors">
-        <ChevronLeft size={14} className="mr-1" /> BACK TO QUEUE
+    <div className="p-4 md:p-8 bg-warm-bg min-h-screen text-warm-text font-sans animate-in fade-in duration-500">
+      <Link href="/advisor/applications" className="inline-flex items-center text-sm font-bold text-warm-muted hover:text-warm-primary mb-6 transition-colors">
+        <ChevronLeft size={16} className="mr-1" /> BACK TO QUEUE
       </Link>
       
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-zinc-800 pb-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-warm-border pb-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-widest text-white uppercase">Application Review</h1>
-          <p className="text-xs text-terminal-cyan tracking-widest uppercase mt-2 font-bold">ID: {appId} // Rajesh Kumar</p>
+          <h1 className="text-3xl font-bold tracking-tight text-warm-text">Application Review</h1>
+          <p className="text-sm text-warm-primary font-bold mt-1">ID: {appId} • Rajesh Kumar</p>
         </div>
         
         <div className="flex space-x-3 mt-4 md:mt-0">
-          <button className="bg-terminal-red/10 border border-terminal-red text-terminal-red hover:bg-terminal-red hover:text-black px-6 py-2 flex items-center text-xs font-bold transition-colors uppercase tracking-widest">
-            <XCircle size={14} className="mr-2" /> Reject
+          <button className="bg-red-50 border border-red-200 text-red-600 hover:bg-red-600 hover:text-white px-6 py-2.5 rounded-xl flex items-center text-sm font-bold transition-colors shadow-sm">
+            <XCircle size={18} className="mr-2" /> Reject
           </button>
-          <button className="bg-terminal-green/10 border border-terminal-green text-terminal-green hover:bg-terminal-green hover:text-black px-6 py-2 flex items-center text-xs font-bold transition-colors uppercase tracking-widest">
-            <CheckCircle2 size={14} className="mr-2" /> Approve Loan
+          <button className="bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-600 hover:text-white px-6 py-2.5 rounded-xl flex items-center text-sm font-bold transition-colors shadow-sm">
+            <CheckCircle2 size={18} className="mr-2" /> Approve Loan
           </button>
         </div>
       </div>
@@ -38,106 +38,107 @@ export default function ApplicationReview() {
             type="positive"
             title="ALGORITHMIC RECOMMENDATION: APPROVE"
             message="This business plan scores 88/100 on the YUKTI viability index. The applicant has requested ₹15 Lakhs for Textile Manufacturing in Nagpur Zone A. The Debt Service Coverage Ratio (DSCR) is projected at a safe 2.1x even under recession stress tests."
+            className="shadow-sm"
           />
           
-          <Card className="bg-zinc-900 border-zinc-800 rounded-none shadow-none">
-            <CardHeader className="border-b border-zinc-800 pb-3">
-              <CardTitle className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center">
-                <Target size={14} className="mr-2 text-terminal-cyan" /> YUKTI Risk Assessment
+          <Card className="bg-warm-surface border-warm-border rounded-xl shadow-sm">
+            <CardHeader className="border-b border-warm-border pb-4 bg-warm-bg/50">
+              <CardTitle className="text-sm font-bold text-warm-text uppercase tracking-wider flex items-center">
+                <Target size={16} className="mr-2 text-warm-primary" /> YUKTI Risk Assessment
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6 space-y-6">
               <div>
                 <div className="flex justify-between items-end mb-2">
-                  <div className="text-xs text-zinc-400 uppercase tracking-widest">Market Saturation Risk</div>
-                  <div className="text-terminal-green text-sm font-bold">LOW</div>
+                  <div className="text-xs font-bold text-warm-muted uppercase tracking-wider">Market Saturation Risk</div>
+                  <div className="text-emerald-600 text-sm font-black">LOW</div>
                 </div>
-                <div className="w-full h-1 bg-zinc-800">
-                  <div className="h-full bg-terminal-green" style={{ width: '15%' }}></div>
+                <div className="w-full h-2 bg-warm-border rounded-full overflow-hidden">
+                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: '15%' }}></div>
                 </div>
-                <p className="text-[10px] text-zinc-500 mt-2">Only 2 competitors within a 5km radius. Market is underserved.</p>
+                <p className="text-xs font-medium text-warm-muted mt-2">Only 2 competitors within a 5km radius. Market is underserved.</p>
               </div>
 
               <div>
                 <div className="flex justify-between items-end mb-2">
-                  <div className="text-xs text-zinc-400 uppercase tracking-widest">Capital Efficiency</div>
-                  <div className="text-terminal-green text-sm font-bold">HIGH</div>
+                  <div className="text-xs font-bold text-warm-muted uppercase tracking-wider">Capital Efficiency</div>
+                  <div className="text-emerald-600 text-sm font-black">HIGH</div>
                 </div>
-                <div className="w-full h-1 bg-zinc-800">
-                  <div className="h-full bg-terminal-green" style={{ width: '85%' }}></div>
+                <div className="w-full h-2 bg-warm-border rounded-full overflow-hidden">
+                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: '85%' }}></div>
                 </div>
-                <p className="text-[10px] text-zinc-500 mt-2">Projected ROI is 22%. Applicant is bringing 10% margin money.</p>
+                <p className="text-xs font-medium text-warm-muted mt-2">Projected ROI is 22%. Applicant is bringing 10% margin money.</p>
               </div>
 
               <div>
                 <div className="flex justify-between items-end mb-2">
-                  <div className="text-xs text-zinc-400 uppercase tracking-widest">Execution Risk</div>
-                  <div className="text-terminal-amber text-sm font-bold">MEDIUM</div>
+                  <div className="text-xs font-bold text-warm-muted uppercase tracking-wider">Execution Risk</div>
+                  <div className="text-amber-500 text-sm font-black">MEDIUM</div>
                 </div>
-                <div className="w-full h-1 bg-zinc-800">
-                  <div className="h-full bg-terminal-amber" style={{ width: '45%' }}></div>
+                <div className="w-full h-2 bg-warm-border rounded-full overflow-hidden">
+                  <div className="h-full bg-amber-500 rounded-full" style={{ width: '45%' }}></div>
                 </div>
-                <p className="text-[10px] text-zinc-500 mt-2">Applicant has 3 years of sector experience, but limited formal management training.</p>
+                <p className="text-xs font-medium text-warm-muted mt-2">Applicant has 3 years of sector experience, but limited formal management training.</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
         <div className="space-y-6">
-          <Card className="bg-zinc-900 border-zinc-800 rounded-none shadow-none">
-            <CardHeader className="border-b border-zinc-800 pb-3">
-              <CardTitle className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center">
-                <FileText size={14} className="mr-2 text-terminal-cyan" /> Document Verification
+          <Card className="bg-warm-surface border-warm-border rounded-xl shadow-sm">
+            <CardHeader className="border-b border-warm-border pb-4 bg-warm-bg/50">
+              <CardTitle className="text-sm font-bold text-warm-text uppercase tracking-wider flex items-center">
+                <FileText size={16} className="mr-2 text-warm-primary" /> Document Verification
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
               <ul className="space-y-4">
-                <li className="flex items-center text-xs text-zinc-300">
-                  <CheckCircle2 size={16} className="text-terminal-green mr-3" /> Aadhaar / PAN (Promoter)
+                <li className="flex items-center text-sm font-medium text-warm-text">
+                  <CheckCircle2 size={18} className="text-emerald-500 mr-3" /> Aadhaar / PAN (Promoter)
                 </li>
-                <li className="flex items-center text-xs text-zinc-300">
-                  <CheckCircle2 size={16} className="text-terminal-green mr-3" /> Address Proof
+                <li className="flex items-center text-sm font-medium text-warm-text">
+                  <CheckCircle2 size={18} className="text-emerald-500 mr-3" /> Address Proof
                 </li>
-                <li className="flex items-center text-xs text-zinc-300">
-                  <CheckCircle2 size={16} className="text-terminal-green mr-3" /> Equipment Quotations
+                <li className="flex items-center text-sm font-medium text-warm-text">
+                  <CheckCircle2 size={18} className="text-emerald-500 mr-3" /> Equipment Quotations
                 </li>
-                <li className="flex items-center text-xs text-zinc-300">
-                  <CheckCircle2 size={16} className="text-terminal-green mr-3" /> Bank Statements
+                <li className="flex items-center text-sm font-medium text-warm-text">
+                  <CheckCircle2 size={18} className="text-emerald-500 mr-3" /> Bank Statements
                 </li>
               </ul>
               
-              <button className="w-full mt-6 bg-transparent border border-zinc-700 hover:border-terminal-cyan text-zinc-300 hover:text-terminal-cyan px-4 py-2 flex items-center justify-center text-xs transition-colors">
-                <Download size={14} className="mr-2" /> Download Master Archive (ZIP)
+              <button className="w-full mt-6 bg-white border border-warm-border hover:border-warm-primary hover:bg-orange-50 text-warm-primary px-4 py-2.5 rounded-xl flex items-center justify-center text-sm font-bold transition-all shadow-sm">
+                <Download size={16} className="mr-2" /> Download Master Archive (ZIP)
               </button>
             </CardContent>
           </Card>
 
-          <Card className="bg-zinc-900 border-zinc-800 rounded-none shadow-none">
-            <CardHeader className="border-b border-zinc-800 pb-3">
-              <CardTitle className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center">
-                <TrendingUp size={14} className="mr-2 text-terminal-cyan" /> Key Financials
+          <Card className="bg-warm-surface border-warm-border rounded-xl shadow-sm">
+            <CardHeader className="border-b border-warm-border pb-4 bg-warm-bg/50">
+              <CardTitle className="text-sm font-bold text-warm-text uppercase tracking-wider flex items-center">
+                <TrendingUp size={16} className="mr-2 text-warm-primary" /> Key Financials
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6 space-y-3">
-              <div className="flex justify-between">
-                <span className="text-xs text-zinc-500 uppercase tracking-widest">Loan Amount</span>
-                <span className="text-xs text-white font-bold">₹15,00,000</span>
+            <CardContent className="pt-6 space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-warm-muted uppercase tracking-wider">Loan Amount</span>
+                <span className="text-sm text-warm-text font-black">₹15,00,000</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-xs text-zinc-500 uppercase tracking-widest">Tenure</span>
-                <span className="text-xs text-white font-bold">5 Years</span>
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-warm-muted uppercase tracking-wider">Tenure</span>
+                <span className="text-sm text-warm-text font-black">5 Years</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-xs text-zinc-500 uppercase tracking-widest">Base DSCR</span>
-                <span className="text-xs text-terminal-green font-bold">2.4x</span>
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-warm-muted uppercase tracking-wider">Base DSCR</span>
+                <span className="text-sm text-emerald-600 font-black">2.4x</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-xs text-zinc-500 uppercase tracking-widest">IRR</span>
-                <span className="text-xs text-white font-bold">18.5%</span>
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-warm-muted uppercase tracking-wider">IRR</span>
+                <span className="text-sm text-warm-text font-black">18.5%</span>
               </div>
               
-              <Link href="/report" target="_blank" className="w-full mt-4 block text-center bg-terminal-cyan text-black hover:bg-terminal-cyan/80 px-4 py-2 text-xs font-bold transition-colors">
-                VIEW DETAILED PROJECT REPORT
+              <Link href="/report" target="_blank" className="w-full mt-6 block text-center bg-warm-primary text-white hover:bg-orange-600 px-4 py-3 rounded-xl text-xs uppercase tracking-wider font-bold transition-all shadow-md">
+                View Detailed Project Report
               </Link>
             </CardContent>
           </Card>

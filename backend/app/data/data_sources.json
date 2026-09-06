@@ -1,0 +1,42 @@
+[
+  {
+    "id": "ds_nsfdc",
+    "name": "NSFDC Scheme Directives",
+    "url": "https://nsfdc.nic.in",
+    "owner_org": "MoSJE, Govt. of India",
+    "license": "Official",
+    "reliability": "High"
+  },
+  {
+    "id": "ds_pmegp",
+    "name": "PMEGP E-Portal",
+    "url": "https://kviconline.gov.in/pmegpeportal",
+    "owner_org": "KVIC, Ministry of MSME",
+    "license": "Official",
+    "reliability": "High"
+  },
+  {
+    "id": "ds_agmarknet",
+    "name": "Agmarknet via CEDA",
+    "url": "https://agmarknet.ceda.ashoka.edu.in",
+    "owner_org": "Ministry of Agriculture",
+    "license": "Official",
+    "reliability": "High"
+  },
+  {
+    "id": "ds_osm",
+    "name": "OpenStreetMap",
+    "url": "https://www.openstreetmap.org",
+    "owner_org": "OSM Foundation",
+    "license": "ODbL 1.0",
+    "reliability": "Medium"
+  },
+  {
+    "id": "ds_worldpop",
+    "name": "WorldPop Grid",
+    "url": "https://www.worldpop.org",
+    "owner_org": "University of Southampton",
+    "license": "CC BY 4.0",
+    "reliability": "Medium"
+  }
+]

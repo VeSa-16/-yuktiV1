@@ -6,7 +6,7 @@ import { useStore } from "@/lib/store";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function CopilotOverlay() {
-  const { state } = useStore();
+  const state = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [isListening, setIsListening] = useState(false);
@@ -64,7 +64,7 @@ export function CopilotOverlay() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 bg-indigo-600 text-white p-4 rounded-full shadow-2xl hover:bg-indigo-700 transition-colors z-50 flex items-center justify-center"
+            className="fixed bottom-6 right-6 bg-warm-primary text-white p-4 rounded-full shadow-xl hover:bg-orange-600 transition-colors z-50 flex items-center justify-center border-2 border-white/20"
           >
             <MessageSquare size={24} />
           </motion.button>
@@ -78,19 +78,19 @@ export function CopilotOverlay() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed bottom-6 right-6 w-96 h-[500px] bg-black/90 backdrop-blur-xl border border-zinc-800 shadow-2xl flex flex-col z-50 overflow-hidden font-mono"
+            className="fixed bottom-6 right-6 w-96 h-[500px] bg-white border border-warm-border shadow-2xl rounded-2xl flex flex-col z-50 overflow-hidden font-sans"
           >
-            <div className="bg-zinc-900 p-4 text-terminal-text flex justify-between items-center border-b border-terminal-cyan">
+            <div className="bg-warm-primary p-4 text-white flex justify-between items-center shadow-sm z-10">
               <div className="flex items-center space-x-2">
-                <Bot size={20} />
-                <span className="font-semibold">YUKTI Copilot</span>
+                <Bot size={22} className="text-white" />
+                <span className="font-bold text-lg">YUKTI Copilot</span>
               </div>
-              <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white transition-colors">
-                <X size={20} />
+              <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-1.5 rounded-full">
+                <X size={18} />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-black">
+            <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-warm-bg">
               {messages.map((msg, i) => (
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
@@ -98,10 +98,10 @@ export function CopilotOverlay() {
                   key={i} 
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  <div className={`max-w-[85%] p-3 shadow-sm ${msg.role === "user" ? "bg-zinc-800 text-terminal-cyan border border-terminal-cyan" : "bg-black border border-zinc-800 text-terminal-text"}`}>
-                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                  <div className={`max-w-[85%] p-4 shadow-sm rounded-2xl ${msg.role === "user" ? "bg-warm-primary text-white rounded-tr-sm" : "bg-white border border-warm-border text-warm-text rounded-tl-sm"}`}>
+                    <p className="text-sm font-medium whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                     {msg.source && msg.role === "ai" && msg.source !== "template" && (
-                      <div className="mt-2 text-[10px] uppercase font-semibold text-indigo-400 bg-indigo-50/50 inline-block px-2 py-1 rounded-full">
+                      <div className="mt-2.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 inline-block px-2.5 py-1 rounded-full uppercase tracking-wider">
                         Source: {msg.source}
                       </div>
                     )}
@@ -110,41 +110,41 @@ export function CopilotOverlay() {
               ))}
               {loading && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
-                  <div className="bg-black border border-zinc-800 p-3 flex items-center space-x-2">
-                    <Loader2 size={16} className="animate-spin text-terminal-amber" />
-                    <span className="text-xs text-zinc-500 uppercase tracking-widest">Processing...</span>
+                  <div className="bg-white border border-warm-border p-4 rounded-2xl rounded-tl-sm shadow-sm flex items-center space-x-3">
+                    <Loader2 size={18} className="animate-spin text-warm-primary" />
+                    <span className="text-xs font-bold text-warm-muted uppercase tracking-wider">Processing...</span>
                   </div>
                 </motion.div>
               )}
             </div>
 
-            <div className="bg-black border-t border-zinc-800 flex flex-col">
-              <div className="flex space-x-2 overflow-x-auto px-3 py-2 scrollbar-hide border-b border-zinc-800">
+            <div className="bg-white border-t border-warm-border flex flex-col z-10">
+              <div className="flex space-x-2 overflow-x-auto px-4 py-3 scrollbar-hide border-b border-warm-border bg-warm-bg/50">
                 <button 
                   onClick={() => setQuery("Please explain my score in Hindi.")}
-                  className="whitespace-nowrap text-[10px] uppercase tracking-widest font-bold px-3 py-1 bg-zinc-900 text-terminal-amber hover:bg-zinc-800 transition-colors border border-zinc-700"
+                  className="whitespace-nowrap text-xs font-bold px-3 py-1.5 bg-white text-warm-primary hover:bg-orange-50 hover:border-warm-primary transition-colors border border-warm-border rounded-full shadow-sm"
                 >
                   Translate to Hindi
                 </button>
                 <button 
                   onClick={() => setQuery("How can I improve my DSCR?")}
-                  className="whitespace-nowrap text-[10px] uppercase tracking-widest font-bold px-3 py-1 bg-zinc-900 text-terminal-cyan hover:bg-zinc-800 transition-colors border border-zinc-700"
+                  className="whitespace-nowrap text-xs font-bold px-3 py-1.5 bg-white text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 transition-colors border border-warm-border rounded-full shadow-sm"
                 >
                   Improve DSCR
                 </button>
               </div>
-              <div className="p-3 flex items-center space-x-2">
+              <div className="p-4 flex items-center space-x-3 bg-white">
                 <button
                   onClick={startListening}
-                  className={`p-2 transition-colors flex items-center justify-center border ${isListening ? 'bg-terminal-red/20 text-terminal-red border-terminal-red animate-pulse' : 'bg-zinc-900 text-zinc-500 border-zinc-700 hover:text-terminal-cyan'}`}
+                  className={`p-3 rounded-full transition-colors flex items-center justify-center shadow-sm border ${isListening ? 'bg-red-50 text-red-500 border-red-200 animate-pulse' : 'bg-warm-surface text-warm-muted border-warm-border hover:bg-warm-border hover:text-warm-text'}`}
                   title="Voice Input"
                 >
                   <Mic size={18} />
                 </button>
                 <input
                   type="text"
-                  placeholder="Query system..."
-                  className="flex-1 px-4 py-2 border border-zinc-700 text-sm focus:outline-none focus:border-terminal-cyan bg-black text-terminal-text"
+                  placeholder="Ask a question..."
+                  className="flex-1 px-4 py-3 border border-warm-border rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-warm-primary focus:border-transparent bg-warm-surface text-warm-text placeholder-warm-muted transition-all"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
@@ -152,7 +152,7 @@ export function CopilotOverlay() {
                 <button
                   onClick={handleSend}
                   disabled={!query.trim() || loading}
-                  className="bg-terminal-cyan text-black font-bold p-2 hover:bg-terminal-cyan/80 transition-colors disabled:opacity-50 flex items-center justify-center"
+                  className="bg-warm-primary text-white font-bold p-3 rounded-xl hover:bg-orange-600 transition-all disabled:opacity-50 disabled:bg-warm-muted flex items-center justify-center shadow-sm"
                 >
                   <Send size={18} />
                 </button>

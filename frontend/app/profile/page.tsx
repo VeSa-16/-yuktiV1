@@ -9,33 +9,33 @@ export default function ProfilePage() {
   const { categoryName, locationName, marginCapital, userMode } = useStore();
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-8 animate-in fade-in duration-500 font-mono text-terminal-text">
+    <div className="max-w-4xl mx-auto p-4 md:p-8 animate-in fade-in duration-500 font-sans text-warm-text">
       <div className="mb-8 mt-6">
-        <h1 className="text-3xl font-black tracking-widest text-white uppercase mb-2">Platform Profile</h1>
-        <p className="text-zinc-500 uppercase tracking-widest text-sm">Identity Verification \ Core Details</p>
+        <h1 className="text-3xl font-bold tracking-tight text-warm-text mb-2">Platform Profile</h1>
+        <p className="text-warm-muted font-medium text-sm">Identity Verification & Core Details</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="bg-terminal-card border-terminal-border rounded-none shadow-xl col-span-2">
+        <Card className="bg-warm-surface border-warm-border rounded-2xl shadow-sm col-span-2 overflow-hidden">
           <CardContent className="p-6">
             <div className="flex items-start space-x-6">
-              <div className="w-24 h-24 bg-black border-2 border-zinc-700 flex items-center justify-center text-zinc-600 rounded-none relative">
+              <div className="w-24 h-24 bg-warm-bg border-2 border-warm-border flex items-center justify-center text-warm-muted rounded-full relative shadow-sm">
                 <User size={48} />
-                <div className="absolute -bottom-3 -right-3 bg-terminal-cyan text-black p-1.5 border border-black" title="Identity Verified">
+                <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white p-1.5 rounded-full border-2 border-white shadow-sm" title="Identity Verified">
                   <ShieldCheck size={20} />
                 </div>
               </div>
               <div className="flex-1">
-                <h2 className="text-2xl font-bold text-white tracking-widest uppercase mb-1">Rural Entrepreneur</h2>
-                <div className="text-xs text-terminal-amber uppercase font-bold tracking-widest mb-4">UID: YK-492-771</div>
+                <h2 className="text-2xl font-bold text-warm-text tracking-tight mb-1">Rural Entrepreneur</h2>
+                <div className="text-xs text-warm-primary font-bold tracking-wider mb-4 bg-orange-50 inline-block px-2 py-1 rounded-md border border-orange-100">UID: YK-492-771</div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex items-center text-sm text-zinc-400">
-                    <Phone size={14} className="mr-2 text-zinc-600" />
+                  <div className="flex items-center text-sm font-medium text-warm-muted">
+                    <Phone size={16} className="mr-2 text-warm-primary" />
                     +91 98*** **341
                   </div>
-                  <div className="flex items-center text-sm text-zinc-400">
-                    <Mail size={14} className="mr-2 text-zinc-600" />
+                  <div className="flex items-center text-sm font-medium text-warm-muted">
+                    <Mail size={16} className="mr-2 text-warm-primary" />
                     user@example.com
                   </div>
                 </div>
@@ -44,52 +44,52 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-terminal-card border-terminal-border rounded-none shadow-xl">
+        <Card className="bg-warm-surface border-warm-border rounded-2xl shadow-sm overflow-hidden">
           <CardContent className="p-6 flex flex-col justify-center h-full">
-            <h3 className="text-xs text-zinc-500 uppercase tracking-widest font-bold mb-4">Linked Accounts</h3>
+            <h3 className="text-xs text-warm-muted uppercase tracking-wider font-bold mb-4">Linked Accounts</h3>
             <div className="space-y-3">
-              <div className="flex items-center justify-between bg-black border border-zinc-800 p-3">
+              <div className="flex items-center justify-between bg-warm-bg border border-warm-border rounded-xl p-3 shadow-sm">
                 <div className="flex items-center">
-                  <FileText size={16} className="text-terminal-cyan mr-2" />
-                  <span className="text-xs uppercase font-bold text-zinc-300">Aadhaar (UIDAI)</span>
+                  <FileText size={16} className="text-warm-primary mr-2" />
+                  <span className="text-xs font-bold text-warm-text">Aadhaar (UIDAI)</span>
                 </div>
-                <ShieldCheck size={16} className="text-terminal-green" />
+                <ShieldCheck size={16} className="text-emerald-500" />
               </div>
-              <div className="flex items-center justify-between bg-black border border-zinc-800 p-3">
+              <div className="flex items-center justify-between bg-warm-bg border border-warm-border rounded-xl p-3 shadow-sm">
                 <div className="flex items-center">
-                  <FileText size={16} className="text-terminal-amber mr-2" />
-                  <span className="text-xs uppercase font-bold text-zinc-300">PAN</span>
+                  <FileText size={16} className="text-warm-primary mr-2" />
+                  <span className="text-xs font-bold text-warm-text">PAN</span>
                 </div>
-                <AlertCircle size={16} className="text-terminal-amber" title="Verification Pending" />
+                <AlertCircle size={16} className="text-amber-500" />
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <h2 className="text-xl font-bold text-white uppercase tracking-widest mb-4 border-b border-zinc-800 pb-2">Business Intent</h2>
+      <h2 className="text-xl font-bold text-warm-text mb-4 border-b border-warm-border pb-2">Business Intent</h2>
       
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-black border border-zinc-800 p-4">
-          <div className="flex items-center text-zinc-500 mb-2">
-            <Building size={16} className="mr-2" />
-            <span className="text-[10px] uppercase tracking-widest font-bold">Category</span>
+        <div className="bg-warm-surface border border-warm-border rounded-xl p-5 shadow-sm">
+          <div className="flex items-center text-warm-muted mb-2">
+            <Building size={16} className="mr-2 text-warm-primary" />
+            <span className="text-xs font-bold uppercase tracking-wider">Category</span>
           </div>
-          <div className="text-sm text-terminal-cyan font-bold">{categoryName || 'Not Set'}</div>
+          <div className="text-lg text-warm-text font-bold">{categoryName || 'Not Set'}</div>
         </div>
-        <div className="bg-black border border-zinc-800 p-4">
-          <div className="flex items-center text-zinc-500 mb-2">
-            <MapPin size={16} className="mr-2" />
-            <span className="text-[10px] uppercase tracking-widest font-bold">Location</span>
+        <div className="bg-warm-surface border border-warm-border rounded-xl p-5 shadow-sm">
+          <div className="flex items-center text-warm-muted mb-2">
+            <MapPin size={16} className="mr-2 text-warm-primary" />
+            <span className="text-xs font-bold uppercase tracking-wider">Location</span>
           </div>
-          <div className="text-sm text-white font-bold">{locationName || 'Not Set'}</div>
+          <div className="text-lg text-warm-text font-bold">{locationName || 'Not Set'}</div>
         </div>
-        <div className="bg-black border border-zinc-800 p-4">
-          <div className="flex items-center text-zinc-500 mb-2">
-            <ShieldCheck size={16} className="mr-2" />
-            <span className="text-[10px] uppercase tracking-widest font-bold">Initial Capital</span>
+        <div className="bg-warm-surface border border-warm-border rounded-xl p-5 shadow-sm">
+          <div className="flex items-center text-warm-muted mb-2">
+            <ShieldCheck size={16} className="mr-2 text-warm-primary" />
+            <span className="text-xs font-bold uppercase tracking-wider">Initial Capital</span>
           </div>
-          <div className="text-sm text-terminal-amber font-bold">₹{marginCapital ? marginCapital.toLocaleString('en-IN') : '0'}</div>
+          <div className="text-lg text-warm-text font-bold">₹{marginCapital ? marginCapital.toLocaleString('en-IN') : '0'}</div>
         </div>
       </div>
 

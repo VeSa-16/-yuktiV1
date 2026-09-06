@@ -13,5 +13,6 @@ class CostModel(Base):
     selling_price_per_unit = Column(Float)
     estimated_monthly_revenue = Column(Float)
     estimated_monthly_units = Column(Float, nullable=True)
-    data_origin = Column(String, default="prototype_curated")
-    note = Column(String, nullable=True)
+    confidence = Column(String)
+    assumption_note = Column(String)
+    source_id = Column(String, ForeignKey("data_sources.id"))

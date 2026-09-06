@@ -42,59 +42,65 @@ export default function DiscoverPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-4 md:p-8 text-warm-text animate-in fade-in duration-500">
-      <div className="mb-8">
+    <div className="max-w-5xl mx-auto p-4 md:p-8 text-warm-text animate-in fade-in duration-500 font-sans">
+      <div className="mb-8 text-center md:text-left">
         <h1 className="text-3xl font-bold tracking-tight">Discover a Business</h1>
-        <p className="text-warm-muted mt-2 text-lg">What are you interested in starting?</p>
+        <p className="text-warm-muted mt-2 text-lg font-medium">What are you interested in starting?</p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-12">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-12">
         {categories.map((cat) => (
           <button 
             key={cat.id} 
             onClick={() => handleCategorySelect(cat.name, cat.id)}
-            className="flex flex-col items-center justify-center p-6 bg-warm-surface border border-warm-border rounded-2xl hover:border-warm-primary hover:shadow-md transition-all group"
+            className="flex flex-col items-center justify-center p-6 bg-warm-surface border border-warm-border rounded-2xl hover:border-warm-primary hover:shadow-lg transition-all group shadow-sm"
           >
-            <div className={`p-4 rounded-xl ${cat.bg} mb-4 group-hover:scale-110 transition-transform`}>
+            <div className={`p-4 rounded-full ${cat.bg} mb-4 group-hover:scale-110 transition-transform`}>
               <cat.icon size={32} className={cat.color} />
             </div>
-            <span className="font-semibold text-warm-text">{cat.name}</span>
+            <span className="font-bold text-warm-text text-center">{cat.name}</span>
           </button>
         ))}
-        <button className="flex flex-col items-center justify-center p-6 bg-warm-bg/50 border border-dashed border-warm-border rounded-2xl hover:bg-warm-border/30 transition-all text-warm-muted hover:text-warm-text">
-          <Search size={32} className="mb-4" />
-          <span className="font-medium">Other</span>
+        <button className="flex flex-col items-center justify-center p-6 bg-warm-bg border-2 border-dashed border-warm-border rounded-2xl hover:bg-warm-hover transition-all text-warm-muted hover:text-warm-text group">
+          <div className="p-4 rounded-full bg-warm-border/30 mb-4 group-hover:scale-110 transition-transform">
+            <Search size={32} className="text-warm-muted group-hover:text-warm-text" />
+          </div>
+          <span className="font-bold text-center">Other</span>
         </button>
       </div>
 
       <div className="relative flex py-5 items-center">
         <div className="flex-grow border-t border-warm-border"></div>
-        <span className="flex-shrink-0 mx-4 text-warm-muted font-medium text-sm uppercase tracking-widest">OR</span>
+        <span className="flex-shrink-0 mx-4 text-warm-muted font-bold text-sm uppercase tracking-wider bg-warm-bg px-2 rounded-full">OR</span>
         <div className="flex-grow border-t border-warm-border"></div>
       </div>
 
       <div className="mt-8">
-        <Card className="bg-warm-primary/5 border-warm-primary/20 overflow-hidden">
+        <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200 overflow-hidden shadow-md rounded-2xl">
           <div className="p-8 md:flex items-center justify-between">
             <div className="mb-6 md:mb-0 md:mr-8">
-              <h3 className="text-2xl font-bold text-warm-text flex items-center mb-2">
+              <h3 className="text-2xl font-bold text-warm-text flex items-center mb-3">
                 <Sparkles size={24} className="text-warm-primary mr-2" />
-                Let Yukti find opportunities for me
+                Let YUKTI find opportunities for me
               </h3>
-              <p className="text-warm-muted">
-                Our AI analyzes local market demand, competitor density, and your available capital to recommend the highest-potential businesses.
+              <p className="text-warm-text/80 font-medium leading-relaxed max-w-2xl">
+                Our smart system analyzes local market demand, competitor density, and your available capital to recommend the most profitable businesses for you.
               </p>
               
-              <div className="flex flex-wrap gap-2 mt-4 font-mono">
-                <span className="px-3 py-1 bg-black border border-zinc-800 text-xs font-bold text-zinc-500 uppercase tracking-widest">Location: {locationName || 'Pending'}</span>
-                <span className="px-3 py-1 bg-black border border-zinc-800 text-xs font-bold text-zinc-500 uppercase tracking-widest">Capital: ₹{marginCapital ? marginCapital.toLocaleString('en-IN') : 'Pending'}</span>
+              <div className="flex flex-wrap gap-3 mt-6">
+                <span className="px-4 py-2 bg-white rounded-lg border border-orange-200 text-sm font-bold text-warm-text shadow-sm flex items-center">
+                  <span className="text-warm-primary mr-2">📍 Location:</span> {locationName || 'Pending'}
+                </span>
+                <span className="px-4 py-2 bg-white rounded-lg border border-orange-200 text-sm font-bold text-warm-text shadow-sm flex items-center">
+                  <span className="text-warm-primary mr-2">💰 Capital:</span> ₹{marginCapital ? marginCapital.toLocaleString('en-IN') : 'Pending'}
+                </span>
               </div>
             </div>
             
             <button 
               onClick={handleLetYuktiFind}
               disabled={isSearching}
-              className="w-full md:w-auto flex-shrink-0 bg-warm-primary hover:bg-warm-primary/90 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center transition-all hover:shadow-lg hover:shadow-warm-primary/30 disabled:opacity-70"
+              className="w-full md:w-auto flex-shrink-0 bg-warm-primary hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center transition-all hover:shadow-lg disabled:opacity-70"
             >
               {isSearching ? <Loader2 className="animate-spin mr-2" size={24} /> : null}
               {isSearching ? 'Analyzing Market...' : 'Find Matches'}

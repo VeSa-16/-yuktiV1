@@ -1,7 +1,6 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { Card, CardContent } from '@/components/ui/card';
 import { Search, Filter, ShieldCheck, Clock, CheckCircle2 } from 'lucide-react';
 import { YuktiInsight } from '@/components/YuktiInsight';
 
@@ -30,23 +29,23 @@ export default function ApplicationQueue() {
   };
 
   return (
-    <div className="p-8 bg-black min-h-screen text-terminal-text font-mono animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-zinc-800 pb-4 mb-8">
+    <div className="p-4 md:p-8 bg-warm-bg min-h-screen text-warm-text font-sans animate-in fade-in duration-500">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-warm-border pb-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-widest text-white uppercase">Review Queue</h1>
-          <p className="text-xs text-zinc-500 tracking-widest uppercase mt-2">Incoming Business Plans</p>
+          <h1 className="text-3xl font-bold tracking-tight text-warm-text">Review Queue</h1>
+          <p className="text-sm font-medium text-warm-muted mt-1">Incoming Business Plans</p>
         </div>
         
-        <div className="flex space-x-2 mt-4 md:mt-0">
-          <div className="bg-zinc-900 border border-zinc-800 flex items-center px-3 py-1">
-            <Search size={14} className="text-zinc-500 mr-2" />
-            <input type="text" placeholder="SEARCH ID..." className="bg-transparent border-none outline-none text-xs text-white placeholder-zinc-700 w-32" />
+        <div className="flex space-x-3 mt-4 md:mt-0">
+          <div className="bg-white border border-warm-border flex items-center px-4 py-2 rounded-xl shadow-sm">
+            <Search size={16} className="text-warm-muted mr-2" />
+            <input type="text" placeholder="Search ID..." className="bg-transparent border-none outline-none text-sm text-warm-text placeholder-warm-muted w-32" />
           </div>
           <button 
             onClick={exportToCSV}
-            className="bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 px-3 py-1 flex items-center text-xs transition-colors"
+            className="bg-white border border-warm-border hover:bg-orange-50 px-4 py-2 flex items-center text-sm font-bold text-warm-primary transition-colors rounded-xl shadow-sm"
           >
-            <Filter size={14} className="mr-2" /> EXPORT CSV
+            <Filter size={16} className="mr-2" /> Export CSV
           </button>
         </div>
       </div>
@@ -55,53 +54,53 @@ export default function ApplicationQueue() {
         type="positive"
         title="QUEUE STATUS"
         message="2 applications have achieved 100% readiness and passed the YUKTI viability threshold. They are ready for immediate officer review."
-        className="mb-6"
+        className="mb-6 shadow-sm"
       />
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto bg-white rounded-2xl border border-warm-border shadow-sm">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-zinc-800 bg-zinc-900/50">
-              <th className="p-4 text-[10px] text-zinc-500 uppercase tracking-widest font-normal">App ID</th>
-              <th className="p-4 text-[10px] text-zinc-500 uppercase tracking-widest font-normal">Applicant & Business</th>
-              <th className="p-4 text-[10px] text-zinc-500 uppercase tracking-widest font-normal">Capital Req</th>
-              <th className="p-4 text-[10px] text-zinc-500 uppercase tracking-widest font-normal">YUKTI Score</th>
-              <th className="p-4 text-[10px] text-zinc-500 uppercase tracking-widest font-normal">Readiness</th>
-              <th className="p-4 text-[10px] text-zinc-500 uppercase tracking-widest font-normal">Status</th>
-              <th className="p-4 text-[10px] text-zinc-500 uppercase tracking-widest font-normal">Action</th>
+            <tr className="border-b border-warm-border bg-warm-bg/50">
+              <th className="p-4 text-xs font-bold text-warm-muted uppercase tracking-wider">App ID</th>
+              <th className="p-4 text-xs font-bold text-warm-muted uppercase tracking-wider">Applicant & Business</th>
+              <th className="p-4 text-xs font-bold text-warm-muted uppercase tracking-wider">Capital Req</th>
+              <th className="p-4 text-xs font-bold text-warm-muted uppercase tracking-wider">YUKTI Score</th>
+              <th className="p-4 text-xs font-bold text-warm-muted uppercase tracking-wider">Readiness</th>
+              <th className="p-4 text-xs font-bold text-warm-muted uppercase tracking-wider">Status</th>
+              <th className="p-4 text-xs font-bold text-warm-muted uppercase tracking-wider">Action</th>
             </tr>
           </thead>
           <tbody>
             {dummyApplications.map((app, i) => (
-              <tr key={i} className="border-b border-zinc-800 hover:bg-zinc-900/50 transition-colors group">
-                <td className="p-4 font-bold text-xs text-terminal-cyan">{app.id}</td>
+              <tr key={i} className="border-b border-warm-border last:border-0 hover:bg-warm-bg/30 transition-colors group">
+                <td className="p-4 font-bold text-sm text-warm-primary">{app.id}</td>
                 <td className="p-4">
-                  <div className="text-white font-bold text-sm">{app.name}</div>
-                  <div className="text-xs text-zinc-500 mt-1">{app.business} // {app.location}</div>
+                  <div className="text-warm-text font-bold text-sm">{app.name}</div>
+                  <div className="text-xs font-medium text-warm-muted mt-1">{app.business} • {app.location}</div>
                 </td>
-                <td className="p-4 text-sm">{app.req}</td>
+                <td className="p-4 text-sm font-medium">{app.req}</td>
                 <td className="p-4">
-                  <div className={`text-lg font-bold ${app.score > 80 ? 'text-terminal-green' : app.score > 70 ? 'text-terminal-amber' : 'text-terminal-red'}`}>
+                  <div className={`text-xl font-black ${app.score > 80 ? 'text-emerald-600' : app.score > 70 ? 'text-amber-500' : 'text-red-500'}`}>
                     {app.score}
                   </div>
                 </td>
                 <td className="p-4">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs font-bold w-8">{app.readiness}%</span>
-                    <div className="w-16 h-1 bg-zinc-800">
+                  <div className="flex items-center space-x-3">
+                    <span className="text-sm font-bold text-warm-text w-10">{app.readiness}%</span>
+                    <div className="w-20 h-2 bg-warm-border rounded-full overflow-hidden">
                       <div 
-                        className={`h-full ${app.readiness === 100 ? 'bg-terminal-green' : 'bg-terminal-amber'}`} 
+                        className={`h-full rounded-full ${app.readiness === 100 ? 'bg-emerald-500' : 'bg-amber-500'}`} 
                         style={{ width: `${app.readiness}%` }}
                       ></div>
                     </div>
                   </div>
                 </td>
                 <td className="p-4">
-                  <div className="flex items-center text-xs text-zinc-400">
+                  <div className="flex items-center text-xs font-bold text-warm-muted">
                     {app.readiness === 100 ? (
-                      <CheckCircle2 size={14} className="text-terminal-green mr-2" />
+                      <CheckCircle2 size={16} className="text-emerald-500 mr-2" />
                     ) : (
-                      <Clock size={14} className="text-terminal-amber mr-2" />
+                      <Clock size={16} className="text-amber-500 mr-2" />
                     )}
                     {app.status}
                   </div>
@@ -109,13 +108,13 @@ export default function ApplicationQueue() {
                 <td className="p-4">
                   <Link 
                     href={`/advisor/applications/${app.id.toLowerCase()}`}
-                    className={`px-4 py-2 text-xs font-bold rounded-none border transition-colors flex items-center justify-center w-28 ${
+                    className={`px-4 py-2.5 text-xs font-bold rounded-xl border transition-all flex items-center justify-center w-28 shadow-sm ${
                       app.readiness === 100 
-                        ? 'bg-terminal-cyan/10 border-terminal-cyan text-terminal-cyan hover:bg-terminal-cyan hover:text-black' 
-                        : 'bg-zinc-900 border-zinc-700 text-zinc-500 hover:border-zinc-500'
+                        ? 'bg-warm-primary border-warm-primary text-white hover:bg-orange-600' 
+                        : 'bg-white border-warm-border text-warm-muted hover:border-warm-muted hover:text-warm-text'
                     }`}
                   >
-                    <ShieldCheck size={14} className="mr-2" /> REVIEW
+                    <ShieldCheck size={16} className="mr-2" /> Review
                   </Link>
                 </td>
               </tr>
