@@ -59,10 +59,10 @@ export default function ResultsPage() {
       <div className="mb-10 border-b border-warm-border pb-6">
         <h1 className="text-3xl font-bold tracking-tight">Top Opportunities</h1>
         <div className="flex items-center space-x-4 mt-3">
-          <span className="flex items-center text-sm font-medium text-warm-muted bg-white border border-warm-border px-3 py-1 rounded-full">
+          <span className="flex items-center text-sm font-medium text-warm-muted bg-warm-surface border border-warm-border px-3 py-1 rounded-full">
             <MapPin size={14} className="mr-2 text-warm-primary" /> {locationName || "Solapur"}
           </span>
-          <span className="flex items-center text-sm font-medium text-warm-muted bg-white border border-warm-border px-3 py-1 rounded-full">
+          <span className="flex items-center text-sm font-medium text-warm-muted bg-warm-surface border border-warm-border px-3 py-1 rounded-full">
             Capital: {marginCapital ? formatCurrency(marginCapital) : "₹75,000"}
           </span>
         </div>
@@ -78,7 +78,7 @@ export default function ResultsPage() {
           >
             <div 
               onClick={() => handleSelect(opp.category_id, opp.category_name)}
-              className="bg-white border border-warm-border rounded-2xl overflow-hidden hover:border-warm-primary hover:shadow-lg transition-all cursor-pointer group flex flex-col md:flex-row"
+              className="bg-warm-surface border border-warm-border rounded-2xl overflow-hidden hover:border-warm-primary hover:shadow-lg transition-all cursor-pointer group flex flex-col md:flex-row"
             >
               <div className="p-6 md:p-8 flex-1">
                 <div className="flex items-start justify-between mb-4">
@@ -133,7 +133,7 @@ export default function ResultsPage() {
                   {(opp.yukti_score || opp.score || 84) >= 75 ? "High Potential" : "Viable Option"}
                 </span>
                 
-                <button className="w-full bg-white border border-warm-border hover:border-warm-primary hover:text-warm-primary text-warm-text px-4 py-2 rounded-lg font-medium text-sm flex items-center justify-center transition-colors">
+                <button className="w-full bg-warm-surface border border-warm-border hover:border-warm-primary hover:text-warm-primary text-warm-text px-4 py-2 rounded-lg font-medium text-sm flex items-center justify-center transition-colors">
                   View Analytics <ArrowRight size={16} className="ml-2" />
                 </button>
               </div>

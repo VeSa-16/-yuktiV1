@@ -60,10 +60,10 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4 min-h-screen relative overflow-hidden bg-white">
+    <div className="flex-1 flex flex-col items-center justify-center p-4 min-h-screen relative overflow-hidden bg-black font-mono">
       {/* Abstract Background Patterns */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-20 pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-warm-primary blur-3xl opacity-30"></div>
+        <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-terminal-amber blur-3xl opacity-30"></div>
         <div className="absolute top-1/2 right-0 w-[500px] h-[500px] rounded-full bg-terminal-cyan blur-3xl opacity-20 transform translate-x-1/2 -translate-y-1/2"></div>
       </div>
 
@@ -78,7 +78,7 @@ export default function LandingPage() {
             className="w-full max-w-4xl z-10 text-center"
           >
             <div className="mb-12">
-              <h1 className="text-6xl font-black tracking-widest text-black mb-4">YUKTI 2.0</h1>
+              <h1 className="text-6xl font-black tracking-widest text-white mb-4">YUKTI 2.0</h1>
               <p className="text-xl text-zinc-500 uppercase tracking-widest font-bold">Select Your Operating Environment</p>
             </div>
 
@@ -86,15 +86,15 @@ export default function LandingPage() {
               {/* Entrepreneur Door */}
               <button 
                 onClick={() => setSelectedPath('entrepreneur')}
-                className="group relative bg-white border border-warm-border p-12 rounded-3xl shadow-xl hover:shadow-2xl hover:border-warm-primary transition-all text-left overflow-hidden"
+                className="group relative bg-zinc-900 border border-zinc-800 p-12 rounded-3xl shadow-xl hover:shadow-2xl hover:border-terminal-amber transition-all text-left overflow-hidden font-mono"
               >
-                <div className="absolute inset-0 bg-warm-primary opacity-0 group-hover:opacity-5 transition-opacity"></div>
-                <div className="w-16 h-16 bg-warm-bg rounded-full flex items-center justify-center mb-6 text-warm-primary group-hover:scale-110 transition-transform">
+                <div className="absolute inset-0 bg-terminal-amber opacity-0 group-hover:opacity-5 transition-opacity"></div>
+                <div className="w-16 h-16 bg-black border border-zinc-800 rounded-full flex items-center justify-center mb-6 text-terminal-amber group-hover:scale-110 transition-transform">
                   <User size={32} />
                 </div>
-                <h2 className="text-3xl font-bold text-warm-text mb-2">Entrepreneur</h2>
-                <p className="text-warm-muted">I want to discover viable business opportunities, simulate financials, and generate a bank-ready project report.</p>
-                <div className="mt-8 flex items-center text-warm-primary font-bold">
+                <h2 className="text-3xl font-bold text-white mb-2 uppercase tracking-widest">Entrepreneur</h2>
+                <p className="text-zinc-500 text-sm">I want to discover viable business opportunities, simulate financials, and generate a bank-ready project report.</p>
+                <div className="mt-8 flex items-center text-terminal-amber font-bold uppercase tracking-widest text-xs">
                   Enter Workspace <ArrowRight size={20} className="ml-2 group-hover:translate-x-2 transition-transform" />
                 </div>
               </button>
@@ -125,12 +125,12 @@ export default function LandingPage() {
             animate={{ opacity: 1, x: 0 }}
             className="w-full max-w-lg z-10"
           >
-            <div className="mb-6 flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-warm-text">Entrepreneur Profile</h2>
-              <button onClick={() => setSelectedPath('none')} className="text-sm text-warm-muted hover:text-warm-primary">← Back</button>
+            <div className="mb-6 flex justify-between items-center font-mono">
+              <h2 className="text-2xl font-bold text-white uppercase tracking-widest">Entrepreneur Profile</h2>
+              <button onClick={() => setSelectedPath('none')} className="text-xs text-zinc-500 hover:text-terminal-amber uppercase tracking-widest">← Abort</button>
             </div>
             
-            <div className="bg-white p-8 rounded-2xl shadow-xl border border-warm-border">
+            <div className="bg-zinc-900 p-8 rounded-none border border-zinc-800 shadow-xl font-mono">
               <form onSubmit={handleEntrepreneurSubmit} className="space-y-5">
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-warm-text flex items-center">
@@ -147,10 +147,10 @@ export default function LandingPage() {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-warm-text">Age</label>
+                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Age</label>
                     <input 
                       type="number"
-                      className="w-full rounded-xl border border-warm-border bg-warm-bg/50 px-4 py-3 text-warm-text placeholder:text-warm-muted focus:outline-none focus:ring-2 focus:ring-warm-primary/20 focus:border-warm-primary transition-all"
+                      className="w-full bg-black border border-zinc-700 px-4 py-3 text-white focus:outline-none focus:border-terminal-amber transition-colors"
                       placeholder="25" 
                       required
                       value={formData.age}
@@ -158,11 +158,11 @@ export default function LandingPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-warm-text flex items-center">
-                      <GraduationCap size={16} className="mr-2 text-warm-muted" /> Education
+                    <label className="text-xs font-bold text-zinc-500 flex items-center uppercase tracking-widest">
+                      <GraduationCap size={16} className="mr-2 text-zinc-700" /> Education
                     </label>
                     <select 
-                      className="w-full rounded-xl border border-warm-border bg-warm-bg/50 px-4 py-3 text-warm-text focus:outline-none focus:ring-2 focus:ring-warm-primary/20 focus:border-warm-primary transition-all"
+                      className="w-full bg-black border border-zinc-700 px-4 py-3 text-white focus:outline-none focus:border-terminal-amber transition-colors"
                       value={formData.education}
                       onChange={e => setFormData({...formData, education: e.target.value})}
                     >
@@ -175,11 +175,11 @@ export default function LandingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-warm-text flex items-center">
-                    <MapPin size={16} className="mr-2 text-warm-muted" /> Location (Target Market)
+                  <label className="text-xs font-bold text-zinc-500 flex items-center uppercase tracking-widest">
+                    <MapPin size={16} className="mr-2 text-zinc-700" /> Location (Target Market)
                   </label>
                   <input 
-                    className="w-full rounded-xl border border-warm-border bg-warm-bg/50 px-4 py-3 text-warm-text placeholder:text-warm-muted focus:outline-none focus:ring-2 focus:ring-warm-primary/20 focus:border-warm-primary transition-all"
+                    className="w-full bg-black border border-zinc-700 px-4 py-3 text-white focus:outline-none focus:border-terminal-amber transition-colors"
                     placeholder="e.g. Solapur, Maharashtra" 
                     required
                     value={formData.location}
@@ -189,7 +189,7 @@ export default function LandingPage() {
                 
                 <button 
                   type="submit" 
-                  className="w-full mt-8 py-4 bg-warm-primary hover:bg-warm-primary/90 text-white rounded-xl font-bold text-lg flex items-center justify-center transition-all shadow-lg shadow-warm-primary/30 disabled:opacity-70" 
+                  className="w-full mt-8 py-4 bg-terminal-amber hover:bg-terminal-amber/90 text-black font-bold uppercase tracking-widest text-xs flex items-center justify-center transition-all disabled:opacity-70" 
                   disabled={loading}
                 >
                   {loading ? <Loader2 className="animate-spin mr-2" size={20} /> : null}

@@ -81,7 +81,7 @@ export default function AnalyticsOverview() {
               {[
                 { label: 'Agriculture & Processing', val: 45, color: 'bg-terminal-cyan' },
                 { label: 'Manufacturing & Textiles', val: 28, color: 'bg-terminal-amber' },
-                { label: 'Retail & Distribution', val: 15, color: 'bg-white' },
+                { label: 'Retail & Distribution', val: 15, color: 'bg-warm-surface' },
                 { label: 'Services & IT', val: 12, color: 'bg-zinc-600' }
               ].map((item, i) => (
                 <div key={i}>

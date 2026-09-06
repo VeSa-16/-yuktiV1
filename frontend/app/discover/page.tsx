@@ -18,7 +18,7 @@ const categories = [
 
 export default function DiscoverPage() {
   const router = useRouter();
-  const { locationId, marginCapital, updateState } = useStore();
+  const { locationId, locationName, marginCapital, updateState } = useStore();
   const [isSearching, setIsSearching] = useState(false);
 
   const handleLetYuktiFind = async () => {
@@ -53,7 +53,7 @@ export default function DiscoverPage() {
           <button 
             key={cat.id} 
             onClick={() => handleCategorySelect(cat.name, cat.id)}
-            className="flex flex-col items-center justify-center p-6 bg-white border border-warm-border rounded-2xl hover:border-warm-primary hover:shadow-md transition-all group"
+            className="flex flex-col items-center justify-center p-6 bg-warm-surface border border-warm-border rounded-2xl hover:border-warm-primary hover:shadow-md transition-all group"
           >
             <div className={`p-4 rounded-xl ${cat.bg} mb-4 group-hover:scale-110 transition-transform`}>
               <cat.icon size={32} className={cat.color} />
@@ -85,9 +85,9 @@ export default function DiscoverPage() {
                 Our AI analyzes local market demand, competitor density, and your available capital to recommend the highest-potential businesses.
               </p>
               
-              <div className="flex flex-wrap gap-2 mt-4">
-                <span className="px-3 py-1 bg-white border border-warm-border rounded-full text-xs font-semibold text-warm-muted">Location: {useStore().locationName || 'Pending'}</span>
-                <span className="px-3 py-1 bg-white border border-warm-border rounded-full text-xs font-semibold text-warm-muted">Capital: ₹{marginCapital ? marginCapital.toLocaleString('en-IN') : 'Pending'}</span>
+              <div className="flex flex-wrap gap-2 mt-4 font-mono">
+                <span className="px-3 py-1 bg-black border border-zinc-800 text-xs font-bold text-zinc-500 uppercase tracking-widest">Location: {locationName || 'Pending'}</span>
+                <span className="px-3 py-1 bg-black border border-zinc-800 text-xs font-bold text-zinc-500 uppercase tracking-widest">Capital: ₹{marginCapital ? marginCapital.toLocaleString('en-IN') : 'Pending'}</span>
               </div>
             </div>
             

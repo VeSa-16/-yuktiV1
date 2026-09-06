@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} min-h-screen flex bg-warm-bg text-warm-text`}>
+      <body className="font-mono min-h-screen flex bg-black text-terminal-text">
         <StoreProvider>
           <Sidebar />
 

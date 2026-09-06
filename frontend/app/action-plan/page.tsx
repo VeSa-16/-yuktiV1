@@ -69,13 +69,13 @@ export default function ActionPlan() {
         </div>
         <button 
           onClick={() => window.print()}
-          className="mt-4 md:mt-0 flex items-center bg-white border border-warm-border px-4 py-2 rounded-xl text-sm font-bold text-warm-text hover:bg-warm-bg transition-colors"
+          className="mt-4 md:mt-0 flex items-center bg-warm-surface border border-warm-border px-4 py-2 rounded-xl text-sm font-bold text-warm-text hover:bg-warm-bg transition-colors"
         >
           <Flag size={16} className="mr-2" /> Export to PDF
         </button>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl border border-warm-border shadow-sm mb-8 flex flex-col md:flex-row items-center justify-between">
+      <div className="bg-warm-surface p-6 rounded-2xl border border-warm-border shadow-sm mb-8 flex flex-col md:flex-row items-center justify-between">
         <div className="flex items-center mb-6 md:mb-0">
           <div className="relative w-24 h-24 mr-6 flex items-center justify-center">
             <svg className="w-full h-full transform -rotate-90">
@@ -122,7 +122,7 @@ export default function ActionPlan() {
               )}
               
               <div className="flex items-center mb-4 relative z-10">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 border-warm-bg mr-4 transition-colors duration-500 ${isPhaseDone ? 'bg-emerald-500 text-white' : 'bg-white border-warm-border text-warm-muted'}`}>
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 border-warm-bg mr-4 transition-colors duration-500 ${isPhaseDone ? 'bg-emerald-500 text-white' : 'bg-warm-surface border-warm-border text-warm-muted'}`}>
                   {isPhaseDone ? <CheckCircle2 size={24} /> : <Flag size={20} />}
                 </div>
                 <div className="flex-1">
@@ -136,7 +136,7 @@ export default function ActionPlan() {
                 </div>
               </div>
 
-              <Card className="ml-16 bg-white border-warm-border shadow-sm">
+              <Card className="ml-16 bg-warm-surface border-warm-border shadow-sm">
                 <CardContent className="p-0">
                   <ul className="divide-y divide-warm-border">
                     {milestone.tasks.map(task => (

@@ -74,10 +74,10 @@ export default function Marketplace() {
             placeholder="Search equipment (e.g. Sewing Machine, POS...)"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-12 pr-4 py-4 rounded-xl border border-warm-border focus:outline-none focus:ring-2 focus:ring-warm-primary/50 transition-shadow bg-white"
+            className="w-full pl-12 pr-4 py-4 rounded-xl border border-warm-border focus:outline-none focus:ring-2 focus:ring-warm-primary/50 transition-shadow bg-warm-surface"
           />
         </div>
-        <select className="px-6 py-4 rounded-xl border border-warm-border focus:outline-none bg-white text-warm-text font-medium cursor-pointer">
+        <select className="px-6 py-4 rounded-xl border border-warm-border focus:outline-none bg-warm-surface text-warm-text font-medium cursor-pointer">
           <option>Sort by: Recommended</option>
           <option>Distance: Nearest</option>
           <option>Price: Low to High</option>
@@ -93,7 +93,7 @@ export default function Marketplace() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
           >
-            <Card className="bg-white border-warm-border shadow-sm hover:shadow-md transition-shadow h-full flex flex-col overflow-hidden group">
+            <Card className="bg-warm-surface border-warm-border shadow-sm hover:shadow-md transition-shadow h-full flex flex-col overflow-hidden group">
               <div className="h-2 w-full bg-warm-bg group-hover:bg-warm-primary transition-colors"></div>
               <CardContent className="p-6 flex flex-col flex-1">
                 <div className="flex justify-between items-start mb-4">

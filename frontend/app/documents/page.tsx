@@ -35,7 +35,7 @@ export default function DocumentsPage() {
           <p className="text-warm-muted mt-2">Track your application readiness for {categoryName || "your business"}.</p>
         </div>
         
-        <div className="mt-4 md:mt-0 flex items-center bg-white p-3 border border-warm-border rounded-xl shadow-sm">
+        <div className="mt-4 md:mt-0 flex items-center bg-warm-surface p-3 border border-warm-border rounded-xl shadow-sm">
           <div className="mr-4">
             <div className="text-[10px] uppercase font-bold text-warm-muted tracking-widest">Readiness</div>
             <div className={`text-2xl font-black ${readinessScore >= 100 ? 'text-emerald-600' : 'text-amber-600'}`}>{readinessScore}%</div>
@@ -69,7 +69,7 @@ export default function DocumentsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-6">
-          <Card className="bg-white border-warm-border shadow-sm">
+          <Card className="bg-warm-surface border-warm-border shadow-sm">
             <CardHeader className="bg-warm-bg/50 border-b border-warm-border">
               <CardTitle className="text-sm font-bold uppercase tracking-widest text-warm-text flex items-center">
                 <FileText size={16} className="mr-2 text-warm-primary" /> Document Checklist
@@ -102,7 +102,7 @@ export default function DocumentsPage() {
         </div>
 
         <div className="space-y-6">
-          <Card className="bg-white border-warm-border shadow-sm">
+          <Card className="bg-warm-surface border-warm-border shadow-sm">
             <CardHeader className="bg-warm-bg/50 border-b border-warm-border">
               <CardTitle className="text-sm font-bold uppercase tracking-widest text-warm-text flex items-center">
                 <Building size={16} className="mr-2 text-warm-primary" /> Agency Match
@@ -138,7 +138,7 @@ export default function DocumentsPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-warm-border shadow-sm">
+          <Card className="bg-warm-surface border-warm-border shadow-sm">
             <CardContent className="p-6">
               <h4 className="font-bold mb-2 flex items-center"><Download size={16} className="mr-2 text-warm-primary" /> Project Report</h4>
               <p className="text-xs text-warm-muted mb-4">Your auto-generated Detailed Project Report (DPR) is ready for download. This is required by the lending agency.</p>

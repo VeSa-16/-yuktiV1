@@ -24,7 +24,7 @@ export default function PlansPage() {
         {categoryId && (
           <button 
             onClick={handleSaveCurrent}
-            className="mt-4 md:mt-0 flex items-center px-4 py-2 bg-white border border-warm-border rounded-lg text-sm font-semibold hover:border-warm-primary hover:text-warm-primary transition-colors shadow-sm"
+            className="mt-4 md:mt-0 flex items-center px-4 py-2 bg-warm-surface border border-warm-border rounded-lg text-sm font-semibold hover:border-warm-primary hover:text-warm-primary transition-colors shadow-sm"
           >
             <Folder size={16} className="mr-2" /> Save Active Session
           </button>
@@ -34,11 +34,11 @@ export default function PlansPage() {
       {savedPlans && savedPlans.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {savedPlans.map((plan: BusinessPlan) => (
-            <Card key={plan.id} className="bg-white border-warm-border hover:border-warm-primary hover:shadow-lg transition-all rounded-xl overflow-hidden group">
+            <Card key={plan.id} className="bg-warm-surface border-warm-border hover:border-warm-primary hover:shadow-lg transition-all rounded-xl overflow-hidden group">
               <div className="p-5 border-b border-warm-border bg-warm-bg/30">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-bold text-lg text-warm-text group-hover:text-warm-primary transition-colors">{plan.categoryName}</h3>
-                  <div className="flex flex-col items-center bg-white border border-warm-border px-2 py-1 rounded-md">
+                  <div className="flex flex-col items-center bg-warm-surface border border-warm-border px-2 py-1 rounded-md">
                     <span className={`text-lg font-black leading-none ${plan.score >= 80 ? 'text-emerald-600' : 'text-amber-600'}`}>
                       {plan.score}
                     </span>
@@ -74,7 +74,7 @@ export default function PlansPage() {
           ))}
         </div>
       ) : (
-        <Card className="bg-white border-dashed border-2 border-warm-border flex flex-col items-center justify-center p-12 text-center rounded-2xl">
+        <Card className="bg-warm-surface border-dashed border-2 border-warm-border flex flex-col items-center justify-center p-12 text-center rounded-2xl">
           <div className="w-16 h-16 bg-warm-bg rounded-full flex items-center justify-center mb-4">
             <FileText size={32} className="text-warm-muted" />
           </div>

@@ -59,7 +59,7 @@ export default function ReportPage() {
         </Button>
       </div>
       
-      <div className="bg-white text-black p-8 md:p-16 min-h-[1056px] shadow-2xl print:shadow-none print:p-0">
+      <div className="bg-warm-surface text-black p-8 md:p-16 min-h-[1056px] shadow-2xl print:shadow-none print:p-0">
         
         {/* Cover Page */}
         <div className="flex flex-col justify-center min-h-[800px] print:min-h-[100vh] border-b-4 border-black mb-12 pb-12">

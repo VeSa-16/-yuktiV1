@@ -18,13 +18,13 @@ const config: Config = {
           text: '#cccccc'
         },
         warm: {
-          bg: '#faf9f6',        // Off-white/cream
-          surface: '#ffffff',
-          primary: '#e65c00',   // Deep orange/rust
-          secondary: '#2563eb', // Friendly blue
-          text: '#1f2937',      // Slate 800
-          muted: '#6b7280',     // Gray 500
-          border: '#e5e7eb'     // Gray 200
+          bg: '#000000',        // Was Off-white/cream, now True Black
+          surface: '#0c0c0c',   // Was White, now Dark Zinc
+          primary: '#00ffff',   // Was Orange, now Terminal Cyan (Primary action color)
+          secondary: '#ffb000', // Was Blue, now Terminal Amber (Secondary highlight)
+          text: '#ffffff',      // Was Slate 800, now White
+          muted: '#888888',     // Was Gray 500, now Dark Gray
+          border: '#333333'     // Was Gray 200, now Charcoal Border
         }
       },
       typography: {

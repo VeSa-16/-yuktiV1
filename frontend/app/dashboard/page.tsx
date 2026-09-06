@@ -31,7 +31,7 @@ export default function Dashboard() {
         {/* Left Column: Journey & Quick Actions */}
         <div className="lg:col-span-1 space-y-8">
           
-          <Card className="bg-white border-warm-border shadow-sm rounded-xl overflow-hidden">
+          <Card className="bg-warm-surface border-warm-border shadow-sm rounded-xl overflow-hidden">
             <div className="p-4 border-b border-warm-border bg-warm-bg/50">
               <h3 className="font-semibold text-sm uppercase tracking-wider text-warm-muted">Your Business Journey</h3>
             </div>
@@ -55,14 +55,14 @@ export default function Dashboard() {
 
           <div className="space-y-3">
             <h3 className="font-semibold text-sm uppercase tracking-wider text-warm-muted ml-1">Quick Actions</h3>
-            <Link href="/discover" className="flex items-center p-3 bg-white border border-warm-border rounded-xl hover:border-warm-primary hover:shadow-md transition-all group">
+            <Link href="/discover" className="flex items-center p-3 bg-warm-surface border border-warm-border rounded-xl hover:border-warm-primary hover:shadow-md transition-all group">
               <div className="bg-warm-primary/10 p-2 rounded-lg mr-3 group-hover:bg-warm-primary/20 transition-colors">
                 <Compass size={18} className="text-warm-primary" />
               </div>
               <span className="font-medium text-sm flex-1">Explore Opportunities</span>
               <ArrowRight size={16} className="text-warm-muted group-hover:text-warm-primary transition-colors" />
             </Link>
-            <Link href="/plans" className="flex items-center p-3 bg-white border border-warm-border rounded-xl hover:border-warm-secondary hover:shadow-md transition-all group">
+            <Link href="/plans" className="flex items-center p-3 bg-warm-surface border border-warm-border rounded-xl hover:border-warm-secondary hover:shadow-md transition-all group">
               <div className="bg-warm-secondary/10 p-2 rounded-lg mr-3 group-hover:bg-warm-secondary/20 transition-colors">
                 <FileText size={18} className="text-warm-secondary" />
               </div>
@@ -76,7 +76,7 @@ export default function Dashboard() {
         {/* Right Column: Current Plan Overview */}
         <div className="lg:col-span-2">
           {categoryName ? (
-            <Card className="bg-white border-warm-border shadow-sm rounded-xl overflow-hidden h-full">
+            <Card className="bg-warm-surface border-warm-border shadow-sm rounded-xl overflow-hidden h-full">
               <div className="p-6 border-b border-warm-border flex justify-between items-start">
                 <div>
                   <h3 className="text-xs font-semibold uppercase tracking-wider text-warm-primary mb-1">Your Current Plan</h3>
@@ -129,7 +129,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           ) : (
-            <Card className="bg-white border-warm-border shadow-sm rounded-xl h-full flex flex-col items-center justify-center p-12 text-center">
+            <Card className="bg-warm-surface border-warm-border shadow-sm rounded-xl h-full flex flex-col items-center justify-center p-12 text-center">
               <div className="w-16 h-16 bg-warm-bg rounded-full flex items-center justify-center mb-4">
                 <Compass size={32} className="text-warm-muted" />
               </div>
