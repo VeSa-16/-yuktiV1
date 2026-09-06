@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { ProgressStepper } from "@/components/ProgressStepper";
 import { formatCurrency, formatPercentage } from "@/lib/formatters";
 import { api } from "@/lib/api-client";
-import { Loader2, TrendingUp, AlertTriangle, ArrowRight, Settings2, BarChart4 } from "lucide-react";
+import { Loader2, TrendingUp, AlertTriangle, ArrowRight, Settings2, BarChart4, ArrowDown, ArrowUp } from "lucide-react";
 import { motion } from "framer-motion";
+import { YuktiInsight } from "@/components/YuktiInsight";
 
 export default function SimulatorPage() {
   const router = useRouter();
@@ -165,7 +166,7 @@ export default function SimulatorPage() {
             </div>
 
             <Button 
-              className="w-full mt-4" 
+              className="w-full mt-4 bg-terminal-cyan text-black hover:bg-terminal-cyan/80 font-bold" 
               onClick={runSimulation}
               disabled={simLoading}
             >
@@ -176,11 +177,11 @@ export default function SimulatorPage() {
         </Card>
 
         {/* Results */}
-        <Card className="lg:col-span-2 border-zinc-800">
+        <Card className="lg:col-span-2 border-zinc-800 bg-black">
           <CardHeader className="bg-zinc-900 pb-4 border-b border-zinc-800">
             <CardTitle className="text-xs font-mono text-zinc-400 uppercase tracking-widest flex items-center">
               <TrendingUp size={14} className="mr-2 text-terminal-cyan" />
-              Impact Analysis
+              Impact Analysis (BEFORE / AFTER)
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
@@ -195,40 +196,60 @@ export default function SimulatorPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="space-y-6"
               >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-black p-4 border border-zinc-800">
-                    <p className="text-[10px] text-zinc-500 font-mono font-bold mb-2 uppercase tracking-widest">Simulated ROI</p>
-                    <div className="flex items-baseline space-x-4">
-                      <span className={`text-4xl font-mono font-bold ${simResults.simulated_roi >= 15 ? 'text-terminal-green' : simResults.simulated_roi >= 5 ? 'text-terminal-amber' : 'text-terminal-red'}`}>
-                        {simResults.simulated_roi.toFixed(1)}%
-                      </span>
-                      <span className="text-[10px] font-mono text-zinc-600 line-through uppercase">Base: {baseParams.roi.toFixed(1)}%</span>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* BEFORE Card */}
+                  <div className="bg-zinc-900 border border-zinc-800 p-4">
+                    <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-4 border-b border-zinc-800 pb-2">Original State</div>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">ROI</div>
+                        <div className="text-2xl font-mono text-white">{baseParams.roi.toFixed(1)}%</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">DSCR</div>
+                        <div className="text-2xl font-mono text-white">{baseParams.dscr.toFixed(2)}x</div>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="bg-black p-4 border border-zinc-800">
-                    <p className="text-[10px] text-zinc-500 font-mono font-bold mb-2 uppercase tracking-widest">Simulated DSCR</p>
-                    <div className="flex items-baseline space-x-4">
-                      <span className={`text-4xl font-mono font-bold ${simResults.simulated_dscr >= 1.5 ? 'text-terminal-green' : simResults.simulated_dscr >= 1.0 ? 'text-terminal-amber' : 'text-terminal-red'}`}>
-                        {simResults.simulated_dscr.toFixed(2)}x
-                      </span>
-                      <span className="text-[10px] font-mono text-zinc-600 line-through uppercase">Base: {baseParams.dscr.toFixed(2)}x</span>
+                  {/* AFTER Card */}
+                  <div className={`border p-4 ${simResults.survives_stress ? 'bg-terminal-green/5 border-terminal-green/30' : 'bg-terminal-red/5 border-terminal-red/30'}`}>
+                    <div className="text-[10px] font-mono text-zinc-300 uppercase tracking-widest mb-4 border-b border-zinc-800 pb-2 flex justify-between items-center">
+                      Simulated State
+                      {simResults.survives_stress ? (
+                        <span className="bg-terminal-green/20 text-terminal-green px-2 py-0.5 text-[8px]">PASS</span>
+                      ) : (
+                        <span className="bg-terminal-red/20 text-terminal-red px-2 py-0.5 text-[8px]">FAIL</span>
+                      )}
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">ROI</div>
+                        <div className="flex items-center">
+                          <div className={`text-2xl font-mono font-bold ${simResults.simulated_roi >= baseParams.roi ? 'text-terminal-green' : 'text-terminal-red'}`}>
+                            {simResults.simulated_roi.toFixed(1)}%
+                          </div>
+                          {simResults.simulated_roi >= baseParams.roi ? <ArrowUp size={14} className="text-terminal-green ml-2" /> : <ArrowDown size={14} className="text-terminal-red ml-2" />}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">DSCR</div>
+                        <div className="flex items-center">
+                          <div className={`text-2xl font-mono font-bold ${simResults.simulated_dscr >= baseParams.dscr ? 'text-terminal-green' : 'text-terminal-red'}`}>
+                            {simResults.simulated_dscr.toFixed(2)}x
+                          </div>
+                          {simResults.simulated_dscr >= baseParams.dscr ? <ArrowUp size={14} className="text-terminal-green ml-2" /> : <ArrowDown size={14} className="text-terminal-red ml-2" />}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className={`p-4 border mt-6 ${simResults.survives_stress ? 'bg-terminal-green/10 border-terminal-green text-terminal-green' : 'bg-terminal-red/10 border-terminal-red text-terminal-red'}`}>
-                  <h4 className="font-mono text-xs font-bold flex items-center mb-2 uppercase tracking-widest">
-                    {simResults.survives_stress ? (
-                      <><span className="mr-2">■</span> BUSINESS SURVIVES STRESS</>
-                    ) : (
-                      <><AlertTriangle className="mr-2" size={14} /> HIGH RISK OF DEFAULT</>
-                    )}
-                  </h4>
-                  <p className="font-mono text-xs opacity-90">
-                    {simResults.ai_insight}
-                  </p>
-                </div>
+                <YuktiInsight 
+                  type={simResults.survives_stress ? 'positive' : 'warning'}
+                  title={simResults.survives_stress ? "BUSINESS SURVIVES STRESS" : "HIGH RISK OF DEFAULT"}
+                  message={simResults.ai_insight}
+                />
               </motion.div>
             )}
           </CardContent>

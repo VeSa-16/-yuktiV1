@@ -97,22 +97,44 @@ export function CopilotOverlay() {
               )}
             </div>
 
-            <div className="p-3 bg-white border-t border-slate-100 flex items-center space-x-2">
-              <input
-                type="text"
-                placeholder="Ask about financial projections..."
-                className="flex-1 px-4 py-2 border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 bg-slate-50/50"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              />
-              <button
-                onClick={handleSend}
-                disabled={!query.trim() || loading}
-                className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center justify-center"
-              >
-                <Send size={18} />
-              </button>
+            <div className="bg-white border-t border-slate-100 flex flex-col">
+              <div className="flex space-x-2 overflow-x-auto px-3 py-2 scrollbar-hide border-b border-slate-50">
+                <button 
+                  onClick={() => setQuery("Please explain my score in Hindi.")}
+                  className="whitespace-nowrap text-[10px] uppercase tracking-widest font-semibold px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors border border-indigo-100"
+                >
+                  Translate to Hindi
+                </button>
+                <button 
+                  onClick={() => setQuery("Please explain this in Marathi.")}
+                  className="whitespace-nowrap text-[10px] uppercase tracking-widest font-semibold px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors border border-indigo-100"
+                >
+                  Translate to Marathi
+                </button>
+                <button 
+                  onClick={() => setQuery("How can I improve my DSCR?")}
+                  className="whitespace-nowrap text-[10px] uppercase tracking-widest font-semibold px-3 py-1 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition-colors border border-slate-200"
+                >
+                  Improve DSCR
+                </button>
+              </div>
+              <div className="p-3 flex items-center space-x-2">
+                <input
+                  type="text"
+                  placeholder="Ask about financial projections..."
+                  className="flex-1 px-4 py-2 border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 bg-slate-50/50"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                />
+                <button
+                  onClick={handleSend}
+                  disabled={!query.trim() || loading}
+                  className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center justify-center"
+                >
+                  <Send size={18} />
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
