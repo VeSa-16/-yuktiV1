@@ -16,7 +16,7 @@ import { MarketRadar } from "@/components/MarketRadar";
 
 export default function CategoryDeepDivePage({ params }: { params: { categoryId: string } }) {
   const router = useRouter();
-  const { state } = useStore();
+  const state = useStore();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState("");

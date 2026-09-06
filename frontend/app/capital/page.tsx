@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 
 export default function CapitalPage() {
   const router = useRouter();
-  const { state, updateState } = useStore();
+  const state = useStore(); const { updateState } = state;
   const [marginCapital, setMarginCapital] = useState("50000");
 
   useEffect(() => {

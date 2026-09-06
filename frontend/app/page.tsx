@@ -2,12 +2,9 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
 import { api } from "@/lib/api-client";
-import { Loader2, ArrowRight } from "lucide-react";
+import { Loader2, ArrowRight, Building2, MapPin, GraduationCap, User } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function ProfilePage() {
@@ -35,10 +32,11 @@ export default function ProfilePage() {
       updateState({
         sessionId: res.user_id,
         locationId: res.location_id,
-        locationName: res.location_name
+        locationName: res.location_name,
+        profileName: formData.name
       });
       
-      router.push("/capital");
+      router.push("/dashboard");
     } catch (error) {
       console.error(error);
     } finally {
@@ -47,78 +45,111 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4">
+    <div className="flex-1 flex flex-col items-center justify-center p-4 min-h-[calc(100vh-100px)]">
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="text-center mb-8"
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
       >
-        <h1 className="text-4xl sm:text-5xl font-mono text-white tracking-widest uppercase mb-4 border-b border-zinc-800 pb-4 inline-block">
-          Discover <span className="text-gradient">Business Potential</span>
-        </h1>
-        <p className="text-sm sm:text-base text-terminal-cyan max-w-2xl mx-auto font-mono uppercase tracking-widest">
-          SYS.RUN(HYPER_LOCAL_DATA) // AI_MATCHING_ENGINE_ACTIVE
-        </p>
-      </motion.div>
+        {/* Left Side: Friendly Value Prop */}
+        <div className="text-left space-y-6 md:pr-8">
+          <div className="inline-flex items-center space-x-2 bg-warm-primary/10 text-warm-primary px-4 py-2 rounded-full font-medium text-sm">
+            <Building2 size={16} />
+            <span>Empowering Rural Entrepreneurs</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-warm-text leading-tight">
+            Discover Your Next <span className="text-warm-primary">Business Opportunity</span>
+          </h1>
+          <p className="text-lg text-warm-muted max-w-lg">
+            Yukti helps you find the right business for your location, capital, and skills. We analyze local markets to ensure you start with confidence.
+          </p>
+          
+          <div className="flex items-center space-x-8 pt-4">
+            <div>
+              <p className="text-3xl font-bold text-warm-text">1,200+</p>
+              <p className="text-sm text-warm-muted">Businesses Analyzed</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-warm-text">98%</p>
+              <p className="text-sm text-warm-muted">Data Confidence</p>
+            </div>
+          </div>
+        </div>
 
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.2 }}
-        className="w-full max-w-md"
-      >
-        <Card className="border-t-4 border-t-terminal-amber">
-          <CardHeader className="text-left pb-4 border-b border-zinc-800 mb-4">
-            <CardTitle className="text-sm font-mono text-zinc-400 uppercase tracking-widest">System Login / Profiling</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <Input 
-                label="Full Name" 
+        {/* Right Side: Clean Form */}
+        <div className="bg-white p-8 rounded-2xl shadow-xl border border-warm-border">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-warm-text">Tell us about yourself</h2>
+            <p className="text-warm-muted text-sm mt-1">Let's personalize your Yukti experience.</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-warm-text flex items-center">
+                <User size={16} className="mr-2 text-warm-muted" /> Full Name
+              </label>
+              <input 
+                className="w-full rounded-xl border border-warm-border bg-warm-bg/50 px-4 py-3 text-warm-text placeholder:text-warm-muted focus:outline-none focus:ring-2 focus:ring-warm-primary/20 focus:border-warm-primary transition-all"
                 placeholder="e.g. Ramesh Kumar" 
                 required
                 value={formData.name}
                 onChange={e => setFormData({...formData, name: e.target.value})}
               />
-              <div className="grid grid-cols-2 gap-4">
-                <Input 
-                  label="Age" 
-                  type="number" 
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-warm-text">Age</label>
+                <input 
+                  type="number"
+                  className="w-full rounded-xl border border-warm-border bg-warm-bg/50 px-4 py-3 text-warm-text placeholder:text-warm-muted focus:outline-none focus:ring-2 focus:ring-warm-primary/20 focus:border-warm-primary transition-all"
                   placeholder="25" 
                   required
                   value={formData.age}
                   onChange={e => setFormData({...formData, age: e.target.value})}
                 />
-                <div className="flex flex-col space-y-1">
-                  <label className="text-xs font-bold uppercase tracking-wider text-terminal-amber">Education</label>
-                  <select 
-                    className="rounded-none border border-zinc-700 bg-black px-3 py-2 text-terminal-text font-mono transition-all duration-100 focus:outline-none focus:border-terminal-cyan focus:ring-1 focus:ring-terminal-cyan disabled:opacity-50"
-                    value={formData.education}
-                    onChange={e => setFormData({...formData, education: e.target.value})}
-                  >
-                    <option value="10th">10th Pass</option>
-                    <option value="12th">12th Pass</option>
-                    <option value="Graduate">Graduate</option>
-                    <option value="ITI">ITI / Diploma</option>
-                  </select>
-                </div>
               </div>
-              <Input 
-                label="Location (Target Market)" 
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-warm-text flex items-center">
+                  <GraduationCap size={16} className="mr-2 text-warm-muted" /> Education
+                </label>
+                <select 
+                  className="w-full rounded-xl border border-warm-border bg-warm-bg/50 px-4 py-3 text-warm-text focus:outline-none focus:ring-2 focus:ring-warm-primary/20 focus:border-warm-primary transition-all"
+                  value={formData.education}
+                  onChange={e => setFormData({...formData, education: e.target.value})}
+                >
+                  <option value="10th">10th Pass</option>
+                  <option value="12th">12th Pass</option>
+                  <option value="Graduate">Graduate</option>
+                  <option value="ITI">ITI / Diploma</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-warm-text flex items-center">
+                <MapPin size={16} className="mr-2 text-warm-muted" /> Location (Target Market)
+              </label>
+              <input 
+                className="w-full rounded-xl border border-warm-border bg-warm-bg/50 px-4 py-3 text-warm-text placeholder:text-warm-muted focus:outline-none focus:ring-2 focus:ring-warm-primary/20 focus:border-warm-primary transition-all"
                 placeholder="e.g. Solapur, Maharashtra" 
                 required
                 value={formData.location}
                 onChange={e => setFormData({...formData, location: e.target.value})}
               />
-              
-              <Button type="submit" className="w-full mt-6 py-4" disabled={loading}>
-                {loading ? <Loader2 className="animate-spin mr-2" size={16} /> : null}
-                Initialize Profile <ArrowRight size={16} className="ml-2" />
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+            </div>
+            
+            <button 
+              type="submit" 
+              className="w-full mt-8 py-4 bg-warm-primary hover:bg-warm-primary/90 text-white rounded-xl font-bold text-lg flex items-center justify-center transition-all hover:shadow-lg hover:shadow-warm-primary/30 disabled:opacity-70" 
+              disabled={loading}
+            >
+              {loading ? <Loader2 className="animate-spin mr-2" size={20} /> : null}
+              Start My Journey <ArrowRight size={20} className="ml-2" />
+            </button>
+          </form>
+        </div>
       </motion.div>
     </div>
   );

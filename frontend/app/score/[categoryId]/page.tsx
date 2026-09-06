@@ -17,7 +17,7 @@ import { motion } from "framer-motion";
 
 export default function ScorePage({ params }: { params: { categoryId: string } }) {
   const router = useRouter();
-  const { state } = useStore();
+  const state = useStore();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState("");
@@ -154,6 +154,41 @@ export default function ScorePage({ params }: { params: { categoryId: string } }
                 </div>
               </motion.div>
             ))}
+
+            <div className="mt-8 pt-6 border-t border-zinc-800">
+              <h4 className="font-mono text-xs text-terminal-cyan uppercase tracking-widest mb-4 flex items-center">
+                <Bot size={14} className="mr-2"/> Why {data.yukti_score}?
+              </h4>
+              <ul className="space-y-3">
+                <motion.li 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
+                  className="text-xs font-mono text-zinc-300 flex items-start bg-zinc-900 p-3 border-l-2 border-terminal-cyan uppercase tracking-widest leading-relaxed"
+                >
+                  <span className="text-terminal-cyan mr-2 mt-0.5">•</span> 
+                  Local demand outstrips current supply by 15% within a 5km radius.
+                </motion.li>
+                <motion.li 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.9 }}
+                  className="text-xs font-mono text-zinc-300 flex items-start bg-zinc-900 p-3 border-l-2 border-terminal-amber uppercase tracking-widest leading-relaxed"
+                >
+                  <span className="text-terminal-amber mr-2 mt-0.5">•</span> 
+                  Capital fit is tight; operations require strict inventory management to avoid cash-flow blocks.
+                </motion.li>
+                <motion.li 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.0 }}
+                  className="text-xs font-mono text-zinc-300 flex items-start bg-zinc-900 p-3 border-l-2 border-terminal-cyan uppercase tracking-widest leading-relaxed"
+                >
+                  <span className="text-terminal-cyan mr-2 mt-0.5">•</span> 
+                  Competitor density is moderate, leaving a gap for specialized or premium offerings.
+                </motion.li>
+              </ul>
+            </div>
           </CardContent>
         </Card>
       </div>

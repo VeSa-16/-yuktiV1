@@ -16,6 +16,15 @@ const config: Config = {
           green: '#00ff00',
           red: '#ff003c',
           text: '#cccccc'
+        },
+        warm: {
+          bg: '#faf9f6',        // Off-white/cream
+          surface: '#ffffff',
+          primary: '#e65c00',   // Deep orange/rust
+          secondary: '#2563eb', // Friendly blue
+          text: '#1f2937',      // Slate 800
+          muted: '#6b7280',     // Gray 500
+          border: '#e5e7eb'     // Gray 200
         }
       },
       typography: {

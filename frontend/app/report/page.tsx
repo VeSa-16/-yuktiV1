@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 export default function ReportPage() {
   const router = useRouter();
-  const { state } = useStore();
+  const state = useStore();
   const [loading, setLoading] = useState(true);
   const [html, setHtml] = useState("");
   const [error, setError] = useState("");

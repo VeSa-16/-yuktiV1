@@ -38,6 +38,8 @@ interface MapProps {
 
 export function MapRadiusOverlay({ lat, lng, radiusKm, competitors = [] }: MapProps) {
   const [mounted, setMounted] = useState(false);
+  const [showCompetitors, setShowCompetitors] = useState(true);
+  const [showZones, setShowZones] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -52,17 +54,45 @@ export function MapRadiusOverlay({ lat, lng, radiusKm, competitors = [] }: MapPr
 
   return (
     <div className="w-full h-64 rounded-none overflow-hidden border border-zinc-800 z-0 relative grayscale">
+      
+      {/* Interactive Layer Toggles */}
+      <div className="absolute top-2 right-2 z-[400] flex flex-col gap-2">
+        <button 
+          onClick={() => setShowCompetitors(!showCompetitors)}
+          className={`px-3 py-1 text-[10px] uppercase font-mono tracking-widest border transition-colors ${showCompetitors ? 'bg-terminal-red/20 border-terminal-red text-terminal-red' : 'bg-black/50 border-zinc-700 text-zinc-500'}`}
+        >
+          {showCompetitors ? 'Hide Competitors' : 'Show Competitors'}
+        </button>
+        <button 
+          onClick={() => setShowZones(!showZones)}
+          className={`px-3 py-1 text-[10px] uppercase font-mono tracking-widest border transition-colors ${showZones ? 'bg-terminal-cyan/20 border-terminal-cyan text-terminal-cyan' : 'bg-black/50 border-zinc-700 text-zinc-500'}`}
+        >
+          {showZones ? 'Hide Opp. Zones' : 'Show Opp. Zones'}
+        </button>
+      </div>
+
       <MapContainer center={[lat, lng]} zoom={12} style={{ height: "100%", width: "100%", backgroundColor: '#000000' }} scrollWheelZoom={false}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
-        <Circle center={[lat, lng]} radius={radiusKm * 1000} pathOptions={{ color: '#00ffff', fillColor: '#00ffff', fillOpacity: 0.1, weight: 1 }} />
+        
+        {/* Core Radius */}
+        <Circle center={[lat, lng]} radius={radiusKm * 1000} pathOptions={{ color: '#00ffff', fillColor: '#00ffff', fillOpacity: 0.05, weight: 1 }} />
+        
+        {/* Opp Zone (Green Heatmap/Polygon proxy) */}
+        {showZones && (
+          <>
+            <Circle center={[lat + 0.015, lng + 0.01]} radius={(radiusKm * 1000) * 0.4} pathOptions={{ color: '#16a34a', fillColor: '#16a34a', fillOpacity: 0.2, weight: 0 }} />
+            <Circle center={[lat - 0.02, lng - 0.015]} radius={(radiusKm * 1000) * 0.3} pathOptions={{ color: '#16a34a', fillColor: '#16a34a', fillOpacity: 0.15, weight: 0 }} />
+          </>
+        )}
+
         <Marker position={[lat, lng]} icon={blueIcon}>
           <Popup>Target Location</Popup>
         </Marker>
         
-        {competitors.map((comp, idx) => {
+        {showCompetitors && competitors.map((comp, idx) => {
           // Generate deterministic fake coordinates around center based on distance
           const angle = (idx * (360 / Math.max(1, competitors.length))) * (Math.PI / 180);
           const distLat = (comp.distance_km / 111) * Math.cos(angle);

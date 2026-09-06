@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 
 export default function SimulatorPage() {
   const router = useRouter();
-  const { state } = useStore();
+  const state = useStore();
   const [loading, setLoading] = useState(true);
   
   const [baseParams, setBaseParams] = useState<any>(null);
