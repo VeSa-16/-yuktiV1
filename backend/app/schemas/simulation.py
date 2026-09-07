@@ -13,3 +13,5 @@ class SimulateResponse(BaseModel):
     break_even_units: float
     verdict: str
     net_profit: float
+    simulated_roi: float          # annualised net_profit / project cost proxy
+    survives_stress: bool         # True when dscr >= 1.0 (can service debt)

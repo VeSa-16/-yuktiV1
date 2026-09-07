@@ -86,9 +86,9 @@ def rank_opportunities(location_id: str, margin_capital: float) -> list[dict]:
 
         # 3. Market analysis (lightweight — for ranking overview)
         market = run_full_market_analysis(location_id, cat_id, cat_name)
-        gap_score = market["opportunity_gaps"].get("gap_score", 50) or 50
-        risk_score = market["threats"].get("risk_score", 50)
-        competitor_count = market["competitors"]["count"]
+        gap_score = market["opportunity_gaps"]["value"].get("gap_score", 50) or 50
+        risk_score = market["threats"]["value"].get("risk_score", 50)
+        competitor_count = market["competitors"]["value"]["count"]
 
         # 4. Dimension scores
         financial_viability = min(100, max(0, roi + 30))  # ROI-based

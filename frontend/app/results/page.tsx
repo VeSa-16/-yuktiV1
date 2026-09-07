@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 
 export default function ResultsPage() {
   const router = useRouter();
-  const { locationId, marginCapital, updateState, locationName, opportunities } = useStore();
+  const { locationId, marginCapital, updateState, locationName, opportunities, sessionId } = useStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -22,22 +22,27 @@ export default function ResultsPage() {
     }
 
     const fetchResults = async () => {
+      if (!sessionId) {
+        router.push("/");
+        return;
+      }
       try {
         const res = await api.rankOpportunities({
-          session_id: "demo",
+          session_id: sessionId,
           location_id: locationId || "loc_1",
           margin_capital: marginCapital || 50000
         });
         updateState({ opportunities: res.rankings });
-      } catch (err: any) {
-        setError(err.message || "Failed to load opportunities");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Failed to load opportunities");
       } finally {
         setLoading(false);
       }
     };
 
     fetchResults();
-  }, [locationId, marginCapital, updateState, opportunities]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId, locationId, marginCapital]);
 
   const handleSelect = (categoryId: string, categoryName: string) => {
     updateState({ categoryId, categoryName });
@@ -69,7 +74,7 @@ export default function ResultsPage() {
       </div>
 
       <div className="space-y-6">
-        {opportunities.map((opp: any, index: number) => (
+        {opportunities.map((opp, index) => (
           <motion.div 
             key={opp.category_id || index}
             initial={{ opacity: 0, y: 20 }}
@@ -89,7 +94,7 @@ export default function ResultsPage() {
                     </h2>
                   </div>
                   <div className="text-center bg-warm-bg px-4 py-2 rounded-xl border border-warm-border">
-                    <div className="text-2xl font-black text-emerald-600">{opp.yukti_score || opp.score || 84}</div>
+                    <div className="text-2xl font-black text-emerald-600">{opp.score || 84}</div>
                     <div className="text-[10px] font-bold text-warm-muted uppercase tracking-widest mt-1">Yukti Score</div>
                   </div>
                 </div>
@@ -99,7 +104,7 @@ export default function ResultsPage() {
                     <Zap size={14} className="mr-1" /> Why Yukti Recommends This
                   </h4>
                   <p className="text-warm-text font-medium text-sm leading-relaxed">
-                    {opp.rationale || opp.verdict || "High local demand signal. Moderate competition in a 5km radius. Strong fit for your available capital contribution."}
+                    {opp.rationale || "High local demand signal. Moderate competition in a 5km radius. Strong fit for your available capital contribution."}
                   </p>
                 </div>
 
@@ -124,13 +129,13 @@ export default function ResultsPage() {
               </div>
 
               <div className="bg-warm-bg border-t md:border-t-0 md:border-l border-warm-border p-6 flex flex-col justify-center items-center md:w-56">
-                {(opp.yukti_score || opp.score || 84) >= 75 ? (
+                {(opp.score || 84) >= 75 ? (
                   <CheckCircle2 size={32} className="text-emerald-500 mb-3" />
                 ) : (
                   <ShieldAlert size={32} className="text-amber-500 mb-3" />
                 )}
                 <span className="text-sm font-bold text-warm-text uppercase tracking-wider text-center mb-4">
-                  {(opp.yukti_score || opp.score || 84) >= 75 ? "High Potential" : "Viable Option"}
+                  {(opp.score || 84) >= 75 ? "High Potential" : "Viable Option"}
                 </span>
                 
                 <button className="w-full bg-warm-surface border border-warm-border hover:border-warm-primary hover:text-warm-primary text-warm-text px-4 py-2 rounded-lg font-medium text-sm flex items-center justify-center transition-colors">

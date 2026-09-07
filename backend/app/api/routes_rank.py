@@ -16,8 +16,23 @@ router = APIRouter()
 def rank(req: RankRequest, db: DBSession = Depends(get_db)):
     if req.margin_capital <= 0:
         raise HTTPException(status_code=400, detail="Margin capital must be greater than 0.")
-
     rankings = rank_opportunities(req.location_id, req.margin_capital)
+
+    # Ensure a session exists in DB for this flow
+    from app.models import Session
+    session = db.query(Session).filter(Session.id == req.session_id).first()
+    if not session:
+        session = Session(
+            id=req.session_id,
+            user_id=req.session_id,
+            location_id=req.location_id,
+            margin_capital=req.margin_capital,
+        )
+        db.add(session)
+    else:
+        session.margin_capital = req.margin_capital
+        session.location_id = req.location_id
+    db.commit()
 
     # Check scheme match
     pc = compute_project_cost(req.margin_capital)

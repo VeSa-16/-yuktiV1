@@ -16,27 +16,37 @@ export function CopilotOverlay() {
   const [loading, setLoading] = useState(false);
 
   const startListening = () => {
-    // @ts-ignore
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Your browser does not support voice input.");
+    // SpeechRecognition is not in all TypeScript DOM lib configs — safe cast via any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SpeechRecognitionAPI =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognitionAPI) {
+      alert("Your browser does not support voice input. Try Chrome on Android or desktop.");
       return;
     }
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-IN'; // Can be mapped to store preference later
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const recognition: any = new SpeechRecognitionAPI();
+    recognition.lang = 'en-IN';
     recognition.interimResults = false;
     
     recognition.onstart = () => setIsListening(true);
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: { results: { [0]: { [0]: { transcript: string } } } }) => {
       const transcript = event.results[0][0].transcript;
       setQuery(transcript);
     };
     recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => setIsListening(false);
     recognition.start();
   };
 
   const handleSend = async () => {
-    if (!query.trim() || !state.sessionId) return;
+    if (!query.trim()) return;
+    if (!state.sessionId) {
+      setMessages(prev => [...prev, { role: "ai", content: "Please complete your profile setup first to use the AI Copilot.", source: "system" }]);
+      return;
+    }
     
     const userMsg = query;
     setMessages(prev => [...prev, { role: "user", content: userMsg }]);

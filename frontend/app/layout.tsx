@@ -1,19 +1,21 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { StoreProvider } from "@/lib/store";
 import { CopilotOverlay } from "@/components/CopilotOverlay";
 import { Sidebar } from "@/components/Sidebar";
-import Link from "next/link";
-import { Home, Compass, Map, PieChart, Target, Zap, Folder, FileText, MessageSquare, HelpCircle, Settings, User } from "lucide-react";
 
-const inter = Inter({ 
+const fraunces = Fraunces({
   subsets: ["latin"],
-  variable: "--font-inter", 
+  variable: "--font-fraunces",
+  display: "swap",
 });
 
-import { Viewport } from "next";
-
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+  display: "swap",
+});
 export const metadata: Metadata = {
   title: "YUKTI",
   description: "YUKTI 2.0 Platform",
@@ -36,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans min-h-screen flex bg-warm-bg text-warm-text`}>
+      <body className={`${fraunces.variable} ${jakarta.variable} font-sans min-h-screen flex bg-warm-bg text-warm-text`}>
         <StoreProvider>
           <Sidebar />
 

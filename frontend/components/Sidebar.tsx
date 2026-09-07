@@ -1,11 +1,12 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useStore } from '@/lib/store';
 import { 
-  Home, Compass, Map, PieChart, Target, Zap, Folder, FileText, 
-  MessageSquare, HelpCircle, Settings, User, BarChart, 
-  ListOrdered, FileArchive, Briefcase, ShoppingCart, Activity
+  Search, LayoutDashboard, BarChart3, Calculator, Target, Activity, 
+  FileText, CheckSquare, Folder, HelpCircle, MapPin, ChevronDown, User, 
+  BarChart, ListOrdered, FileArchive, Menu, PanelLeftClose
 } from 'lucide-react';
 
 const dict: Record<string, Record<string, string>> = {
@@ -70,110 +71,104 @@ const dict: Record<string, Record<string, string>> = {
 
 export function Sidebar() {
   const { userMode, toggleUserMode, preferredLanguage, setLanguage, categoryId } = useStore();
+  const [isOpen, setIsOpen] = useState(true);
+  const pathname = usePathname();
   
+  if (pathname === '/' || pathname === '/onboarding') return null;
+
   // Fallback to EN if language not found
   const t = dict[preferredLanguage] || dict.EN;
 
+  if (!isOpen) {
+    return (
+      <button 
+        onClick={() => setIsOpen(true)} 
+        className="fixed top-4 left-4 z-50 p-2 bg-white border border-premium-border rounded-md shadow-sm text-ink hover:bg-cream hidden md:flex items-center justify-center transition-colors"
+      >
+        <Menu size={20} className="text-forest" />
+      </button>
+    );
+  }
+
+  const NavLink = ({ href, icon: Icon, label, isActive = false }: { href: string, icon: any, label: string, isActive?: boolean }) => {
+    return (
+      <Link 
+        href={href} 
+        className={`flex items-center px-4 py-3 rounded-2xl mb-1 transition-all font-medium text-sm ${
+          isActive 
+            ? 'bg-[#fff5f0] text-[#ea580c] font-bold shadow-sm ring-1 ring-black/5' 
+            : 'text-ink-soft hover:bg-black/5 hover:text-ink'
+        }`}
+      >
+        <Icon size={18} className={`mr-4 ${isActive ? 'text-[#ea580c]' : 'text-ink-soft'}`} />
+        {label}
+      </Link>
+    );
+  };
+
   return (
-    <aside className="w-64 bg-warm-surface text-warm-text hidden md:flex flex-col border-r border-warm-border shadow-sm">
-      <div className="p-6 border-b border-warm-border flex justify-between items-center">
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="text-2xl font-bold tracking-tight text-warm-primary">YUKTI</span>
+    <aside className="w-[280px] bg-[#fcfbf8] text-ink hidden md:flex flex-col border-r border-premium-border/50 shadow-sm shrink-0 h-screen overflow-hidden">
+      
+      {/* Logo */}
+      <div className="p-6 pt-8 flex items-center mb-4">
+        <Link href="/dashboard" className="flex items-center space-x-2">
+          <div className="flex-shrink-0 flex items-center">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
+              <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#ea580c"/>
+              <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#166534" style={{ clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)' }}/>
+            </svg>
+            <span className="font-display font-bold text-2xl text-forest-deep tracking-tight">YUKTI</span>
+          </div>
         </Link>
-        <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${userMode === 'advisor' ? 'bg-warm-secondary text-warm-text' : 'bg-warm-primary text-warm-text'}`}>
-          {userMode}
-        </span>
       </div>
       
-      <nav className="flex-1 overflow-y-auto py-4 px-3 text-sm space-y-1 font-medium">
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto px-4 py-2 custom-scrollbar">
         {userMode === 'entrepreneur' ? (
           <>
-            <Link href="/dashboard" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-              <Home size={18} className="mr-3 text-warm-primary" /> {t.dashboard}
-            </Link>
-            <Link href="/discover" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-              <Compass size={18} className="mr-3 text-warm-primary" /> {t.discover}
-            </Link>
-            <Link href="/compare" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-              <Map size={18} className="mr-3 text-warm-primary" /> {t.compare}
-            </Link>
-            <Link href={`/market-intelligence/${categoryId || 'demo'}`} className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-              <Activity size={18} className="mr-3 text-warm-primary" /> Market Intelligence
-            </Link>
-            <Link href="/financials" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-              <PieChart size={18} className="mr-3 text-warm-primary" /> {t.financials}
-            </Link>
-            <Link href="/score/demo" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-              <Target size={18} className="mr-3 text-warm-primary" /> {t.score}
-            </Link>
-            <Link href="/simulator" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-              <Zap size={18} className="mr-3 text-warm-primary" /> {t.simulator}
-            </Link>
-            <Link href="/plans" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-              <Folder size={18} className="mr-3 text-warm-primary" /> {t.plans}
-            </Link>
-
-            <div className="mt-8 mb-2 px-3 text-xs uppercase tracking-wider font-bold text-warm-muted">{t.tools}</div>
-            
-            <Link href="/documents" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-              <FileText size={18} className="mr-3 text-warm-muted" /> {t.documents}
-            </Link>
-            <Link href="/action-plan" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-              <Target size={18} className="mr-3 text-warm-muted" /> {t.actionPlan}
-            </Link>
-            <Link href="/marketplace" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-              <ShoppingCart size={18} className="mr-3 text-warm-muted" /> {t.vendorMarketplace}
-            </Link>
+            <NavLink href="/dashboard" icon={LayoutDashboard} label={t.dashboard} isActive={pathname === '/dashboard'} />
+            <NavLink href="/discover" icon={Search} label={t.discover} isActive={pathname === '/discover'} />
+            <NavLink href={`/market-intelligence/${categoryId || 'demo'}`} icon={BarChart3} label="Market Intelligence" isActive={pathname.includes('/market-intelligence')} />
+            <NavLink href="/financials" className="text-sm" icon={Calculator} label={t.financials} isActive={pathname === '/financials'} />
+            <NavLink href="/score/demo" icon={Target} label={t.score} isActive={pathname.includes('/score')} />
+            <NavLink href="/simulator" icon={Activity} label={t.simulator} isActive={pathname === '/simulator'} />
+            <NavLink href="/plans" icon={FileText} label={t.plans} isActive={pathname === '/plans'} />
+            <NavLink href="/action-plan" icon={CheckSquare} label={t.actionPlan} isActive={pathname === '/action-plan'} />
+            <NavLink href="/documents" icon={Folder} label={t.documents} isActive={pathname === '/documents'} />
+            <NavLink href="/ask" icon={HelpCircle} label="Ask YUKTI" isActive={pathname === '/ask'} />
           </>
         ) : (
           <>
-            <Link href="/advisor/analytics" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-              <BarChart size={18} className="mr-3 text-warm-secondary" /> Analytics Overview
-            </Link>
-            <Link href="/advisor/applications" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-              <ListOrdered size={18} className="mr-3 text-warm-secondary" /> Review Queue
-            </Link>
-            <Link href="/advisor/reports" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-              <FileArchive size={18} className="mr-3 text-warm-secondary" /> Regional Reports
-            </Link>
+            <NavLink href="/advisor/analytics" icon={BarChart} label="Analytics Overview" isActive={pathname === '/advisor/analytics'} />
+            <NavLink href="/advisor/applications" icon={ListOrdered} label="Review Queue" isActive={pathname === '/advisor/applications'} />
+            <NavLink href="/advisor/reports" icon={FileArchive} label="Regional Reports" isActive={pathname === '/advisor/reports'} />
           </>
         )}
       </nav>
 
-      <div className="p-4 border-t border-warm-border text-sm font-medium">
-        <button onClick={toggleUserMode} className="w-full mb-4 flex items-center justify-center px-3 py-2 rounded-md bg-warm-bg hover:bg-warm-hover text-warm-text transition-colors border border-warm-border">
-          <Briefcase size={14} className="mr-2" /> 
-          {userMode === 'entrepreneur' ? t.switchAdvisor : t.switchEntrepreneur}
-        </button>
+      {/* Footer */}
+      <div className="p-4 mt-auto">
+        <div className="bg-white rounded-xl p-3 border border-premium-border mb-4 cursor-pointer hover:border-premium-border-strong transition-colors flex items-center justify-between">
+          <div className="flex items-center text-ink-soft">
+            <MapPin size={16} className="mr-2" />
+            <span className="text-sm font-medium">English</span>
+          </div>
+          <ChevronDown size={16} className="text-ink-soft" />
+        </div>
 
-        <Link href="/settings" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-          <Settings size={16} className="mr-3 text-warm-muted" /> {t.settings}
-        </Link>
-        <Link href="/profile" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
-          <User size={16} className="mr-3 text-warm-muted" /> {t.profile}
-        </Link>
-        
-        <div className="mt-4 px-3 flex items-center justify-center space-x-4 text-warm-muted border-t border-warm-border pt-4">
-          <button 
-            onClick={() => setLanguage('EN')} 
-            className={`transition-colors ${preferredLanguage === 'EN' ? 'text-warm-primary font-bold' : 'hover:text-warm-text'}`}
-          >
-            EN
-          </button>
-          <span>|</span>
-          <button 
-            onClick={() => setLanguage('HI')} 
-            className={`transition-colors ${preferredLanguage === 'HI' ? 'text-warm-primary font-bold' : 'hover:text-warm-text'}`}
-          >
-            हिं
-          </button>
-          <span>|</span>
-          <button 
-            onClick={() => setLanguage('MR')} 
-            className={`transition-colors ${preferredLanguage === 'MR' ? 'text-warm-primary font-bold' : 'hover:text-warm-text'}`}
-          >
-            मर
-          </button>
+        <div className="flex items-center px-3 py-2">
+          <div className="w-10 h-10 rounded-full bg-[#fde68a] mr-3 overflow-hidden border border-premium-border flex items-center justify-center shrink-0">
+            {/* Avatar placeholder matching screenshot */}
+            <User size={20} className="text-[#b45309]" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-bold text-ink">Rahul Sharma</span>
+            <div className="flex text-xs font-medium text-ink-soft mt-0.5 space-x-1">
+              <Link href="/profile" className="hover:text-ink">Profile</Link>
+              <span>·</span>
+              <Link href="/settings" className="hover:text-ink">Settings</Link>
+            </div>
+          </div>
         </div>
       </div>
     </aside>

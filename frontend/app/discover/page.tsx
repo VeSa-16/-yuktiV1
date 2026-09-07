@@ -1,131 +1,205 @@
 "use client";
-import React, { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Coffee, ShoppingBag, Truck, Wrench, Package, Monitor, Search, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
+import React from 'react';
+import { 
+  Bell, ChevronDown, Search, ArrowRight, Clock
+} from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useStore } from '@/lib/store';
-import { api } from '@/lib/api-client';
+import Image from 'next/image';
 
-const categories = [
-  { id: 'food', name: 'Food & Processing', icon: Coffee, color: 'text-amber-600', bg: 'bg-amber-100' },
-  { id: 'retail', name: 'Local Retail', icon: ShoppingBag, color: 'text-emerald-600', bg: 'bg-emerald-100' },
-  { id: 'transport', name: 'Transport', icon: Truck, color: 'text-blue-600', bg: 'bg-blue-100' },
-  { id: 'services', name: 'Services', icon: Monitor, color: 'text-purple-600', bg: 'bg-purple-100' },
-  { id: 'manufacturing', name: 'Manufacturing', icon: Package, color: 'text-red-600', bg: 'bg-red-100' },
-  { id: 'repair', name: 'Repair & Maint.', icon: Wrench, color: 'text-stone-600', bg: 'bg-stone-100' },
-];
+// 1. Top Header with Global Search
+const TopHeader = () => (
+  <div className="flex justify-between items-center mb-8 pt-2">
+    <div className="flex-1 max-w-xl relative">
+      <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-faint" />
+      <input 
+        type="text" 
+        placeholder="Search for business ideas..." 
+        className="w-full bg-white border border-premium-border rounded-2xl py-2.5 pl-11 pr-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-saffron"
+      />
+    </div>
+    <div className="flex items-center space-x-5">
+      <button className="text-ink-soft hover:text-ink transition-colors">
+        <Bell size={20} />
+      </button>
+      <button className="text-ink-soft hover:text-ink transition-colors">
+        <Clock size={20} />
+      </button>
+      <button className="flex items-center px-3 py-1.5 bg-white border border-premium-border rounded-xl text-sm font-bold shadow-sm hover:border-premium-border-strong">
+        EN <ChevronDown size={14} className="ml-1 text-ink-soft" />
+      </button>
+    </div>
+  </div>
+);
+
+interface BusinessCardProps {
+  id: string;
+  name: string;
+  category: string;
+  score: number;
+  demand: string;
+  demandColor: string;
+  competition: string;
+  competitionColor: string;
+  investment: string;
+  image: string;
+}
+
+const BusinessCard = ({ name, category, score, demand, demandColor, competition, competitionColor, investment, image, id }: BusinessCardProps) => (
+  <div className="bg-white border border-premium-border rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-premium-border-strong transition-all flex flex-col h-full group">
+    
+    {/* Header: Image & Titles */}
+    <div className="flex items-center mb-6">
+      <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 mr-4 bg-cream shadow-sm relative">
+        <Image src={image} alt={name} fill className="object-cover" />
+      </div>
+      <div className="flex flex-col">
+        <h3 className="font-bold text-ink text-lg leading-tight mb-1">{name}</h3>
+        <p className="text-xs font-medium text-ink-soft">{category}</p>
+      </div>
+    </div>
+
+    {/* YUKTI Score */}
+    <div className="mb-6 ml-24">
+      <div className="text-[10px] font-bold text-ink-soft uppercase tracking-wider mb-1">YUKTI Score</div>
+      <div className="flex items-baseline">
+        <span className="text-3xl font-bold text-forest-deep">{score}</span>
+        <span className="text-sm font-bold text-ink-soft">/100</span>
+      </div>
+    </div>
+
+    {/* Badges */}
+    <div className="flex items-center space-x-3 mb-8">
+      <div className={`px-3 py-1 rounded-full text-[10px] font-bold flex items-center shadow-sm ${demandColor}`}>
+        <span className="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-70"></span>
+        {demand}
+      </div>
+      <div className={`px-3 py-1 rounded-full text-[10px] font-bold flex items-center shadow-sm ${competitionColor}`}>
+        <span className="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-70"></span>
+        {competition}
+      </div>
+    </div>
+
+    {/* Footer: Investment & Action */}
+    <div className="mt-auto flex justify-between items-end">
+      <div>
+        <div className="text-[10px] font-bold text-ink-soft uppercase tracking-wider mb-1">Investment</div>
+        <div className="font-bold text-ink">{investment}</div>
+      </div>
+      <Link href={`/market-intelligence/${id}`} className="px-5 py-2.5 bg-[#ea580c] hover:bg-[#c2410c] text-white rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center">
+        View Details <ArrowRight size={14} className="ml-1.5" />
+      </Link>
+    </div>
+
+  </div>
+);
 
 export default function DiscoverPage() {
-  const router = useRouter();
-  const { locationId, locationName, marginCapital, updateState, sessionId } = useStore();
-  const [isSearching, setIsSearching] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleLetYuktiFind = async () => {
-    setIsSearching(true);
-    setError("");
-    try {
-      if (!sessionId || !locationId || !marginCapital) {
-        throw new Error("Missing session data. Please restart the process.");
-      }
-      
-      const res = await api.rankOpportunities({
-        session_id: sessionId,
-        location_id: locationId,
-        margin_capital: marginCapital,
-      });
-
-      updateState({
-        opportunities: res.rankings.map((r: any) => ({
-          category_id: r.category_id,
-          category_name: r.category_name,
-          score: r.score,
-          rationale: r.rationale
-        }))
-      });
-      router.push('/results');
-    } catch (err: any) {
-      setError(err.message || "Failed to find opportunities");
-      setIsSearching(false);
+  
+  const businesses = [
+    {
+      id: "e-rickshaw",
+      name: "E-Rickshaw",
+      category: "Transport & Logistics",
+      score: 91,
+      demand: "High Demand",
+      demandColor: "bg-emerald-100 text-emerald-700 border border-emerald-200",
+      competition: "Medium Competition",
+      competitionColor: "bg-orange-100 text-orange-700 border border-orange-200",
+      investment: "₹9.5L - ₹10L",
+      image: "https://images.unsplash.com/photo-1593955681577-c9de066928e4?q=80&w=400&auto=format&fit=crop"
+    },
+    {
+      id: "grocery-store",
+      name: "Grocery Store",
+      category: "Retail & Trading",
+      score: 76,
+      demand: "High Demand",
+      demandColor: "bg-orange-100 text-orange-700 border border-orange-200", // Matches screenshot
+      competition: "High Competition",
+      competitionColor: "bg-orange-100 text-orange-700 border border-orange-200",
+      investment: "₹5L - ₹8L",
+      image: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?q=80&w=400&auto=format&fit=crop"
+    },
+    {
+      id: "mobile-repair",
+      name: "Mobile Repair Shop",
+      category: "Repair & Services",
+      score: 82,
+      demand: "Medium Demand",
+      demandColor: "bg-emerald-100 text-emerald-700 border border-emerald-200",
+      competition: "Low Competition",
+      competitionColor: "bg-emerald-100 text-emerald-700 border border-emerald-200",
+      investment: "₹2L - ₹4L",
+      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=400&auto=format&fit=crop"
+    },
+    {
+      id: "dairy-farming",
+      name: "Dairy Farming",
+      category: "Dairy & Livestock",
+      score: 78,
+      demand: "High Demand",
+      demandColor: "bg-amber-100 text-amber-700 border border-amber-200",
+      competition: "Medium Competition",
+      competitionColor: "bg-amber-100 text-amber-700 border border-amber-200",
+      investment: "₹4L - ₹7L",
+      image: "https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?q=80&w=400&auto=format&fit=crop"
+    },
+    {
+      id: "tailoring-unit",
+      name: "Tailoring Unit",
+      category: "Manufacturing",
+      score: 69,
+      demand: "Medium Demand",
+      demandColor: "bg-orange-100 text-orange-700 border border-orange-200",
+      competition: "Medium Competition",
+      competitionColor: "bg-orange-100 text-orange-700 border border-orange-200",
+      investment: "₹3L - ₹6L",
+      image: "https://images.unsplash.com/photo-1556228578-8d89b6acd8fa?q=80&w=400&auto=format&fit=crop"
+    },
+    {
+      id: "organic-farming",
+      name: "Organic Farming",
+      category: "Agriculture & Allied",
+      score: 74,
+      demand: "High Demand",
+      demandColor: "bg-emerald-100 text-emerald-700 border border-emerald-200",
+      competition: "Low Competition",
+      competitionColor: "bg-emerald-100 text-emerald-700 border border-emerald-200",
+      investment: "₹2L - ₹5L",
+      image: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=400&auto=format&fit=crop"
     }
-  };
-
-  const handleCategorySelect = (catName: string, catId: string) => {
-    updateState({ categoryName: catName, categoryId: catId });
-    router.push(/score/\);
-  };
+  ];
 
   return (
-    <div className="max-w-5xl mx-auto p-4 md:p-8 text-warm-text animate-in fade-in duration-500 font-sans">
-      <div className="mb-8 text-center md:text-left">
-        <h1 className="text-3xl font-bold tracking-tight">Discover a Business</h1>
-        <p className="text-warm-muted mt-2 text-lg font-medium">What are you interested in starting?</p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 pb-20 animate-in fade-in duration-500 bg-[#fcfbf8] min-h-screen">
+      <TopHeader />
+      
+      <div className="mb-6">
+        <h1 className="text-[32px] font-bold text-forest-deep tracking-tight mb-2">
+          Find Your Opportunity
+        </h1>
+        <p className="text-sm font-medium text-ink-soft">
+          Businesses ranked for your location, capital and profile.
+        </p>
       </div>
 
-      {error && <div className="text-red-500 font-bold mb-4">{error}</div>}
-
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-12">
-        {categories.map((cat) => (
-          <button 
-            key={cat.id} 
-            onClick={() => handleCategorySelect(cat.name, cat.id)}
-            className="flex flex-col items-center justify-center p-6 bg-warm-surface border border-warm-border rounded-2xl hover:border-warm-primary hover:shadow-lg transition-all group shadow-sm"
-          >
-            <div className={p-4 rounded-full \ mb-4 group-hover:scale-110 transition-transform}>
-              <cat.icon size={32} className={cat.color} />
-            </div>
-            <span className="font-bold text-warm-text text-center">{cat.name}</span>
-          </button>
-        ))}
-        <button className="flex flex-col items-center justify-center p-6 bg-warm-bg border-2 border-dashed border-warm-border rounded-2xl hover:bg-warm-hover transition-all text-warm-muted hover:text-warm-text group">
-          <div className="p-4 rounded-full bg-warm-border/30 mb-4 group-hover:scale-110 transition-transform">
-            <Search size={32} className="text-warm-muted group-hover:text-warm-text" />
-          </div>
-          <span className="font-bold text-center">Other</span>
+      {/* Toggles */}
+      <div className="flex space-x-3 mb-8">
+        <button className="px-6 py-2.5 bg-[#ea580c] text-white rounded-xl text-sm font-bold shadow-sm transition-colors">
+          Recommended for you
+        </button>
+        <button className="px-6 py-2.5 bg-white border border-premium-border text-ink-soft hover:text-ink rounded-xl text-sm font-bold shadow-sm transition-colors">
+          Browse All
         </button>
       </div>
 
-      <div className="relative flex py-5 items-center">
-        <div className="flex-grow border-t border-warm-border"></div>
-        <span className="flex-shrink-0 mx-4 text-warm-muted font-bold text-sm uppercase tracking-wider bg-warm-bg px-2 rounded-full">OR</span>
-        <div className="flex-grow border-t border-warm-border"></div>
+      {/* Card Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {businesses.map((biz) => (
+          <BusinessCard key={biz.id} {...biz} />
+        ))}
       </div>
-
-      <div className="mt-8">
-        <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200 overflow-hidden shadow-md rounded-2xl">
-          <div className="p-8 md:flex items-center justify-between">
-            <div className="mb-6 md:mb-0 md:mr-8">
-              <h3 className="text-2xl font-bold text-warm-text flex items-center mb-3">
-                <Sparkles size={24} className="text-warm-primary mr-2" />
-                Let YUKTI find opportunities for me
-              </h3>
-              <p className="text-warm-text/80 font-medium leading-relaxed max-w-2xl">
-                Our smart system analyzes local market demand, competitor density, and your available capital to recommend the most profitable businesses for you.
-              </p>
-              
-              <div className="flex flex-wrap gap-3 mt-6">
-                <span className="px-4 py-2 bg-white rounded-lg border border-orange-200 text-sm font-bold text-warm-text shadow-sm flex items-center">
-                  <span className="text-warm-primary mr-2">?? Location:</span> {locationName || 'Pending'}
-                </span>
-                <span className="px-4 py-2 bg-white rounded-lg border border-orange-200 text-sm font-bold text-warm-text shadow-sm flex items-center">
-                  <span className="text-warm-primary mr-2">?? Capital:</span> ?{marginCapital ? marginCapital.toLocaleString('en-IN') : 'Pending'}
-                </span>
-              </div>
-            </div>
-            
-            <button 
-              onClick={handleLetYuktiFind}
-              disabled={isSearching}
-              className="w-full md:w-auto flex-shrink-0 bg-warm-primary hover:bg-orange-600 text-warm-text px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center transition-all hover:shadow-lg disabled:opacity-70"
-            >
-              {isSearching ? <Loader2 className="animate-spin mr-2" size={24} /> : null}
-              {isSearching ? 'Analyzing Market...' : 'Find Matches'}
-              {!isSearching && <ArrowRight size={24} className="ml-2" />}
-            </button>
-          </div>
-        </Card>
-      </div>
+      
     </div>
   );
 }
