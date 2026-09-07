@@ -50,5 +50,8 @@ export const api = {
     
   generateReport: (data: { session_id: string; format?: string }) => 
     ApiClient.post<any>("/report", data),
+    
+  calculateFinance: (data: { session_id: string }) => 
+    ApiClient.post<any>("/calculate-finance", data),
 };
 
