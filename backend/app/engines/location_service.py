@@ -8,11 +8,15 @@ from typing import Optional
 
 # Known demo location keywords → location_id
 LOCATION_KEYWORDS = {
-    "solapur": "solapur",
-    "barshi": "solapur",
-    "maharashtra": "solapur",  # fallback to rich-data location
-    "remote": "sparse_location",
-    "sparse": "sparse_location",
+    "solapur": "loc_akkalkot",
+    "akkalkot": "loc_akkalkot",
+    "barshi": "loc_akkalkot",
+    "maharashtra": "loc_akkalkot",  # fallback to rich-data location
+    "karha": "loc_karha",
+    "baramati": "loc_karha",
+    "pune": "loc_karha",
+    "remote": "loc_sparse_rural",
+    "sparse": "loc_sparse_rural",
 }
 
 
@@ -26,23 +30,32 @@ def resolve_location(input_text: str) -> Optional[str]:
         if keyword in normalized:
             return loc_id
     # Default to Solapur for the demo — a real system would return None
-    return "solapur"
+    return "loc_akkalkot"
 
 
 def get_location_metadata(location_id: str) -> dict:
     """Return static metadata for known demo locations."""
     METADATA = {
-        "solapur": {
-            "id": "solapur",
+        "loc_akkalkot": {
+            "id": "loc_akkalkot",
             "district": "Solapur",
             "state": "Maharashtra",
-            "lat": 18.2334,
-            "lng": 75.6910,
+            "lat": 17.52,
+            "lng": 76.21,
             "radius_km": 10,
             "data_richness": "rich",
         },
-        "sparse_location": {
-            "id": "sparse_location",
+        "loc_karha": {
+            "id": "loc_karha",
+            "district": "Pune",
+            "state": "Maharashtra",
+            "lat": 18.15,
+            "lng": 74.58,
+            "radius_km": 10,
+            "data_richness": "sparse",
+        },
+        "loc_sparse_rural": {
+            "id": "loc_sparse_rural",
             "district": "Remote District",
             "state": "Maharashtra",
             "lat": 19.0,

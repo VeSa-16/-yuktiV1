@@ -13,7 +13,7 @@ export default function Dashboard() {
     { name: 'Location', completed: !!locationName },
     { name: 'Capital', completed: !!marginCapital },
     { name: 'Business Analysis', completed: !!categoryName },
-    { name: 'Financial Plan', completed: savedPlans.length > 0 },
+    { name: 'Financial Plan', completed: (savedPlans || []).length > 0 },
     { name: 'Business Plan', completed: false }
   ];
 
