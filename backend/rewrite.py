@@ -1,4 +1,4 @@
-"""POST /recommend - fetch the final recommendation (YUKTI score + verdict)."""
+content = '''\"\"\"POST /recommend - fetch the final recommendation (YUKTI score + verdict).\"\"\"
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session as DBSession
 from app.schemas.recommendation import RecommendRequest, RecommendResponse, DimensionScores
@@ -40,3 +40,8 @@ def recommend(req: RecommendRequest, db: DBSession = Depends(get_db)):
         next_steps=getattr(score_result, 'next_steps', ["Verify assumptions with local experts.", "Apply for eligible scheme matching your margin capital."]),
         confidence="Medium",
     )
+'''
+
+with open('d:/yukti/backend/app/api/routes_recommend.py', 'w', encoding='utf-8') as f:
+    f.write(content)
+print("File rewritten.")

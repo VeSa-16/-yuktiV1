@@ -18,27 +18,42 @@ const categories = [
 
 export default function DiscoverPage() {
   const router = useRouter();
-  const { locationId, locationName, marginCapital, updateState } = useStore();
+  const { locationId, locationName, marginCapital, updateState, sessionId } = useStore();
   const [isSearching, setIsSearching] = useState(false);
+  const [error, setError] = useState("");
 
   const handleLetYuktiFind = async () => {
     setIsSearching(true);
-    // Simulate finding opportunities based on profile
-    setTimeout(() => {
-      updateState({
-        opportunities: [
-          { category_id: "food_processing", category_name: "Food Processing", score: 87, rationale: "High demand • Moderate competition • Strong capital fit" },
-          { category_id: "mobile_repair", category_name: "Mobile Repair", score: 82, rationale: "Low starting capital • High local demand" },
-          { category_id: "local_retail", category_name: "Local Retail", score: 76, rationale: "Steady cashflow • Known market dynamics" }
-        ]
+    setError("");
+    try {
+      if (!sessionId || !locationId || !marginCapital) {
+        throw new Error("Missing session data. Please restart the process.");
+      }
+      
+      const res = await api.rankOpportunities({
+        session_id: sessionId,
+        location_id: locationId,
+        margin_capital: marginCapital,
       });
-      router.push('/results'); // We'll route them to a specific results view, or just show it inline
-    }, 1500);
+
+      updateState({
+        opportunities: res.rankings.map((r: any) => ({
+          category_id: r.category_id,
+          category_name: r.category_name,
+          score: r.score,
+          rationale: r.rationale
+        }))
+      });
+      router.push('/results');
+    } catch (err: any) {
+      setError(err.message || "Failed to find opportunities");
+      setIsSearching(false);
+    }
   };
 
   const handleCategorySelect = (catName: string, catId: string) => {
     updateState({ categoryName: catName, categoryId: catId });
-    router.push(`/score/${catId}`); // Jump straight to score/analysis if they pick manually
+    router.push(/score/\);
   };
 
   return (
@@ -48,6 +63,8 @@ export default function DiscoverPage() {
         <p className="text-warm-muted mt-2 text-lg font-medium">What are you interested in starting?</p>
       </div>
 
+      {error && <div className="text-red-500 font-bold mb-4">{error}</div>}
+
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-12">
         {categories.map((cat) => (
           <button 
@@ -55,7 +72,7 @@ export default function DiscoverPage() {
             onClick={() => handleCategorySelect(cat.name, cat.id)}
             className="flex flex-col items-center justify-center p-6 bg-warm-surface border border-warm-border rounded-2xl hover:border-warm-primary hover:shadow-lg transition-all group shadow-sm"
           >
-            <div className={`p-4 rounded-full ${cat.bg} mb-4 group-hover:scale-110 transition-transform`}>
+            <div className={p-4 rounded-full \ mb-4 group-hover:scale-110 transition-transform}>
               <cat.icon size={32} className={cat.color} />
             </div>
             <span className="font-bold text-warm-text text-center">{cat.name}</span>
@@ -89,10 +106,10 @@ export default function DiscoverPage() {
               
               <div className="flex flex-wrap gap-3 mt-6">
                 <span className="px-4 py-2 bg-white rounded-lg border border-orange-200 text-sm font-bold text-warm-text shadow-sm flex items-center">
-                  <span className="text-warm-primary mr-2">📍 Location:</span> {locationName || 'Pending'}
+                  <span className="text-warm-primary mr-2">?? Location:</span> {locationName || 'Pending'}
                 </span>
                 <span className="px-4 py-2 bg-white rounded-lg border border-orange-200 text-sm font-bold text-warm-text shadow-sm flex items-center">
-                  <span className="text-warm-primary mr-2">💰 Capital:</span> ₹{marginCapital ? marginCapital.toLocaleString('en-IN') : 'Pending'}
+                  <span className="text-warm-primary mr-2">?? Capital:</span> ?{marginCapital ? marginCapital.toLocaleString('en-IN') : 'Pending'}
                 </span>
               </div>
             </div>
@@ -100,7 +117,7 @@ export default function DiscoverPage() {
             <button 
               onClick={handleLetYuktiFind}
               disabled={isSearching}
-              className="w-full md:w-auto flex-shrink-0 bg-warm-primary hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center transition-all hover:shadow-lg disabled:opacity-70"
+              className="w-full md:w-auto flex-shrink-0 bg-warm-primary hover:bg-orange-600 text-warm-text px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center transition-all hover:shadow-lg disabled:opacity-70"
             >
               {isSearching ? <Loader2 className="animate-spin mr-2" size={24} /> : null}
               {isSearching ? 'Analyzing Market...' : 'Find Matches'}

@@ -13,9 +13,9 @@ export function ScoreDial({ score, size = 120, label = "YUKTI Score", animate = 
   const circumference = radius * 2 * Math.PI;
   const strokeDashoffset = circumference - (score / 100) * circumference;
 
-  let color = "text-terminal-green";
-  if (score < 50) color = "text-terminal-red";
-  else if (score < 75) color = "text-terminal-amber";
+  let color = "text-warm-secondary";
+  if (score < 50) color = "text-red-600";
+  else if (score < 75) color = "text-orange-500";
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -29,7 +29,7 @@ export function ScoreDial({ score, size = 120, label = "YUKTI Score", animate = 
             fill="transparent"
             stroke="currentColor"
             strokeWidth={strokeWidth}
-            className="text-zinc-800"
+            className="text-warm-border"
           />
           {/* Progress circle */}
           <circle
@@ -46,10 +46,11 @@ export function ScoreDial({ score, size = 120, label = "YUKTI Score", animate = 
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <span className={`text-3xl font-mono font-bold ${color}`}>{Math.round(score)}</span>
+          <span className={`text-3xl font-sans font-bold ${color}`}>{Math.round(score)}</span>
         </div>
       </div>
-      {label && <span className="mt-2 text-[10px] font-mono text-zinc-500 tracking-widest uppercase">{label}</span>}
+      {label && <span className="mt-2 text-[10px] font-sans text-warm-muted tracking-widest uppercase">{label}</span>}
     </div>
   );
 }
+

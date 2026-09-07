@@ -11,8 +11,8 @@ export function Button({ variant = "primary", className, children, ...props }: B
   const variants = {
     primary: "bg-[#ffb000] text-black hover:bg-[#ffc840] shadow-none",
     secondary: "bg-[#00e5ff] text-black hover:bg-[#50eeff] shadow-none",
-    outline: "border-[#ffb000] text-[#ffb000] bg-black hover:bg-[#ffb000] hover:text-black",
-    ghost: "bg-transparent hover:bg-zinc-900 text-zinc-300 hover:text-white",
+    outline: "border-[#ffb000] text-[#ffb000] bg-warm-bg hover:bg-[#ffb000] hover:text-black",
+    ghost: "bg-transparent hover:bg-warm-surface text-warm-text hover:text-warm-text",
   };
 
   return (

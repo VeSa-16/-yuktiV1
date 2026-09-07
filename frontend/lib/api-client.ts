@@ -1,3 +1,4 @@
+import { useSessionStore } from "./store";
 /**
  * API client to communicate with the FastAPI backend.
  */
@@ -50,3 +51,4 @@ export const api = {
   generateReport: (data: { session_id: string; format?: string }) => 
     ApiClient.post<any>("/report", data),
 };
+

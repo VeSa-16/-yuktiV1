@@ -11,6 +11,8 @@ from app.engines.financial_engine import (
     compute_dscr, compute_break_even_units, compute_net_profit, compute_roi,
 )
 from app.engines.scheme_engine import match_scheme
+from app.engines.scoring_engine import compute_all_dimensions
+from app.engines.market_intelligence import run_full_market_analysis
 
 data_layer = DataRetrieval()
 
@@ -189,7 +191,7 @@ def get_base_state(db: DBSession, session_id: str) -> dict:
             "monthly_revenue": result["monthly_revenue"],
             "monthly_opex": result["monthly_opex"],
             "break_even_units": result["break_even_units"],
-            "dimension_scores": _default_dimension_scores(result["dscr"]),
+            "dimension_scores": _default_dimension_scores(result["dscr"], result["roi"], result["break_even_units"], result["monthly_revenue"], session.location_id, session.category_id, session.category_id),
             "confidence_multiplier": 0.85,
         }
 
@@ -207,18 +209,37 @@ def get_base_state(db: DBSession, session_id: str) -> dict:
         "monthly_revenue": projection.monthly_revenue,
         "monthly_opex": projection.monthly_opex,
         "break_even_units": projection.break_even_units,
-        "dimension_scores": _default_dimension_scores(projection.dscr),
+        "dimension_scores": _default_dimension_scores(projection.dscr, projection.roi, projection.break_even_units, projection.monthly_revenue, session.location_id, session.category_id, session.category_id),
         "confidence_multiplier": 0.85,
     }
 
 
-def _default_dimension_scores(dscr: float) -> dict:
-    """Generate dimension scores from financial data — used for simulation."""
-    repayment = min(100, max(0, dscr * 50)) if dscr > 0 else 20
-    return {
-        "financial_viability": 70,
-        "repayment_capacity": round(repayment),
-        "market_opportunity": 65,
-        "capital_efficiency": 60,
-        "risk_exposure": 55,
-    }
+
+def _default_dimension_scores(dscr: float, roi: float, break_even: float, monthly_revenue: float, location_id: str, category_id: str, category_name: str) -> dict:
+    try:
+        market_data = run_full_market_analysis(location_id, category_id, category_name)
+        comp_count = market_data["competitors"]["value"].get("count", 0)
+        pop = market_data["market_reach"]["value"].get("consumer_base", 1000) if market_data["market_reach"]["value"] else 1000
+        threats_count = len(market_data["threats"]["value"].get("risk_factors", []))
+        overall_confidence = market_data["overall_confidence"]
+    except Exception:
+        comp_count = 2
+        pop = 5000
+        threats_count = 1
+        overall_confidence = "low"
+
+    net_margin = (roi / 12) if roi > 0 else 0
+    monthly_units = monthly_revenue / 100 # Approx
+
+    return compute_all_dimensions(
+        roi=roi,
+        dscr=dscr,
+        net_margin=net_margin,
+        break_even_units=break_even,
+        monthly_units=monthly_units,
+        competitor_count=comp_count,
+        population=pop,
+        overall_confidence=overall_confidence,
+        threats_count=threats_count
+    )
+

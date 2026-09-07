@@ -54,7 +54,7 @@ export default function ReportPage() {
     <div className="max-w-4xl mx-auto mt-6 pb-20 font-sans">
       <div className="flex justify-between items-center mb-6 border-b border-warm-border pb-4 print:hidden">
         <h1 className="text-3xl font-bold text-warm-text">System Execution Report</h1>
-        <Button onClick={() => window.print()} className="bg-warm-primary hover:bg-orange-600 text-white font-bold text-sm shadow-md transition-all">
+        <Button onClick={() => window.print()} className="bg-warm-primary hover:bg-orange-600 text-warm-text font-bold text-sm shadow-md transition-all">
           <Download size={16} className="mr-2" /> Export PDF
         </Button>
       </div>
@@ -64,7 +64,7 @@ export default function ReportPage() {
         {/* Cover Page */}
         <div className="flex flex-col justify-center min-h-[800px] print:min-h-[100vh] border-b-4 border-warm-primary mb-12 pb-12">
           <div className="flex items-center space-x-3 mb-16">
-            <div className="w-12 h-12 bg-warm-primary text-white flex items-center justify-center font-bold text-2xl rounded-lg shadow-sm">Y</div>
+            <div className="w-12 h-12 bg-warm-primary text-warm-text flex items-center justify-center font-bold text-2xl rounded-lg shadow-sm">Y</div>
             <span className="text-3xl font-extrabold tracking-tight text-warm-text">YUKTI</span>
           </div>
           

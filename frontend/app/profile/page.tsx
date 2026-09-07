@@ -21,7 +21,7 @@ export default function ProfilePage() {
             <div className="flex items-start space-x-6">
               <div className="w-24 h-24 bg-warm-bg border-2 border-warm-border flex items-center justify-center text-warm-muted rounded-full relative shadow-sm">
                 <User size={48} />
-                <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white p-1.5 rounded-full border-2 border-white shadow-sm" title="Identity Verified">
+                <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-warm-text p-1.5 rounded-full border-2 border-white shadow-sm" title="Identity Verified">
                   <ShieldCheck size={20} />
                 </div>
               </div>

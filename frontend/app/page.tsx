@@ -198,7 +198,7 @@ export default function LandingPage() {
                 
                 <button 
                   type="submit" 
-                  className="w-full mt-4 py-4 rounded-xl bg-warm-primary hover:bg-orange-600 text-white font-bold text-base flex items-center justify-center transition-all disabled:opacity-70 shadow-md hover:shadow-lg" 
+                  className="w-full mt-4 py-4 rounded-xl bg-warm-primary hover:bg-orange-600 text-warm-text font-bold text-base flex items-center justify-center transition-all disabled:opacity-70 shadow-md hover:shadow-lg" 
                   disabled={loading}
                 >
                   {loading ? <Loader2 className="animate-spin mr-2" size={20} /> : null}
@@ -251,7 +251,7 @@ export default function LandingPage() {
                 
                 <button 
                   type="submit" 
-                  className="w-full py-4 rounded-xl bg-warm-secondary hover:bg-green-700 text-white font-bold text-base flex items-center justify-center transition-all disabled:opacity-70 shadow-md hover:shadow-lg" 
+                  className="w-full py-4 rounded-xl bg-warm-secondary hover:bg-green-700 text-warm-text font-bold text-base flex items-center justify-center transition-all disabled:opacity-70 shadow-md hover:shadow-lg" 
                   disabled={loading}
                 >
                   {loading ? <Loader2 className="animate-spin mr-2" size={20} /> : null}

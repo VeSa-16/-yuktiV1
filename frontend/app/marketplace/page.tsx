@@ -143,7 +143,7 @@ export default function Marketplace() {
                   <button className="flex items-center justify-center py-2 px-4 border border-warm-border rounded-lg hover:bg-warm-bg transition-colors text-sm font-medium">
                     <Phone size={16} className="mr-2 text-warm-muted" /> Call
                   </button>
-                  <button className="flex items-center justify-center py-2 px-4 bg-warm-primary hover:bg-warm-primary/90 text-white rounded-lg transition-colors text-sm font-medium">
+                  <button className="flex items-center justify-center py-2 px-4 bg-warm-primary hover:bg-warm-primary/90 text-warm-text rounded-lg transition-colors text-sm font-medium">
                     Request Quote
                   </button>
                 </div>

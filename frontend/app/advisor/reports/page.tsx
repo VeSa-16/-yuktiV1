@@ -19,7 +19,7 @@ export default function ReportsPage() {
           <h1 className="text-3xl font-bold tracking-tight text-warm-text mb-2">Regional Reports</h1>
           <p className="text-warm-muted font-medium text-sm">Aggregated data & Impact analysis & Export</p>
         </div>
-        <button className="mt-4 md:mt-0 flex items-center bg-warm-primary hover:bg-orange-600 text-white px-5 py-2.5 text-sm font-bold transition-all rounded-xl shadow-sm">
+        <button className="mt-4 md:mt-0 flex items-center bg-warm-primary hover:bg-orange-600 text-warm-text px-5 py-2.5 text-sm font-bold transition-all rounded-xl shadow-sm">
           <Plus size={18} className="mr-2" /> Generate New Report
         </button>
       </div>

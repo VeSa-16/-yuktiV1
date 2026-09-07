@@ -20,14 +20,14 @@ export default function SettingsPage() {
  <h1 className="text-3xl font-black tracking-widest text-warm-text uppercase mb-2">System Settings</h1>
  <p className="text-warm-muted text-sm">Preferences \ Localization \ Security</p>
  </div>
- <button className="mt-4 md:mt-0 flex items-center bg-terminal-cyan hover:bg-terminal-cyan/80 text-black px-6 py-2 text-xs font-bold transition-colors">
+ <button className="mt-4 md:mt-0 flex items-center bg-warm-primary hover:bg-warm-primary/80 text-black px-6 py-2 text-xs font-bold transition-colors">
  <Save size={16} className="mr-2" /> Save Config
  </button>
  </div>
 
  <div className="space-y-6">
  {/* Language & Region */}
- <Card className="bg-terminal-card border-terminal-border rounded-none shadow-xl">
+ <Card className="bg-warm-surface border-warm-border rounded-none shadow-xl">
  <CardContent className="p-6">
  <div className="flex items-center mb-6 border-b border-warm-border pb-4">
  <Globe className="text-orange-500 mr-3" size={24} />
@@ -55,7 +55,7 @@ export default function SettingsPage() {
  </Card>
 
  {/* Notifications */}
- <Card className="bg-terminal-card border-terminal-border rounded-none shadow-xl">
+ <Card className="bg-warm-surface border-warm-border rounded-none shadow-xl">
  <CardContent className="p-6">
  <div className="flex items-center mb-6 border-b border-warm-border pb-4">
  <Bell className="text-orange-500 mr-3" size={24} />
@@ -70,7 +70,7 @@ export default function SettingsPage() {
  </div>
  <button 
  onClick={() => setNotifications(prev => ({...prev, email: !prev.email}))}
- className={`w-12 h-6 rounded-full relative transition-colors ${notifications.email ? 'bg-terminal-cyan' : 'bg-zinc-700'}`}
+ className={`w-12 h-6 rounded-full relative transition-colors ${notifications.email ? 'bg-warm-primary' : 'bg-warm-surface'}`}
  >
  <motion.div 
  layout
@@ -85,7 +85,7 @@ export default function SettingsPage() {
  </div>
  <button 
  onClick={() => setNotifications(prev => ({...prev, sms: !prev.sms}))}
- className={`w-12 h-6 rounded-full relative transition-colors ${notifications.sms ? 'bg-terminal-cyan' : 'bg-zinc-700'}`}
+ className={`w-12 h-6 rounded-full relative transition-colors ${notifications.sms ? 'bg-warm-primary' : 'bg-warm-surface'}`}
  >
  <motion.div 
  layout
@@ -98,7 +98,7 @@ export default function SettingsPage() {
  </Card>
 
  {/* Display */}
- <Card className="bg-terminal-card border-terminal-border rounded-none shadow-xl">
+ <Card className="bg-warm-surface border-warm-border rounded-none shadow-xl">
  <CardContent className="p-6">
  <div className="flex items-center mb-6 border-b border-warm-border pb-4">
  <Monitor className="text-orange-500 mr-3" size={24} />

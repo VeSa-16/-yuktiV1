@@ -5,7 +5,7 @@ import { useStore } from '@/lib/store';
 import { 
   Home, Compass, Map, PieChart, Target, Zap, Folder, FileText, 
   MessageSquare, HelpCircle, Settings, User, BarChart, 
-  ListOrdered, FileArchive, Briefcase, ShoppingCart
+  ListOrdered, FileArchive, Briefcase, ShoppingCart, Activity
 } from 'lucide-react';
 
 const dict: Record<string, Record<string, string>> = {
@@ -69,7 +69,7 @@ const dict: Record<string, Record<string, string>> = {
 };
 
 export function Sidebar() {
-  const { userMode, toggleUserMode, preferredLanguage, setLanguage } = useStore();
+  const { userMode, toggleUserMode, preferredLanguage, setLanguage, categoryId } = useStore();
   
   // Fallback to EN if language not found
   const t = dict[preferredLanguage] || dict.EN;
@@ -80,7 +80,7 @@ export function Sidebar() {
         <Link href="/" className="flex items-center space-x-2">
           <span className="text-2xl font-bold tracking-tight text-warm-primary">YUKTI</span>
         </Link>
-        <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${userMode === 'advisor' ? 'bg-warm-secondary text-white' : 'bg-warm-primary text-white'}`}>
+        <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${userMode === 'advisor' ? 'bg-warm-secondary text-warm-text' : 'bg-warm-primary text-warm-text'}`}>
           {userMode}
         </span>
       </div>
@@ -96,6 +96,9 @@ export function Sidebar() {
             </Link>
             <Link href="/compare" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
               <Map size={18} className="mr-3 text-warm-primary" /> {t.compare}
+            </Link>
+            <Link href={`/market-intelligence/${categoryId || 'demo'}`} className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
+              <Activity size={18} className="mr-3 text-warm-primary" /> Market Intelligence
             </Link>
             <Link href="/financials" className="flex items-center px-3 py-2 rounded-md hover:bg-warm-hover text-warm-text transition-colors">
               <PieChart size={18} className="mr-3 text-warm-primary" /> {t.financials}

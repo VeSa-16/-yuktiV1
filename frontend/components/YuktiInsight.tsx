@@ -23,7 +23,7 @@ export function YuktiInsight({ title = "YUKTI INSIGHT", message, type = 'termina
         return 'bg-amber-500/10 border-amber-500/30 text-amber-400';
       case 'terminal':
       default:
-        return 'bg-black border-terminal-cyan/30 text-terminal-cyan shadow-[0_0_15px_rgba(0,255,255,0.1)]';
+        return 'bg-warm-bg border-warm-primary/30 text-warm-primary shadow-[0_0_15px_rgba(0,255,255,0.1)]';
     }
   };
 
@@ -41,7 +41,7 @@ export function YuktiInsight({ title = "YUKTI INSIGHT", message, type = 'termina
     <motion.div 
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`border p-4 flex flex-col sm:flex-row items-start font-mono ${getStyles()} ${className}`}
+      className={`border p-4 flex flex-col sm:flex-row items-start font-sans ${getStyles()} ${className}`}
     >
       <div className="flex items-center mb-2 sm:mb-0 sm:mr-4 mt-0.5">
         {getIcon()}
@@ -49,7 +49,7 @@ export function YuktiInsight({ title = "YUKTI INSIGHT", message, type = 'termina
       </div>
       <div>
         <h4 className="text-[10px] font-bold uppercase tracking-widest mb-1 hidden sm:block opacity-70">{title}</h4>
-        <div className="text-sm leading-relaxed text-zinc-300">
+        <div className="text-sm leading-relaxed text-warm-text">
           {message}
         </div>
       </div>

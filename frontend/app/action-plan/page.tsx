@@ -122,7 +122,7 @@ export default function ActionPlan() {
               )}
               
               <div className="flex items-center mb-4 relative z-10">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 border-warm-bg mr-4 transition-colors duration-500 ${isPhaseDone ? 'bg-emerald-500 text-white' : 'bg-warm-surface border-warm-border text-warm-muted'}`}>
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 border-warm-bg mr-4 transition-colors duration-500 ${isPhaseDone ? 'bg-emerald-500 text-warm-text' : 'bg-warm-surface border-warm-border text-warm-muted'}`}>
                   {isPhaseDone ? <CheckCircle2 size={24} /> : <Flag size={20} />}
                 </div>
                 <div className="flex-1">

@@ -64,7 +64,7 @@ export function CopilotOverlay() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 bg-warm-primary text-white p-4 rounded-full shadow-xl hover:bg-orange-600 transition-colors z-50 flex items-center justify-center border-2 border-white/20"
+            className="fixed bottom-6 right-6 bg-warm-primary text-warm-text p-4 rounded-full shadow-xl hover:bg-orange-600 transition-colors z-50 flex items-center justify-center border-2 border-white/20"
           >
             <MessageSquare size={24} />
           </motion.button>
@@ -80,12 +80,12 @@ export function CopilotOverlay() {
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="fixed bottom-6 right-6 w-96 h-[500px] bg-white border border-warm-border shadow-2xl rounded-2xl flex flex-col z-50 overflow-hidden font-sans"
           >
-            <div className="bg-warm-primary p-4 text-white flex justify-between items-center shadow-sm z-10">
+            <div className="bg-warm-primary p-4 text-warm-text flex justify-between items-center shadow-sm z-10">
               <div className="flex items-center space-x-2">
-                <Bot size={22} className="text-white" />
+                <Bot size={22} className="text-warm-text" />
                 <span className="font-bold text-lg">YUKTI Copilot</span>
               </div>
-              <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-1.5 rounded-full">
+              <button onClick={() => setIsOpen(false)} className="text-warm-text/80 hover:text-warm-text transition-colors bg-white/10 hover:bg-white/20 p-1.5 rounded-full">
                 <X size={18} />
               </button>
             </div>
@@ -98,7 +98,7 @@ export function CopilotOverlay() {
                   key={i} 
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  <div className={`max-w-[85%] p-4 shadow-sm rounded-2xl ${msg.role === "user" ? "bg-warm-primary text-white rounded-tr-sm" : "bg-white border border-warm-border text-warm-text rounded-tl-sm"}`}>
+                  <div className={`max-w-[85%] p-4 shadow-sm rounded-2xl ${msg.role === "user" ? "bg-warm-primary text-warm-text rounded-tr-sm" : "bg-white border border-warm-border text-warm-text rounded-tl-sm"}`}>
                     <p className="text-sm font-medium whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                     {msg.source && msg.role === "ai" && msg.source !== "template" && (
                       <div className="mt-2.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 inline-block px-2.5 py-1 rounded-full uppercase tracking-wider">
@@ -152,7 +152,7 @@ export function CopilotOverlay() {
                 <button
                   onClick={handleSend}
                   disabled={!query.trim() || loading}
-                  className="bg-warm-primary text-white font-bold p-3 rounded-xl hover:bg-orange-600 transition-all disabled:opacity-50 disabled:bg-warm-muted flex items-center justify-center shadow-sm"
+                  className="bg-warm-primary text-warm-text font-bold p-3 rounded-xl hover:bg-orange-600 transition-all disabled:opacity-50 disabled:bg-warm-muted flex items-center justify-center shadow-sm"
                 >
                   <Send size={18} />
                 </button>

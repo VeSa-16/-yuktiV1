@@ -1,17 +1,14 @@
-"""POST /recommend - fetch the final recommendation (YUKTI score + verdict)."""
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session as DBSession
-from app.schemas.recommendation import RecommendRequest, RecommendResponse, DimensionScores
-from app.services.session_service import get_base_state
-from app.engines.recommendation_engine import compute_yukti_score
-from app.core.db import get_db
+import re
 
-router = APIRouter()
+recommend_path = 'd:/yukti/backend/app/api/routes_recommend.py'
+with open(recommend_path, 'r', encoding='utf-8') as f:
+    content = f.read()
 
-@router.post("/recommend", response_model=RecommendResponse)
-def recommend(req: RecommendRequest, db: DBSession = Depends(get_db)):
+# Replace the dscr and roi hallucination logic
+replacement = '''
     base_state = get_base_state(db, req.session_id)
-    
+    # Ensure dscr and roi are fetched correctly from the state, if they exist
+    # If not in dimension_scores natively, we can fetch from session projection
     from app.models import FinancialProjection
     projection = db.query(FinancialProjection).filter(FinancialProjection.session_id == req.session_id).first()
     
@@ -19,6 +16,7 @@ def recommend(req: RecommendRequest, db: DBSession = Depends(get_db)):
         dscr = max(0.5, projection.dscr)
         roi = projection.roi
     else:
+        # Fallback if somehow not generated (should be, since get_base_state calls compute_full_financials)
         dscr = 1.0
         roi = 15.0
 
@@ -37,6 +35,13 @@ def recommend(req: RecommendRequest, db: DBSession = Depends(get_db)):
         dimension_scores=DimensionScores(**base_state["dimension_scores"]),
         dscr=dscr,
         roi=roi,
-        next_steps=getattr(score_result, 'next_steps', ["Verify assumptions with local experts.", "Apply for eligible scheme matching your margin capital."]),
+        next_steps=["Verify assumptions with local experts.", "Apply for eligible scheme matching your margin capital."],
         confidence="Medium",
     )
+'''
+
+content = re.sub(r'    base_state = get_base_state\(db, req.session_id\).*?return RecommendResponse\([^\)]+\)', replacement, content, flags=re.DOTALL)
+
+with open(recommend_path, 'w', encoding='utf-8') as f:
+    f.write(content)
+print("Fixed hallucination in routes_recommend.py")

@@ -23,10 +23,10 @@ export default function ApplicationReview() {
         </div>
         
         <div className="flex space-x-3 mt-4 md:mt-0">
-          <button className="bg-red-50 border border-red-200 text-red-600 hover:bg-red-600 hover:text-white px-6 py-2.5 rounded-xl flex items-center text-sm font-bold transition-colors shadow-sm">
+          <button className="bg-red-50 border border-red-200 text-red-600 hover:bg-red-600 hover:text-warm-text px-6 py-2.5 rounded-xl flex items-center text-sm font-bold transition-colors shadow-sm">
             <XCircle size={18} className="mr-2" /> Reject
           </button>
-          <button className="bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-600 hover:text-white px-6 py-2.5 rounded-xl flex items-center text-sm font-bold transition-colors shadow-sm">
+          <button className="bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-600 hover:text-warm-text px-6 py-2.5 rounded-xl flex items-center text-sm font-bold transition-colors shadow-sm">
             <CheckCircle2 size={18} className="mr-2" /> Approve Loan
           </button>
         </div>
@@ -137,7 +137,7 @@ export default function ApplicationReview() {
                 <span className="text-sm text-warm-text font-black">18.5%</span>
               </div>
               
-              <Link href="/report" target="_blank" className="w-full mt-6 block text-center bg-warm-primary text-white hover:bg-orange-600 px-4 py-3 rounded-xl text-xs uppercase tracking-wider font-bold transition-all shadow-md">
+              <Link href="/report" target="_blank" className="w-full mt-6 block text-center bg-warm-primary text-warm-text hover:bg-orange-600 px-4 py-3 rounded-xl text-xs uppercase tracking-wider font-bold transition-all shadow-md">
                 View Detailed Project Report
               </Link>
             </CardContent>

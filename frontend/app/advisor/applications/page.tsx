@@ -110,7 +110,7 @@ export default function ApplicationQueue() {
                     href={`/advisor/applications/${app.id.toLowerCase()}`}
                     className={`px-4 py-2.5 text-xs font-bold rounded-xl border transition-all flex items-center justify-center w-28 shadow-sm ${
                       app.readiness === 100 
-                        ? 'bg-warm-primary border-warm-primary text-white hover:bg-orange-600' 
+                        ? 'bg-warm-primary border-warm-primary text-warm-text hover:bg-orange-600' 
                         : 'bg-white border-warm-border text-warm-muted hover:border-warm-muted hover:text-warm-text'
                     }`}
                   >

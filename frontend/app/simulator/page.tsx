@@ -55,8 +55,8 @@ export default function SimulatorPage() {
     try {
       const res = await api.simulate({
         session_id: state.sessionId!,
-        revenue_delta_pct: simParams.demand_multiplier,
-        cost_delta_pct: simParams.cost_multiplier,
+        revenue_delta_pct: (simParams.demand_multiplier - 1.0) * 100,
+        cost_delta_pct: (simParams.cost_multiplier - 1.0) * 100,
       });
       setSimResults(res);
     } catch (err: any) {
@@ -98,7 +98,7 @@ export default function SimulatorPage() {
           </h1>
           <p className="text-warm-muted mt-2 font-medium">Test different scenarios for <strong className="text-warm-text">{state.categoryName}</strong></p>
         </div>
-        <Button onClick={() => router.push('/report')} className="bg-warm-bg text-warm-primary border border-warm-primary hover:bg-warm-primary hover:text-white transition-colors shadow-sm font-bold">
+        <Button onClick={() => router.push('/report')} className="bg-warm-bg text-warm-primary border border-warm-primary hover:bg-warm-primary hover:text-warm-text transition-colors shadow-sm font-bold">
           Generate Final Report <ArrowRight size={16} className="ml-2" />
         </Button>
       </div>
@@ -116,7 +116,7 @@ export default function SimulatorPage() {
             <div>
               <div className="flex justify-between mb-2">
                 <label className="text-sm font-bold text-warm-text">Demand Volume</label>
-                <span className="text-xs font-bold text-white bg-warm-primary px-2 py-1 rounded-md">{(simParams.demand_multiplier * 100).toFixed(0)}%</span>
+                <span className="text-xs font-bold text-warm-text bg-warm-primary px-2 py-1 rounded-md">{(simParams.demand_multiplier * 100).toFixed(0)}%</span>
               </div>
               <input 
                 type="range" 
@@ -134,7 +134,7 @@ export default function SimulatorPage() {
             <div>
               <div className="flex justify-between mb-2">
                 <label className="text-sm font-bold text-warm-text">Operating Costs</label>
-                <span className={`text-xs font-bold text-white px-2 py-1 rounded-md ${simParams.cost_multiplier > 1 ? 'bg-red-500' : 'bg-emerald-500'}`}>{(simParams.cost_multiplier * 100).toFixed(0)}%</span>
+                <span className={`text-xs font-bold text-warm-text px-2 py-1 rounded-md ${simParams.cost_multiplier > 1 ? 'bg-red-500' : 'bg-emerald-500'}`}>{(simParams.cost_multiplier * 100).toFixed(0)}%</span>
               </div>
               <input 
                 type="range" 
@@ -152,7 +152,7 @@ export default function SimulatorPage() {
             <div>
               <div className="flex justify-between mb-2">
                 <label className="text-sm font-bold text-warm-text">Selling Price</label>
-                <span className="text-xs font-bold text-white bg-amber-500 px-2 py-1 rounded-md">{(simParams.price_multiplier * 100).toFixed(0)}%</span>
+                <span className="text-xs font-bold text-warm-text bg-amber-500 px-2 py-1 rounded-md">{(simParams.price_multiplier * 100).toFixed(0)}%</span>
               </div>
               <input 
                 type="range" 
@@ -168,7 +168,7 @@ export default function SimulatorPage() {
             </div>
 
             <Button 
-              className="w-full mt-4 bg-warm-primary text-white hover:bg-orange-600 font-bold py-6 rounded-xl shadow-md transition-all text-base" 
+              className="w-full mt-4 bg-warm-primary text-warm-text hover:bg-orange-600 font-bold py-6 rounded-xl shadow-md transition-all text-base" 
               onClick={runSimulation}
               disabled={simLoading}
             >
@@ -260,3 +260,4 @@ export default function SimulatorPage() {
     </motion.div>
   );
 }
+

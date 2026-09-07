@@ -81,7 +81,7 @@ export const useStore = create<SessionState>()(
         if (!state.categoryId || !state.categoryName || !state.locationName || !state.marginCapital) return;
         
         const newPlan: BusinessPlan = {
-          id: Math.random().toString(36).substr(2, 9),
+          id: crypto.randomUUID(),
           name: `${state.categoryName} in ${state.locationName}`,
           categoryId: state.categoryId,
           categoryName: state.categoryName,

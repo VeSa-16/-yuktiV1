@@ -27,9 +27,9 @@ export function ProgressStepper() {
   return (
     <div className="w-full py-4 mb-6">
       <div className="flex items-center justify-between relative">
-        <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-0.5 bg-zinc-800 z-0"></div>
+        <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-0.5 bg-warm-surface z-0"></div>
         <div 
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 h-0.5 bg-terminal-cyan z-0 transition-all duration-300" 
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 h-0.5 bg-warm-primary z-0 transition-all duration-300" 
           style={{ width: `${(currentStepIdx / (steps.length - 1)) * 100}%` }}
         ></div>
         
@@ -38,13 +38,13 @@ export function ProgressStepper() {
           const isCurrent = idx === currentStepIdx;
           
           return (
-            <div key={step.id} className="relative z-10 flex flex-col items-center bg-black px-2">
+            <div key={step.id} className="relative z-10 flex flex-col items-center bg-warm-bg px-2">
               <Link href={isCompleted ? step.href : "#"} className={`flex items-center justify-center w-6 h-6 rounded-none border ${
-                isCompleted ? "bg-terminal-cyan border-terminal-cyan text-black" : isCurrent ? "bg-black border-terminal-cyan text-terminal-cyan ring-2 ring-terminal-cyan/20" : "bg-black border-zinc-700 text-zinc-700"
+                isCompleted ? "bg-warm-primary border-warm-primary text-black" : isCurrent ? "bg-warm-bg border-warm-primary text-warm-primary ring-2 ring-terminal-cyan/20" : "bg-warm-bg border-warm-border text-zinc-700"
               }`}>
-                {isCompleted ? <CheckCircle2 size={12} /> : <span className="text-xs font-bold font-mono">{idx + 1}</span>}
+                {isCompleted ? <CheckCircle2 size={12} /> : <span className="text-xs font-bold font-sans">{idx + 1}</span>}
               </Link>
-              <span className={`mt-2 text-[10px] font-bold tracking-widest uppercase ${isCurrent ? "text-terminal-cyan" : isCompleted ? "text-terminal-text" : "text-zinc-600"}`}>
+              <span className={`mt-2 text-[10px] font-bold tracking-widest uppercase ${isCurrent ? "text-warm-primary" : isCompleted ? "text-warm-text" : "text-zinc-600"}`}>
                 {step.name}
               </span>
             </div>

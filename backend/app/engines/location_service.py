@@ -1,67 +1,39 @@
 """
-Location Service — resolves user input to a known demo location.
-For the prototype, this is a simple string match against seeded locations.
-In production, this would integrate geocoding + admin-boundary matching.
+Location Service — resolves user input to a known location ID.
+Integrates with the DataService to match against valid loaded datasets.
 """
 from typing import Optional
-
-
-# Known demo location keywords → location_id
-LOCATION_KEYWORDS = {
-    "solapur": "loc_akkalkot",
-    "akkalkot": "loc_akkalkot",
-    "barshi": "loc_akkalkot",
-    "maharashtra": "loc_akkalkot",  # fallback to rich-data location
-    "karha": "loc_karha",
-    "baramati": "loc_karha",
-    "pune": "loc_karha",
-    "remote": "loc_sparse_rural",
-    "sparse": "loc_sparse_rural",
-}
+from app.services.data_service import data_service
 
 
 def resolve_location(input_text: str) -> Optional[str]:
     """
-    Match user's location input to a known location_id.
+    Match user's location input to a known location_id from the JSON database.
     Returns the location_id string, or None if no match.
     """
+    if not input_text:
+        return None
+        
     normalized = input_text.strip().lower()
-    for keyword, loc_id in LOCATION_KEYWORDS.items():
-        if keyword in normalized:
-            return loc_id
-    # Default to Solapur for the demo — a real system would return None
-    return "loc_akkalkot"
+    locations = data_service.get_dataset("locations")
+    
+    # Simple search against village, block, district
+    for loc in locations:
+        if (loc.get("village", "").lower() in normalized or 
+            loc.get("block", "").lower() in normalized or
+            loc.get("district", "").lower() in normalized):
+            return loc.get("id")
+            
+    # If we couldn't resolve the location, return None. We NO LONGER default to a fake location.
+    return None
 
 
 def get_location_metadata(location_id: str) -> dict:
-    """Return static metadata for known demo locations."""
-    METADATA = {
-        "loc_akkalkot": {
-            "id": "loc_akkalkot",
-            "district": "Solapur",
-            "state": "Maharashtra",
-            "lat": 17.52,
-            "lng": 76.21,
-            "radius_km": 10,
-            "data_richness": "rich",
-        },
-        "loc_karha": {
-            "id": "loc_karha",
-            "district": "Pune",
-            "state": "Maharashtra",
-            "lat": 18.15,
-            "lng": 74.58,
-            "radius_km": 10,
-            "data_richness": "sparse",
-        },
-        "loc_sparse_rural": {
-            "id": "loc_sparse_rural",
-            "district": "Remote District",
-            "state": "Maharashtra",
-            "lat": 19.0,
-            "lng": 76.0,
-            "radius_km": 10,
-            "data_richness": "sparse",
-        },
-    }
-    return METADATA.get(location_id, {})
+    """Return metadata for a given location_id from the dataset."""
+    locations = data_service.get_dataset("locations")
+    for loc in locations:
+        if loc.get("id") == location_id:
+            # Inject radius_km for subsequent queries
+            loc["radius_km"] = 10
+            return loc
+    return {}

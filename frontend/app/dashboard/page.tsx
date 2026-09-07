@@ -119,7 +119,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex space-x-3 pt-4 border-t border-warm-border">
-                  <Link href={`/score/${categoryName.toLowerCase().replace(/\s+/g, '-')}`} className="flex-1 text-center bg-warm-primary text-white py-3 rounded-lg font-medium hover:bg-warm-primary/90 transition-colors">
+                  <Link href={`/score/${categoryName.toLowerCase().replace(/\s+/g, '-')}`} className="flex-1 text-center bg-warm-primary text-warm-text py-3 rounded-lg font-medium hover:bg-warm-primary/90 transition-colors">
                     Continue Planning
                   </Link>
                   <Link href={`/category/${categoryName.toLowerCase().replace(/\s+/g, '-')}`} className="flex-1 text-center bg-warm-bg text-warm-text py-3 rounded-lg font-medium border border-warm-border hover:bg-warm-border/50 transition-colors">
@@ -135,7 +135,7 @@ export default function Dashboard() {
               </div>
               <h2 className="text-xl font-bold mb-2">No Active Plan</h2>
               <p className="text-warm-muted mb-6 max-w-sm">You haven't started planning a specific business yet. Explore opportunities to get started.</p>
-              <Link href="/discover" className="bg-warm-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-warm-primary/90 transition-colors">
+              <Link href="/discover" className="bg-warm-primary text-warm-text px-6 py-3 rounded-lg font-medium hover:bg-warm-primary/90 transition-colors">
                 Discover Opportunities
               </Link>
             </Card>

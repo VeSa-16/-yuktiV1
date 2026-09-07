@@ -96,7 +96,7 @@ export default function ComparePage() {
                     onClick={() => handleSelect(biz.category_id, biz.category_name)}
                     className={`w-full py-3 rounded-lg font-bold flex items-center justify-center transition-all ${
                       i === 0 
-                      ? 'bg-warm-primary text-white hover:bg-warm-primary/90 hover:shadow-lg' 
+                      ? 'bg-warm-primary text-warm-text hover:bg-warm-primary/90 hover:shadow-lg' 
                       : 'bg-warm-surface border border-warm-border hover:border-warm-primary hover:text-warm-primary'
                     }`}
                   >

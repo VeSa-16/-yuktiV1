@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from"react";
-import { Button } from"@/components/ui/button";
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function Error({
  error,
@@ -12,7 +12,7 @@ export default function Error({
 }) {
  useEffect(() => {
  // Log the error to an error reporting service
- console.error("YUKTI App Route Error:", error);
+ console.error("YUKTI App Route Error: ", error);
  }, [error]);
 
  return (

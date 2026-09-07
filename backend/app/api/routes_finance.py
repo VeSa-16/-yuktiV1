@@ -1,13 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session as DBSession
 from app.schemas.finance import FinanceRequest, FinanceResponse
-from app.engines.financial_engine import compute_project_cost, compute_loan_amount
+from app.services.session_service import compute_full_financials
+from app.core.db import get_db
 
 router = APIRouter()
 
 @router.post("/calculate-finance", response_model=FinanceResponse)
-def calculate_finance(req: FinanceRequest):
-    project_cost = compute_project_cost(req.margin_capital)
-    loan_amount = compute_loan_amount(project_cost)
-    contribution = project_cost - loan_amount
-    return FinanceResponse(project_cost=project_cost, loan_amount=loan_amount,
-                            beneficiary_contribution=contribution)
+def calculate_finance(req: FinanceRequest, db: DBSession = Depends(get_db)):
+    result = compute_full_financials(db, req.session_id)
+    return FinanceResponse(**result)

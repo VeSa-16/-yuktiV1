@@ -1,42 +1,50 @@
 [
   {
+    "id": "ds_osm",
+    "name": "OpenStreetMap Commercial Data",
+    "type": "open_data",
+    "dataset": "competitors",
+    "confidence": "medium",
+    "url": "https://openstreetmap.org"
+  },
+  {
+    "id": "ds_worldpop",
+    "name": "WorldPop Spatial Demographics",
+    "type": "open_data",
+    "dataset": "market_metrics",
+    "confidence": "high",
+    "url": "https://worldpop.org"
+  },
+  {
+    "id": "ds_agmarknet",
+    "name": "Agmarknet Price Indices",
+    "type": "government",
+    "dataset": "prices",
+    "confidence": "high",
+    "url": "https://agmarknet.gov.in"
+  },
+  {
     "id": "ds_nsfdc",
     "name": "NSFDC Scheme Directives",
-    "url": "https://nsfdc.nic.in",
-    "owner_org": "MoSJE, Govt. of India",
-    "license": "Official",
-    "reliability": "High"
+    "type": "government",
+    "dataset": "schemes",
+    "confidence": "high",
+    "url": "https://nsfdc.nic.in"
   },
   {
     "id": "ds_pmegp",
     "name": "PMEGP E-Portal",
-    "url": "https://kviconline.gov.in/pmegpeportal",
-    "owner_org": "KVIC, Ministry of MSME",
-    "license": "Official",
-    "reliability": "High"
+    "type": "government",
+    "dataset": "schemes",
+    "confidence": "high",
+    "url": "https://kviconline.gov.in/pmegpeportal"
   },
   {
-    "id": "ds_agmarknet",
-    "name": "Agmarknet via CEDA",
-    "url": "https://agmarknet.ceda.ashoka.edu.in",
-    "owner_org": "Ministry of Agriculture",
-    "license": "Official",
-    "reliability": "High"
-  },
-  {
-    "id": "ds_osm",
-    "name": "OpenStreetMap",
-    "url": "https://www.openstreetmap.org",
-    "owner_org": "OSM Foundation",
-    "license": "ODbL 1.0",
-    "reliability": "Medium"
-  },
-  {
-    "id": "ds_worldpop",
-    "name": "WorldPop Grid",
-    "url": "https://www.worldpop.org",
-    "owner_org": "University of Southampton",
-    "license": "CC BY 4.0",
-    "reliability": "Medium"
+    "id": "ds_local_survey",
+    "name": "Local Survey Data",
+    "type": "user_input",
+    "dataset": "cost_models",
+    "confidence": "low",
+    "url": ""
   }
 ]

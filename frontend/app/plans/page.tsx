@@ -66,7 +66,7 @@ export default function PlansPage() {
                   </div>
                 </div>
                 
-                <Link href={`/score/${plan.categoryId}`} className="w-full flex items-center justify-center px-4 py-2 bg-warm-primary/10 text-warm-primary font-semibold rounded-lg hover:bg-warm-primary hover:text-white transition-colors">
+                <Link href={`/score/${plan.categoryId}`} className="w-full flex items-center justify-center px-4 py-2 bg-warm-primary/10 text-warm-primary font-semibold rounded-lg hover:bg-warm-primary hover:text-warm-text transition-colors">
                   Open Plan <ArrowRight size={16} className="ml-2" />
                 </Link>
               </CardContent>
@@ -80,7 +80,7 @@ export default function PlansPage() {
           </div>
           <h2 className="text-xl font-bold mb-2">No Saved Plans</h2>
           <p className="text-warm-muted mb-6 max-w-sm">You haven't saved any business plans yet. Discover opportunities to create your first plan.</p>
-          <Link href="/discover" className="bg-warm-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-warm-primary/90 transition-colors shadow-sm">
+          <Link href="/discover" className="bg-warm-primary text-warm-text px-6 py-3 rounded-lg font-medium hover:bg-warm-primary/90 transition-colors shadow-sm">
             Discover Opportunities
           </Link>
         </Card>

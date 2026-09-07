@@ -1,18 +1,18 @@
 "use client";
-import React, { useEffect, useState } from"react";
-import { useRouter } from"next/navigation";
-import { ProgressStepper } from"@/components/ProgressStepper";
-import { Card, CardContent, CardHeader, CardTitle } from"@/components/ui/card";
-import { Button } from"@/components/ui/button";
-import { SourceTooltip } from"@/components/SourceTooltip";
-import dynamic from"next/dynamic";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ProgressStepper } from "@/components/ProgressStepper";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { SourceTooltip } from "@/components/SourceTooltip";
+import dynamic from "next/dynamic";
 const MapRadiusOverlay = dynamic(() => import("@/components/MapRadiusOverlay").then(mod => mod.MapRadiusOverlay), { ssr: false });
-import { api } from"@/lib/api-client";
-import { useStore } from"@/lib/store";
-import { formatNumber } from"@/lib/formatters";
-import { Loader2, ArrowRight, ShieldAlert, Zap, Search, Target } from"lucide-react";
-import { motion } from"framer-motion";
-import { MarketRadar } from"@/components/MarketRadar";
+import { api } from "@/lib/api-client";
+import { useStore } from "@/lib/store";
+import { formatNumber } from "@/lib/formatters";
+import { Loader2, ArrowRight, ShieldAlert, Zap, Search, Target } from "lucide-react";
+import { motion } from "framer-motion";
+import { MarketRadar } from "@/components/MarketRadar";
 
 export default function CategoryDeepDivePage({ params }: { params: { categoryId: string } }) {
  const router = useRouter();
@@ -107,7 +107,7 @@ export default function CategoryDeepDivePage({ params }: { params: { categoryId:
  </CardHeader>
  <CardContent className="pt-6">
  <div className="text-4xl font-sans font-bold text-warm-text">
- {data.market_reach.consumer_base ? formatNumber(data.market_reach.consumer_base) :"Unknown"}
+ {data.market_reach.consumer_base ? formatNumber(data.market_reach.consumer_base) : "Unknown"}
  </div>
  <p className="text-[10px] text-warm-muted mt-1">Est. consumers in radius</p>
  
@@ -179,7 +179,7 @@ export default function CategoryDeepDivePage({ params }: { params: { categoryId:
  {data.swot.opportunities.map((o: string, i: number) => <li key={i}>{o}</li>)}
  </ul>
  </motion.div>
- <motion.div whileHover={{ scale: 1.01 }} className="bg-warm-bg p-4 border border-terminal-red">
+ <motion.div whileHover={{ scale: 1.01 }} className="bg-warm-bg p-4 border border-red-600">
  <h4 className="font-sans font-bold text-red-600 mb-2 text-xs">Threats / Risks</h4>
  <ul className="list-disc pl-4 text-xs font-sans text-warm-text space-y-1">
  {data.swot.threats.map((t: string, i: number) => <li key={i}>{t}</li>)}
@@ -210,7 +210,7 @@ export default function CategoryDeepDivePage({ params }: { params: { categoryId:
  <p className="text-xs font-sans text-warm-muted">{risk.detail}</p>
  </div>
  <span className={`px-2 py-1 text-[10px] font-sans font-bold uppercase border ${
- risk.severity === 'High' ? 'bg-warm-bg text-red-600 border-terminal-red' :
+ risk.severity === 'High' ? 'bg-warm-bg text-red-600 border-red-600' :
  risk.severity === 'Medium' ? 'bg-warm-bg text-orange-500 border-orange-500' :
  'bg-warm-bg text-warm-secondary border-warm-secondary'
  }`}>
