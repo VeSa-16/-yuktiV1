@@ -92,8 +92,15 @@ export function CopilotOverlay() {
           >
             <div className="bg-warm-primary p-4 text-warm-text flex justify-between items-center shadow-sm z-10">
               <div className="flex items-center space-x-2">
-                <Bot size={22} className="text-warm-text" />
-                <span className="font-bold text-lg">YUKTI Copilot</span>
+                <img
+                  src="/india-emblem.png"
+                  alt="Government of India"
+                  className="h-7 w-7 object-contain"
+                />
+                <div className="flex flex-col justify-center">
+                  <span className="font-bold text-base leading-tight">YUKTI Copilot</span>
+                  <span className="text-[6px] font-bold uppercase tracking-[0.1em] opacity-80 mt-0.5">Government of India Initiative</span>
+                </div>
               </div>
               <button onClick={() => setIsOpen(false)} className="text-warm-text/80 hover:text-warm-text transition-colors bg-white/10 hover:bg-white/20 p-1.5 rounded-full">
                 <X size={18} />

@@ -36,6 +36,8 @@ export interface SessionState {
   marginCapital: number | null;
   categoryId: string | null;
   categoryName: string | null;
+  experience: string | null;
+  ideaDetails: string | null;
   dataRichness: "rich" | "sparse" | null;
   opportunities: Opportunity[];
   
@@ -61,6 +63,8 @@ const DEFAULT_STATE = {
   marginCapital: null,
   categoryId: null,
   categoryName: null,
+  experience: null,
+  ideaDetails: null,
   dataRichness: null,
   opportunities: [] as Opportunity[],
   profileName: 'Entrepreneur',
@@ -139,21 +143,11 @@ export const useStore = create<SessionState>()(
 );
 
 // We keep a provider that prevents Next.js hydration crashes 
-// by waiting until the component is mounted on the client to render children
+// by waiting until the component is mounted on the client to render children.
+// NOTE: We render children immediately but suppress sidebar state differences
+// via suppressHydrationWarning on the body in layout.tsx
 import { useState, useEffect } from "react";
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  if (!mounted) {
-    return <div className="min-h-screen bg-warm-bg flex items-center justify-center">
-       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-warm-primary"></div>
-    </div>;
-  }
-  
   return <>{children}</>;
 }

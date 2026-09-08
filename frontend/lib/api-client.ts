@@ -8,7 +8,7 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const STANDARD_TIMEOUT_MS = 15000;
-const AI_TIMEOUT_MS = 60000;
+const AI_TIMEOUT_MS = 120000; // Increased to 120s to allow multiple slow third-party API queries
 
 class ApiError extends Error {
   constructor(
@@ -90,11 +90,21 @@ export interface ProfileResponse {
 }
 
 export interface RankResponse {
+  session_id: string;
+  scheme_matched: boolean;
+  scheme_name?: string;
   rankings: Array<{
     category_id: string;
     category_name: string;
-    score: number;
-    rationale: string;
+    yukti_score: number;
+    verdict: string;
+    confidence: string;
+    dscr?: number;
+    roi?: number;
+    emi?: number;
+    net_profit?: number;
+    highlights: string[];
+    note: string;
   }>;
 }
 
@@ -106,6 +116,63 @@ export interface MarketResponse {
   competitors: { value: { count: number; records: Array<{ name: string; latitude: number; longitude: number }> } | null; provenance: Record<string, string> };
   opportunity_gaps: { value: { assessment: string } | null; provenance: Record<string, string> };
   pricing: { value: { low: number; high: number; unit: string } | null; provenance: Record<string, string> };
+}
+
+export interface CashflowMonth {
+  month: string;
+  month_num: number;
+  revenue: number;
+  expenses: number;
+  emi_payment: number;
+  net_cash: number;
+  cumulative: number;
+}
+
+export interface PnlStatement {
+  revenue: number;
+  cogs: number;
+  gross_profit: number;
+  gross_margin_pct: number;
+  operating_expenses: number;
+  ebit: number;
+  tax: number;
+  net_profit: number;
+  net_margin_pct: number;
+}
+
+export interface WorkingCapital {
+  daily_cash_needed: number;
+  weekly_cash_needed: number;
+  monthly_working_capital: number;
+  inventory_requirement: number;
+  receivables: number;
+  payables: number;
+  recommended_buffer: number;
+  receivable_days: number;
+  payable_days: number;
+  inventory_days: number;
+}
+
+export interface RevenueScenario {
+  monthly_revenue: number;
+  monthly_opex: number;
+  monthly_net_profit: number;
+  annual_net_profit: number;
+  roi_pct: number;
+  payback_months: number | null;
+}
+
+export interface PaybackPeriod {
+  payback_months: number | null;
+  payback_achieved: boolean;
+  total_investment: number;
+  note: string;
+}
+
+export interface SeasonalMonth {
+  month: string;
+  revenue: number;
+  index: number;
 }
 
 export interface FinanceResponse {
@@ -124,6 +191,13 @@ export interface FinanceResponse {
   break_even_units: number;
   roi: number;
   cost_confidence: string;
+  // Extended
+  cashflow_projection: CashflowMonth[];
+  pnl_statement: PnlStatement | null;
+  working_capital: WorkingCapital | null;
+  revenue_scenarios: { pessimistic: RevenueScenario; realistic: RevenueScenario; optimistic: RevenueScenario };
+  seasonal_revenue: SeasonalMonth[];
+  payback_period: PaybackPeriod | null;
 }
 
 export interface RecommendResponse {
@@ -175,8 +249,8 @@ export const api = {
   rankOpportunities: (data: { session_id: string; location_id: string; margin_capital: number }) =>
     ApiClient.post<RankResponse>("/rank-opportunities", data),
 
-  analyzeMarket: (data: { session_id: string; location_id: string; category_id: string }) =>
-    ApiClient.post<MarketResponse>("/analyze-market", data),
+  analyzeMarket: (data: { session_id: string; location_id: string; category_id: string; category_name?: string; budget?: number; experience?: string; idea_details?: string }) =>
+    ApiClient.post<MarketResponse>("/analyze-market", data, AI_TIMEOUT_MS),
 
   calculateFinance: (data: { session_id: string }) =>
     ApiClient.post<FinanceResponse>("/calculate-finance", data),

@@ -22,7 +22,7 @@ export function OnboardingFlow({ onCancel, onComplete }: OnboardingFlowProps) {
 
   // Form State
   const [aboutData, setAboutData] = useState<AboutYouData>({
-    fullName: '', age: '', gender: '', category: '', income: ''
+    fullName: '', age: '', gender: '', category: ''
   });
   const [locationData, setLocationData] = useState<LocationData>({
     state: '', district: '', village: ''
@@ -31,7 +31,7 @@ export function OnboardingFlow({ onCancel, onComplete }: OnboardingFlowProps) {
     investment: '', source: ''
   });
   const [businessData, setBusinessData] = useState<BusinessData>({
-    industry: '', experience: ''
+    industry: '', experience: '', ideaDetails: ''
   });
 
   const nextStep = () => setStep(prev => Math.min(prev + 1, 5));
@@ -71,9 +71,16 @@ export function OnboardingFlow({ onCancel, onComplete }: OnboardingFlowProps) {
       
       {/* Simple Header */}
       <header className="w-full bg-white border-b border-premium-border/50 py-4 px-6 flex justify-between items-center z-10 sticky top-0 shadow-sm">
-        <div className="flex items-center cursor-pointer" onClick={onCancel}>
-          <Leaf className="w-6 h-6 text-[#ea580c] mr-2" fill="currentColor" />
-          <span className="font-display font-bold text-xl text-forest-deep tracking-tight">YUKTI</span>
+        <div className="flex items-center cursor-pointer group" onClick={onCancel}>
+          <img
+            src="/india-emblem.png"
+            alt="Government of India"
+            className="h-10 w-10 object-contain mr-3 transition-transform group-hover:scale-105"
+          />
+          <div className="flex flex-col justify-center">
+            <span className="font-display font-bold text-2xl text-forest-deep tracking-tight leading-none group-hover:text-[#ea580c] transition-colors">YUKTI</span>
+            <span className="text-[8px] font-bold text-ink-soft uppercase tracking-[0.2em] mt-1">Government of India Initiative</span>
+          </div>
         </div>
         <button 
           onClick={onCancel}

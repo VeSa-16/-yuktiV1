@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useStore } from '@/lib/store';
 
 // 1. Top Header with Global Search
 const TopHeader = () => (
@@ -44,58 +46,69 @@ interface BusinessCardProps {
   image: string;
 }
 
-const BusinessCard = ({ name, category, score, demand, demandColor, competition, competitionColor, investment, image, id }: BusinessCardProps) => (
-  <div className="bg-white border border-premium-border rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-premium-border-strong transition-all flex flex-col h-full group">
-    
-    {/* Header: Image & Titles */}
-    <div className="flex items-center mb-6">
-      <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 mr-4 bg-cream shadow-sm relative">
-        <Image src={image} alt={name} fill className="object-cover" />
-      </div>
-      <div className="flex flex-col">
-        <h3 className="font-bold text-ink text-lg leading-tight mb-1">{name}</h3>
-        <p className="text-xs font-medium text-ink-soft">{category}</p>
-      </div>
-    </div>
+const BusinessCard = ({ name, category, score, demand, demandColor, competition, competitionColor, investment, image, id }: BusinessCardProps) => {
+  const router = useRouter();
+  const { updateState } = useStore();
 
-    {/* YUKTI Score */}
-    <div className="mb-6 ml-24">
-      <div className="text-[10px] font-bold text-ink-soft uppercase tracking-wider mb-1">YUKTI Score</div>
-      <div className="flex items-baseline">
-        <span className="text-3xl font-bold text-forest-deep">{score}</span>
-        <span className="text-sm font-bold text-ink-soft">/100</span>
-      </div>
-    </div>
+  const handleViewDetails = () => {
+    updateState({ categoryId: id });
+    router.push(`/market-intelligence/${id}`);
+  };
 
-    {/* Badges */}
-    <div className="flex items-center space-x-3 mb-8">
-      <div className={`px-3 py-1 rounded-full text-[10px] font-bold flex items-center shadow-sm ${demandColor}`}>
-        <span className="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-70"></span>
-        {demand}
+  return (
+    <div className="bg-white border border-premium-border rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-premium-border-strong transition-all flex flex-col h-full group">
+      
+      {/* Header: Image & Titles */}
+      <div className="flex items-center mb-6">
+        <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 mr-4 bg-cream shadow-sm relative">
+          <Image src={image} alt={name} fill className="object-cover" />
+        </div>
+        <div className="flex flex-col">
+          <h3 className="font-bold text-ink text-lg leading-tight mb-1">{name}</h3>
+          <p className="text-xs font-medium text-ink-soft">{category}</p>
+        </div>
       </div>
-      <div className={`px-3 py-1 rounded-full text-[10px] font-bold flex items-center shadow-sm ${competitionColor}`}>
-        <span className="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-70"></span>
-        {competition}
-      </div>
-    </div>
 
-    {/* Footer: Investment & Action */}
-    <div className="mt-auto flex justify-between items-end">
-      <div>
-        <div className="text-[10px] font-bold text-ink-soft uppercase tracking-wider mb-1">Investment</div>
-        <div className="font-bold text-ink">{investment}</div>
+      {/* YUKTI Score */}
+      <div className="mb-6 ml-24">
+        <div className="text-[10px] font-bold text-ink-soft uppercase tracking-wider mb-1">YUKTI Score</div>
+        <div className="flex items-baseline">
+          <span className="text-3xl font-bold text-forest-deep">{score}</span>
+          <span className="text-sm font-bold text-ink-soft">/100</span>
+        </div>
       </div>
-      <Link href={`/market-intelligence/${id}`} className="px-5 py-2.5 bg-[#ea580c] hover:bg-[#c2410c] text-white rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center">
-        View Details <ArrowRight size={14} className="ml-1.5" />
-      </Link>
-    </div>
 
-  </div>
-);
+      {/* Badges */}
+      <div className="flex items-center space-x-3 mb-8">
+        <div className={`px-3 py-1 rounded-full text-[10px] font-bold flex items-center shadow-sm ${demandColor}`}>
+          <span className="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-70"></span>
+          {demand}
+        </div>
+        <div className={`px-3 py-1 rounded-full text-[10px] font-bold flex items-center shadow-sm ${competitionColor}`}>
+          <span className="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-70"></span>
+          {competition}
+        </div>
+      </div>
+
+      {/* Footer: Investment & Action */}
+      <div className="mt-auto flex justify-between items-end">
+        <div>
+          <div className="text-[10px] font-bold text-ink-soft uppercase tracking-wider mb-1">Investment</div>
+          <div className="font-bold text-ink">{investment}</div>
+        </div>
+        <button onClick={handleViewDetails} className="px-5 py-2.5 bg-[#ea580c] hover:bg-[#c2410c] text-white rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#ea580c]">
+          View Details <ArrowRight size={14} className="ml-1.5" />
+        </button>
+      </div>
+
+    </div>
+  );
+};
 
 export default function DiscoverPage() {
+  const [activeFilter, setActiveFilter] = React.useState('recommended');
   
-  const businesses = [
+  const baseBusinesses = [
     {
       id: "e-rickshaw",
       name: "E-Rickshaw",
@@ -170,6 +183,13 @@ export default function DiscoverPage() {
     }
   ];
 
+  const allBusinesses = [
+    ...baseBusinesses,
+    ...baseBusinesses.map(b => ({ ...b, id: b.id + '-all', score: b.score - 10 }))
+  ];
+
+  const displayedBusinesses = activeFilter === 'recommended' ? baseBusinesses : allBusinesses;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 pb-20 animate-in fade-in duration-500 bg-[#fcfbf8] min-h-screen">
       <TopHeader />
@@ -185,17 +205,23 @@ export default function DiscoverPage() {
 
       {/* Toggles */}
       <div className="flex space-x-3 mb-8">
-        <button className="px-6 py-2.5 bg-[#ea580c] text-white rounded-xl text-sm font-bold shadow-sm transition-colors">
+        <button 
+          onClick={() => setActiveFilter('recommended')}
+          className={`px-6 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-colors ${activeFilter === 'recommended' ? 'bg-[#ea580c] text-white' : 'bg-white border border-premium-border text-ink-soft hover:text-ink'}`}
+        >
           Recommended for you
         </button>
-        <button className="px-6 py-2.5 bg-white border border-premium-border text-ink-soft hover:text-ink rounded-xl text-sm font-bold shadow-sm transition-colors">
+        <button 
+          onClick={() => setActiveFilter('all')}
+          className={`px-6 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-colors ${activeFilter === 'all' ? 'bg-[#ea580c] text-white' : 'bg-white border border-premium-border text-ink-soft hover:text-ink'}`}
+        >
           Browse All
         </button>
       </div>
 
       {/* Card Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {businesses.map((biz) => (
+        {displayedBusinesses.map((biz) => (
           <BusinessCard key={biz.id} {...biz} />
         ))}
       </div>

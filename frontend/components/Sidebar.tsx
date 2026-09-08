@@ -8,6 +8,7 @@ import {
   FileText, CheckSquare, Folder, HelpCircle, MapPin, ChevronDown, User, 
   BarChart, ListOrdered, FileArchive, Menu, PanelLeftClose
 } from 'lucide-react';
+import { YuktiLogo } from '@/components/YuktiLogo';
 
 const dict: Record<string, Record<string, string>> = {
   EN: {
@@ -70,11 +71,13 @@ const dict: Record<string, Record<string, string>> = {
 };
 
 export function Sidebar() {
-  const { userMode, toggleUserMode, preferredLanguage, setLanguage, categoryId } = useStore();
+  const { userMode, toggleUserMode, preferredLanguage, setLanguage, categoryId, profileName } = useStore();
   const [isOpen, setIsOpen] = useState(true);
   const pathname = usePathname();
   
-  if (pathname === '/' || pathname === '/onboarding') return null;
+  const publicPages = ['/', '/onboarding', '/how-it-works', '/about', '/support'];
+  if (publicPages.includes(pathname)) return null;
+
 
   // Fallback to EN if language not found
   const t = dict[preferredLanguage] || dict.EN;
@@ -90,7 +93,7 @@ export function Sidebar() {
     );
   }
 
-  const NavLink = ({ href, icon: Icon, label, isActive = false }: { href: string, icon: any, label: string, isActive?: boolean }) => {
+  const NavLink = ({ href, icon: Icon, label, isActive = false, className = "" }: { href: string, icon: any, label: string, isActive?: boolean, className?: string }) => {
     return (
       <Link 
         href={href} 
@@ -98,7 +101,7 @@ export function Sidebar() {
           isActive 
             ? 'bg-[#fff5f0] text-[#ea580c] font-bold shadow-sm ring-1 ring-black/5' 
             : 'text-ink-soft hover:bg-black/5 hover:text-ink'
-        }`}
+        } ${className}`}
       >
         <Icon size={18} className={`mr-4 ${isActive ? 'text-[#ea580c]' : 'text-ink-soft'}`} />
         {label}
@@ -109,15 +112,16 @@ export function Sidebar() {
   return (
     <aside className="w-[280px] bg-[#fcfbf8] text-ink hidden md:flex flex-col border-r border-premium-border/50 shadow-sm shrink-0 h-screen overflow-hidden">
       
-      {/* Logo */}
-      <div className="p-6 pt-8 flex items-center mb-4">
-        <Link href="/dashboard" className="flex items-center space-x-2">
-          <div className="flex-shrink-0 flex items-center">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
-              <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#ea580c"/>
-              <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#166534" style={{ clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)' }}/>
-            </svg>
-            <span className="font-display font-bold text-2xl text-forest-deep tracking-tight">YUKTI</span>
+      <div className="p-6 pt-8 flex items-center mb-6">
+        <Link href="/" className="flex items-center space-x-3 group">
+          <img
+            src="/india-emblem.png"
+            alt="Government of India"
+            className="h-12 w-12 object-contain transition-transform group-hover:scale-105"
+          />
+          <div className="flex flex-col justify-center">
+            <span className="font-display font-bold text-3xl text-forest-deep tracking-tight leading-none group-hover:text-[#ea580c] transition-colors">YUKTI</span>
+            <span className="text-[10px] font-bold text-ink-soft uppercase tracking-[0.2em] mt-1">Government of India Initiative</span>
           </div>
         </Link>
       </div>
@@ -162,7 +166,7 @@ export function Sidebar() {
             <User size={20} className="text-[#b45309]" />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-bold text-ink">Rahul Sharma</span>
+            <span className="text-sm font-bold text-ink">{profileName}</span>
             <div className="flex text-xs font-medium text-ink-soft mt-0.5 space-x-1">
               <Link href="/profile" className="hover:text-ink">Profile</Link>
               <span>·</span>

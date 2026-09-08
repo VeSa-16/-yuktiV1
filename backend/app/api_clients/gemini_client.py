@@ -1,0 +1,93 @@
+import httpx
+import json
+import logging
+import os
+import asyncio
+from typing import Dict, Any, Optional
+from dotenv import load_dotenv
+
+load_dotenv()
+logger = logging.getLogger(__name__)
+
+class GeminiClient:
+    """
+    Client for interacting with Google's Gemini API via HTTP.
+    Used for generating dynamic market intelligence fallbacks and insights.
+    """
+    def __init__(self, api_key: Optional[str] = None):
+        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
+        if not self.api_key:
+            logger.warning("GEMINI_API_KEY is not set. Gemini API calls will fail.")
+            
+        self.model = "gemini-3.6-flash"
+        self.base_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
+
+    def _build_payload(self, prompt: str, schema: Optional[Dict[str, Any]] = None) -> dict:
+        generation_config: Dict[str, Any] = {
+            "response_mime_type": "application/json"
+        }
+        if schema:
+            generation_config["response_schema"] = schema
+        return {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": generation_config
+        }
+
+    def _parse_response(self, data: dict) -> Optional[Dict[str, Any]]:
+        content = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+        if content:
+            return json.loads(content)
+        return None
+
+    def generate_json(self, prompt: str, schema: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
+        """Synchronous Gemini JSON generation with retry on 503."""
+        if not self.api_key:
+            return None
+        for attempt in range(2):
+            try:
+                with httpx.Client(timeout=7.0) as client:
+                    response = client.post(
+                        f"{self.base_url}?key={self.api_key}",
+                        json=self._build_payload(prompt, schema)
+                    )
+                    response.raise_for_status()
+                    return self._parse_response(response.json())
+            except httpx.HTTPStatusError as e:
+                if e.response.status_code == 503 and attempt < 2:
+                    import time
+                    time.sleep(0.5)
+                    continue
+                logger.error(f"Gemini API error: {e}")
+                logger.error(f"Response: {e.response.text}")
+                return None
+            except Exception as e:
+                logger.error(f"Gemini API error: {e}")
+                return None
+        return None
+
+    async def generate_json_async(self, prompt: str, schema: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
+        """Async Gemini JSON generation with retry on 503."""
+        if not self.api_key:
+            return None
+        for attempt in range(2):
+            try:
+                async with httpx.AsyncClient(timeout=7.0) as client:
+                    response = await client.post(
+                        f"{self.base_url}?key={self.api_key}",
+                        json=self._build_payload(prompt, schema)
+                    )
+                    response.raise_for_status()
+                    return self._parse_response(response.json())
+            except httpx.HTTPStatusError as e:
+                if e.response.status_code == 503 and attempt < 2:
+                    wait = 0.5
+                    logger.warning(f"Gemini 503 (attempt {attempt + 1}/3), retrying in {wait}s...")
+                    await asyncio.sleep(wait)
+                    continue
+                logger.error(f"Gemini API error (async): {e}")
+                logger.error(f"Response: {e.response.text}")
+                return None
+            except Exception as e:
+                logger.error(f"Gemini API error (async): {e}")
+                return None
+        return None

@@ -1,78 +1,78 @@
-"""Section 11 — Risk/threat assessment from market and competition data."""
+"""Section 11 — Risk/threat assessment using Gemini AI."""
 
 
-def assess_threats(
+async def assess_threats_async(
     competitor_count: int,
-    gap_score: int | None,
+    gap_score,
     category_name: str,
     pricing: dict | None,
+    gemini,
     confidence: str = "Low",
+    user_context: str = "",
 ) -> dict:
+    prompt = f"""
+    Assess business threats and risks for a '{category_name}' in India.
+    {user_context}
+    - Competitor Count: {competitor_count}
+    - Opportunity Gap Score: {gap_score if gap_score is not None else 'Unknown'}
+    - Pricing Data: {pricing}
+    
+    Output ONLY a JSON object exactly matching this schema, with no other text.
+    Schema:
+    {{
+        "risk_score": integer (0 to 100, where 100 is extremely risky),
+        "risk_factors": [
+            {{
+                "factor": string (name of risk),
+                "severity": string ('Low', 'Medium', or 'High'),
+                "detail": string (explanation)
+            }}
+        ],
+        "note": string (short summary note)
+    }}
     """
-    Identify key risk factors from structured data.
-    """
-    risk_factors = []
-    risk_score = 50  # neutral baseline
+    result = await gemini.generate_json_async(prompt)
+    if result:
+        return {
+            "risk_score": result.get("risk_score", 50),
+            "risk_factors": result.get("risk_factors", []),
+            "confidence": "High",
+            "note": result.get("note", "AI Generated Threat Assessment")
+        }
 
-    # Competition risk
+    # Hard fallback
+    risk_factors = []
+    risk_score = 50
     if competitor_count >= 7:
         risk_factors.append({
             "factor": "High competition density",
             "severity": "High",
-            "detail": f"{competitor_count} competitors found within 10km for {category_name}.",
+            "detail": f"{competitor_count} competitors found.",
         })
         risk_score += 20
-    elif competitor_count >= 4:
-        risk_factors.append({
-            "factor": "Moderate competition",
-            "severity": "Medium",
-            "detail": f"{competitor_count} competitors in the area.",
-        })
-        risk_score += 10
-
-    # Pricing risk
-    if pricing and pricing.get("value"):
-        price_range = pricing["value"]
-        spread = price_range.get("high", 0) - price_range.get("low", 0)
-        if price_range.get("low", 0) > 0 and spread / price_range["low"] > 2:
-            risk_factors.append({
-                "factor": "Wide pricing spread",
-                "severity": "Medium",
-                "detail": "Large variation in market prices — pricing power uncertain.",
-            })
-            risk_score += 5
-
-    # Market saturation risk
-    if gap_score is not None and gap_score < 40:
-        risk_factors.append({
-            "factor": "Market saturation",
-            "severity": "High",
-            "detail": "Consumer-to-competitor ratio suggests limited remaining demand.",
-        })
-        risk_score += 15
-
-    # Data confidence risk
-    if confidence == "Low":
-        risk_factors.append({
-            "factor": "Low data confidence",
-            "severity": "Medium",
-            "detail": "Risk assessment is based on limited/unverified data.",
-        })
-        risk_score += 10
-
     if not risk_factors:
         risk_factors.append({
             "factor": "No major risks identified",
             "severity": "Low",
             "detail": "Based on available data, no significant risk flags detected.",
         })
-
-    # Cap score
-    risk_score = min(risk_score, 100)
-
     return {
-        "risk_score": risk_score,
+        "risk_score": min(risk_score, 100),
         "risk_factors": risk_factors,
         "confidence": confidence,
-        "note": f"Risk score: {risk_score}/100 (higher = riskier).",
+        "note": "Fallback threat assessment (AI unavailable).",
     }
+
+
+def assess_threats(
+    competitor_count: int,
+    gap_score,
+    category_name: str,
+    pricing: dict | None,
+    confidence: str = "Low",
+) -> dict:
+    """Sync fallback for legacy callers."""
+    from app.api_clients.gemini_client import GeminiClient
+    import asyncio
+    client = GeminiClient()
+    return asyncio.run(assess_threats_async(competitor_count, gap_score, category_name, pricing, client, confidence))

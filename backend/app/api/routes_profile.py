@@ -17,10 +17,28 @@ def create_profile(req: ProfileRequest, db: DBSession = Depends(get_db)):
     if not location_id:
         raise HTTPException(status_code=400, detail="Could not resolve location. Try 'Solapur' or 'Remote'.")
 
-    # Verify location exists in DB
     location = db.query(Location).filter(Location.id == location_id).first()
     if not location:
-        raise HTTPException(status_code=404, detail=f"Location '{location_id}' not found in database.")
+        try:
+            lat_str, lon_str = location_id.split(",")
+            from app.models.core import AdminLevel
+            location = Location(
+                id=location_id,
+                village=req.location_input.split(",")[0],
+                district="Dynamic",
+                state="Dynamic",
+                lat=float(lat_str),
+                lng=float(lon_str),
+                admin_level=AdminLevel.village,
+                data_richness="sparse"
+            )
+            db.add(location)
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            import logging
+            logging.getLogger(__name__).error(f"Failed to insert location: {e}")
+            raise HTTPException(status_code=404, detail=f"Location '{location_id}' not found in database. Error: {e}")
 
     # Create user
     user = User(id=uid(), name=req.name, language_pref=req.language)

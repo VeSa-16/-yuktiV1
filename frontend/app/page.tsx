@@ -33,12 +33,27 @@ export default function LandingPage() {
         language: "en"
       });
       
+      const mapIndustry = (industry: string) => {
+        const lower = industry.toLowerCase();
+        if (lower.includes("retail") || lower.includes("kirana")) return "retail_kirana";
+        if (lower.includes("dairy") || lower.includes("milk")) return "dairy";
+        if (lower.includes("tailor") || lower.includes("boutique")) return "tailoring";
+        if (lower.includes("flour") || lower.includes("mill")) return "flour_mill";
+        if (lower.includes("poultry") || lower.includes("chicken")) return "poultry";
+        return industry.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || "custom_business";
+      };
+
       updateState({
         sessionId: res.user_id,
         locationId: res.location_id,
         locationName: res.location_name,
         profileName: onboardingData.fullName || "Entrepreneur",
-        userMode: 'entrepreneur'
+        userMode: 'entrepreneur',
+        marginCapital: parseInt(onboardingData.investment) || 50000,
+        categoryId: mapIndustry(onboardingData.industry),
+        categoryName: onboardingData.industry || "Retail / Kirana Store",
+        experience: onboardingData.experience || "None, I am a beginner",
+        ideaDetails: onboardingData.ideaDetails || ""
       });
       
       router.push("/dashboard");

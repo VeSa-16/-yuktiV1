@@ -9,6 +9,10 @@
 }
 
 @layer base {
+  html {
+    font-size: 87.5%; /* Scales down all rem-based Tailwind utilities (text, padding, margins) by 12.5% */
+  }
+
   body {
     @apply bg-warm-bg text-warm-text min-h-screen font-sans;
   }

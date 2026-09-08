@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChevronLeft, ArrowRight, Wallet } from 'lucide-react';
 
 export interface CapitalData {
@@ -14,6 +14,9 @@ interface StepCapitalProps {
 }
 
 export function StepCapital({ data, updateData, onNext, onBack }: StepCapitalProps) {
+  const PREDEFINED_OPTIONS = ['Under ₹50,000', '₹50,000 - ₹1L', '₹1L - ₹3L', '₹3L - ₹5L', 'Above ₹5L'];
+  const isCustomMode = data.investment !== '' && !PREDEFINED_OPTIONS.includes(data.investment);
+
   return (
     <div className="flex flex-col h-full bg-white rounded-3xl p-6 sm:p-8 border border-premium-border shadow-card relative">
       <div className="flex-1">
@@ -26,10 +29,10 @@ export function StepCapital({ data, updateData, onNext, onBack }: StepCapitalPro
           {/* Investment Amount */}
           <div className="space-y-2">
             <label className="text-sm font-bold text-ink flex items-center">
-              How much capital can you invest? <span className="text-[#ea580c] ml-1">*</span>
+              What is your available budget for this venture? <span className="text-[#ea580c] ml-1">*</span>
             </label>
             <div className="flex flex-wrap gap-3">
-              {['Under ₹50,000', '₹50,000 - ₹1L', '₹1L - ₹3L', '₹3L - ₹5L', 'Above ₹5L'].map(option => (
+              {PREDEFINED_OPTIONS.map(option => (
                 <label key={option} className={`flex items-center px-4 py-3 rounded-xl border cursor-pointer transition-colors ${data.investment === option ? 'border-forest bg-forest-tint/30 text-forest-deep font-bold' : 'border-premium-border hover:bg-cream text-ink font-medium'}`}>
                   <input 
                     type="radio" 
@@ -42,6 +45,16 @@ export function StepCapital({ data, updateData, onNext, onBack }: StepCapitalPro
                   <span className="text-sm">{option}</span>
                 </label>
               ))}
+              <input 
+                type="text"
+                placeholder="Other amount (e.g. ₹2,50,000)"
+                className={`w-full sm:w-64 rounded-xl border px-4 py-3 text-sm font-medium transition-colors focus:outline-none ${isCustomMode ? 'border-forest bg-forest-tint/30 text-forest-deep font-bold ring-1 ring-forest' : 'border-premium-border hover:bg-cream text-ink placeholder:text-ink-faint'}`}
+                value={isCustomMode && data.investment !== 'Custom' ? data.investment : ''}
+                onChange={(e) => updateData({ investment: e.target.value })}
+                onFocus={() => {
+                  if (!isCustomMode) updateData({ investment: 'Custom' });
+                }}
+              />
             </div>
           </div>
           

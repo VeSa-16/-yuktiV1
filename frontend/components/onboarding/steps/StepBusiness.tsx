@@ -1,9 +1,10 @@
 import React from 'react';
-import { ChevronLeft, ArrowRight, Store, Wrench, Tractor, Laptop } from 'lucide-react';
+import { ChevronLeft, ArrowRight, ChevronDown } from 'lucide-react';
 
 export interface BusinessData {
   industry: string;
   experience: string;
+  ideaDetails: string;
 }
 
 interface StepBusinessProps {
@@ -14,6 +15,12 @@ interface StepBusinessProps {
 }
 
 export function StepBusiness({ data, updateData, onNext, onBack }: StepBusinessProps) {
+  const PREDEFINED_INDUSTRIES = [
+    'Retail & Shop', 'Manufacturing', 'Agri-Business', 'Services & Tech',
+    'Food & Beverage', 'Handicrafts & Artisanal', 'Logistics & Delivery', 
+    'Education & Training', 'Healthcare & Wellness', 'Fashion & Apparel'
+  ];
+  const isCustomIndustry = data.industry !== '' && !PREDEFINED_INDUSTRIES.includes(data.industry);
   return (
     <div className="flex flex-col h-full bg-white rounded-3xl p-6 sm:p-8 border border-premium-border shadow-card relative">
       <div className="flex-1">
@@ -28,33 +35,52 @@ export function StepBusiness({ data, updateData, onNext, onBack }: StepBusinessP
             <label className="text-sm font-bold text-ink flex items-center">
               Area of Interest <span className="text-[#ea580c] ml-1">*</span>
             </label>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { id: 'Retail & Shop', icon: Store },
-                { id: 'Manufacturing', icon: Wrench },
-                { id: 'Agri-Business', icon: Tractor },
-                { id: 'Services & Tech', icon: Laptop },
-              ].map(ind => {
-                const Icon = ind.icon;
-                const isSelected = data.industry === ind.id;
-                return (
-                  <button
-                    key={ind.id}
-                    onClick={() => updateData({ industry: ind.id })}
-                    className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all ${
-                      isSelected 
-                        ? 'border-forest bg-forest-tint/30 ring-1 ring-forest' 
-                        : 'border-premium-border hover:border-forest/50 bg-white'
-                    }`}
-                  >
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${isSelected ? 'bg-forest text-white' : 'bg-cream text-ink-soft'}`}>
-                      <Icon size={20} />
-                    </div>
-                    <span className={`text-sm font-bold ${isSelected ? 'text-forest-deep' : 'text-ink'}`}>{ind.id}</span>
-                  </button>
-                )
-              })}
+            <div className="relative">
+              <select
+                className="w-full rounded-xl border border-premium-border px-4 py-3 text-ink bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest transition-all cursor-pointer font-medium"
+                value={isCustomIndustry ? 'Other' : data.industry}
+                onChange={(e) => {
+                  if (e.target.value === 'Other') {
+                    updateData({ industry: 'Custom' });
+                  } else {
+                    updateData({ industry: e.target.value });
+                  }
+                }}
+              >
+                <option value="" disabled>Select an area of interest...</option>
+                {PREDEFINED_INDUSTRIES.map(ind => (
+                  <option key={ind} value={ind}>{ind}</option>
+                ))}
+                <option value="Other">Other (Please specify)</option>
+              </select>
+              <ChevronDown className="absolute right-4 top-3.5 text-ink-soft pointer-events-none" size={20} />
             </div>
+
+            {isCustomIndustry && (
+              <div className="pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                <input 
+                  type="text"
+                  placeholder="e.g. Handicrafts, Cloud Kitchen, Freelancing..."
+                  className="w-full rounded-xl border border-premium-border px-4 py-3 text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest transition-all"
+                  value={data.industry === 'Custom' ? '' : data.industry}
+                  onChange={(e) => updateData({ industry: e.target.value })}
+                  autoFocus
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-ink flex items-center">
+              Please specify what you want to build in detail
+            </label>
+            <textarea 
+              rows={3}
+              placeholder="Describe your business idea, products, target customers, etc."
+              className="w-full rounded-xl border border-premium-border px-4 py-3 text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest transition-all resize-none"
+              value={data.ideaDetails || ''}
+              onChange={(e) => updateData({ ideaDetails: e.target.value })}
+            />
           </div>
           
           <div className="space-y-2 pt-4">

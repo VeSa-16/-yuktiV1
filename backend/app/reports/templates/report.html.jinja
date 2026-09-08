@@ -1,89 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YUKTI - Business Plan Report</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
-        h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
-        h2 { color: #2980b9; margin-top: 30px; }
-        .section { background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e0e0e0; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .metric { background: #fff; padding: 15px; border-radius: 5px; border-left: 4px solid #3498db; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .metric-label { font-size: 0.9em; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; }
-        .metric-value { font-size: 1.4em; font-weight: bold; color: #2c3e50; margin-top: 5px; }
-        .print-btn { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1em; float: right; margin-top: 10px; }
-        .print-btn:hover { background: #2980b9; }
-        @media print {
-            .print-btn { display: none; }
-            body { background: white; max-width: 100%; }
-            .section { border: none; background: white; }
-            .metric { box-shadow: none; border: 1px solid #eee; border-left: 4px solid #3498db; }
-        }
-    </style>
-</head>
-<body>
-    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
-    <h1>YUKTI Business Plan Report</h1>
-    
-    <div class="section">
-        <h2>Overview</h2>
-        <p><strong>Business Category:</strong> {{ category.name if category else 'Not Selected' }}</p>
-        <p><strong>Location:</strong> {{ location.district if location else 'Unknown' }}, {{ location.state if location else '' }}</p>
-        <p><strong>Initial Capital:</strong> ₹{{ "{:,.2f}".format(session.margin_capital) if session else '0.00' }}</p>
-    </div>
+<div class="report-content">
+    <h3>1. Business Overview</h3>
+    <p><strong>Business Category:</strong> {{ category.name if category else 'Not Selected' }}</p>
+    <p><strong>Target Location:</strong> {{ location.district if location else 'Unknown' }}{% if location and location.state %}, {{ location.state }}{% endif %}</p>
+    <p><strong>User Margin Capital:</strong> ₹{{ "{:,.2f}".format(session.margin_capital) if session and session.margin_capital else '0.00' }}</p>
 
     {% if loan %}
-    <div class="section">
-        <h2>Capital Requirements & Financing</h2>
-        <div class="grid">
-            <div class="metric">
-                <div class="metric-label">Total Project Cost</div>
-                <div class="metric-value">₹{{ "{:,.2f}".format(loan.project_cost) }}</div>
-            </div>
-            <div class="metric">
-                <div class="metric-label">Loan Amount</div>
-                <div class="metric-value">₹{{ "{:,.2f}".format(loan.loan_amount) }}</div>
-            </div>
-            <div class="metric">
-                <div class="metric-label">Your Contribution</div>
-                <div class="metric-value">₹{{ "{:,.2f}".format(loan.beneficiary_contribution) }}</div>
-            </div>
-        </div>
-    </div>
+    <h3 style="margin-top: 2rem;">2. Capital Requirements & Proposed Financing</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+        <thead>
+            <tr style="border-bottom: 2px solid #ea580c; text-align: left;">
+                <th style="padding: 0.75rem;">Metric</th>
+                <th style="padding: 0.75rem; text-align: right;">Amount (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 0.75rem;">Total Estimated Project Cost</td>
+                <td style="padding: 0.75rem; text-align: right; font-weight: bold;">{{ "{:,.2f}".format(loan.project_cost) }}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 0.75rem;">Beneficiary Contribution (Margin)</td>
+                <td style="padding: 0.75rem; text-align: right; font-weight: bold;">{{ "{:,.2f}".format(loan.beneficiary_contribution) }}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 0.75rem;">Required Term Loan Amount</td>
+                <td style="padding: 0.75rem; text-align: right; font-weight: bold; color: #ea580c;">{{ "{:,.2f}".format(loan.loan_amount) }}</td>
+            </tr>
+        </tbody>
+    </table>
     {% endif %}
 
     {% if projection %}
-    <div class="section">
-        <h2>Financial Projections</h2>
-        <div class="grid">
-            <div class="metric">
-                <div class="metric-label">Estimated Monthly Revenue</div>
-                <div class="metric-value">₹{{ "{:,.2f}".format(projection.monthly_revenue) }}</div>
-            </div>
-            <div class="metric">
-                <div class="metric-label">Estimated Monthly Profit</div>
-                <div class="metric-value">₹{{ "{:,.2f}".format(projection.net_profit) }}</div>
-            </div>
-            <div class="metric">
-                <div class="metric-label">Return on Investment (ROI)</div>
-                <div class="metric-value">{{ "{:,.1f}".format(projection.roi) }}%</div>
-            </div>
-            <div class="metric">
-                <div class="metric-label">DSCR (Repayment Capacity)</div>
-                <div class="metric-value">{{ "{:,.2f}".format(projection.dscr) }}</div>
-            </div>
-            <div class="metric">
-                <div class="metric-label">Break-Even Point (Units/Month)</div>
-                <div class="metric-value">{{ "{:,.0f}".format(projection.break_even_units) }}</div>
-            </div>
-        </div>
+    <h3 style="margin-top: 2rem;">3. Financial Projections & Feasibility (Year 1)</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+        <thead>
+            <tr style="border-bottom: 2px solid #ea580c; text-align: left;">
+                <th style="padding: 0.75rem;">Financial Indicator</th>
+                <th style="padding: 0.75rem; text-align: right;">Projected Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 0.75rem;">Estimated Monthly Revenue</td>
+                <td style="padding: 0.75rem; text-align: right; font-weight: bold;">₹{{ "{:,.2f}".format(projection.monthly_revenue) }}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 0.75rem;">Estimated Monthly Net Profit</td>
+                <td style="padding: 0.75rem; text-align: right; font-weight: bold;">₹{{ "{:,.2f}".format(projection.net_profit) }}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 0.75rem;">Estimated Monthly EMI</td>
+                <td style="padding: 0.75rem; text-align: right; font-weight: bold;">₹{{ "{:,.2f}".format(projection.monthly_emi) if projection.monthly_emi else 'N/A' }}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 0.75rem;">Return on Investment (ROI)</td>
+                <td style="padding: 0.75rem; text-align: right; font-weight: bold; color: #059669;">{{ "{:,.1f}".format(projection.roi) }}%</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 0.75rem;">Debt Service Coverage Ratio (DSCR)</td>
+                <td style="padding: 0.75rem; text-align: right; font-weight: bold;">{{ "{:,.2f}".format(projection.dscr) }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem;">Break-Even Point (Units/Month)</td>
+                <td style="padding: 0.75rem; text-align: right; font-weight: bold;">{{ "{:,.0f}".format(projection.break_even_units) }}</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div style="margin-top: 1.5rem; padding: 1rem; background-color: #f8fafc; border-left: 4px solid #ea580c; border-radius: 4px;">
+        <p style="margin: 0; font-size: 0.95rem; color: #334155;">
+            <strong>Analyst Note:</strong> A DSCR of {{ "{:,.2f}".format(projection.dscr) }} indicates that the business generates sufficient cash flow to cover its debt obligations. An ROI of {{ "{:,.1f}".format(projection.roi) }}% represents a healthy return on the initial capital outlay.
+        </p>
     </div>
     {% endif %}
-
-    <div style="margin-top: 50px; text-align: center; color: #7f8c8d; font-size: 0.9em;">
-        <p>Generated by YUKTI — AI-Powered Advisory System for Micro-Entrepreneurs</p>
-    </div>
-</body>
-</html>
+</div>

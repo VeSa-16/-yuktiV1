@@ -9,6 +9,8 @@ from app.data_layer.retrieval import DataRetrieval
 from app.engines.financial_engine import (
     compute_project_cost, compute_loan_amount, compute_emi,
     compute_dscr, compute_break_even_units, compute_net_profit, compute_roi,
+    compute_cashflow_projection, compute_pnl_statement, compute_working_capital,
+    compute_revenue_scenarios, compute_payback_period, compute_seasonal_revenue,
 )
 from app.engines.scheme_engine import match_scheme
 from app.engines.scoring_engine import compute_all_dimensions
@@ -145,6 +147,17 @@ def compute_full_financials(
     db.add(projection)
     db.commit()
 
+    # 5. Extended financial computations
+    cat_id_for_seasonal = category_id or "retail_kirana"
+    cashflow = compute_cashflow_projection(
+        monthly_revenue, monthly_opex, emi, moratorium_months, cat_id_for_seasonal
+    )
+    pnl = compute_pnl_statement(monthly_revenue, monthly_opex)
+    wc = compute_working_capital(monthly_revenue, monthly_opex, selling_price, variable_cost)
+    scenarios = compute_revenue_scenarios(monthly_revenue, monthly_opex, emi, project_cost)
+    payback = compute_payback_period(monthly_revenue, monthly_opex, emi, project_cost, moratorium_months, cat_id_for_seasonal)
+    seasonal = compute_seasonal_revenue(monthly_revenue, cat_id_for_seasonal)
+
     return {
         "project_cost": project_cost,
         "loan_amount": loan_amount,
@@ -161,6 +174,13 @@ def compute_full_financials(
         "break_even_units": break_even,
         "roi": roi,
         "cost_confidence": cost_result.get("confidence", "Low"),
+        # Extended
+        "cashflow_projection": cashflow,
+        "pnl_statement": pnl,
+        "working_capital": wc,
+        "revenue_scenarios": scenarios,
+        "seasonal_revenue": seasonal,
+        "payback_period": payback,
     }
 
 

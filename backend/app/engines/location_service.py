@@ -6,34 +6,41 @@ from typing import Optional
 from app.services.data_service import data_service
 
 
+from app.api_clients.geocoding_client import GeocodingClient
+
 def resolve_location(input_text: str) -> Optional[str]:
     """
-    Match user's location input to a known location_id from the JSON database.
-    Returns the location_id string, or None if no match.
+    Match user's location input using Geocoding API.
+    Returns the location_id string as 'lat,lon', or None if no match.
     """
     if not input_text:
         return None
         
-    normalized = input_text.strip().lower()
-    locations = data_service.get_dataset("locations")
+    geocoder = GeocodingClient()
+    coords = geocoder.get_coordinates(input_text)
     
-    # Simple search against village, block, district
-    for loc in locations:
-        if (loc.get("village", "").lower() in normalized or 
-            loc.get("block", "").lower() in normalized or
-            loc.get("district", "").lower() in normalized):
-            return loc.get("id")
-            
-    # If we couldn't resolve the location, return None. We NO LONGER default to a fake location.
+    if coords:
+        return f"{coords[0]},{coords[1]}"
+        
     return None
 
 
 def get_location_metadata(location_id: str) -> dict:
-    """Return metadata for a given location_id from the dataset."""
-    locations = data_service.get_dataset("locations")
-    for loc in locations:
-        if loc.get("id") == location_id:
-            # Inject radius_km for subsequent queries
-            loc["radius_km"] = 10
-            return loc
+    """Return metadata for a given location_id string ('lat,lon')."""
+    try:
+        if "," in location_id:
+            lat_str, lon_str = location_id.split(",")
+            return {
+                "id": location_id,
+                "lat": float(lat_str),
+                "lon": float(lon_str),
+                "village": "Selected Location",
+                "block": "",
+                "district": "",
+                "state": "Maharashtra", # Example default state for commodity searches
+                "radius_km": 5
+            }
+    except Exception:
+        pass
+        
     return {}

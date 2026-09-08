@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session as DBSession
 from app.core.db import get_db
 from app.schemas.market import MarketRequest, MarketResponse
-from app.engines.market_intelligence import run_full_market_analysis
+from app.engines.market_intelligence import run_full_market_analysis_async
 
 router = APIRouter()
 
@@ -17,9 +17,9 @@ CATEGORY_NAMES = {
 
 
 @router.post("/analyze-market", response_model=MarketResponse)
-def analyze_market(req: MarketRequest, db: DBSession = Depends(get_db)):
-    cat_name = CATEGORY_NAMES.get(req.category_id, req.category_id)
-    
+async def analyze_market(req: MarketRequest, db: DBSession = Depends(get_db)):
+    cat_name = req.category_name or CATEGORY_NAMES.get(req.category_id, req.category_id.replace("_", " ").title())
+
     # Save category to session
     from app.models import Session
     session = db.query(Session).filter(Session.id == req.session_id).first()
@@ -27,5 +27,12 @@ def analyze_market(req: MarketRequest, db: DBSession = Depends(get_db)):
         session.category_id = req.category_id
         db.commit()
 
-    result = run_full_market_analysis(req.location_id, req.category_id, cat_name)
+    result = await run_full_market_analysis_async(
+        req.location_id, 
+        req.category_id, 
+        cat_name,
+        budget=req.budget,
+        experience=req.experience,
+        idea_details=req.idea_details
+    )
     return MarketResponse(**result)

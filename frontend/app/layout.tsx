@@ -38,23 +38,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${fraunces.variable} ${jakarta.variable} font-sans min-h-screen flex bg-warm-bg text-warm-text`}>
+      <body suppressHydrationWarning className={`${fraunces.variable} ${jakarta.variable} font-sans min-h-screen bg-[#fdfbf6] text-ink antialiased flex flex-col`}>
         <StoreProvider>
-          <Sidebar />
+          <div className="flex min-h-screen w-full">
+            <Sidebar />
 
-          {/* Main Content Area */}
-          <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
-            {/* Mobile Header (Hidden on Desktop) */}
-            <header className="md:hidden bg-warm-surface h-14 flex items-center px-4 border-b border-warm-border shadow-sm">
-              <span className="text-xl font-bold tracking-tight text-warm-primary">YUKTI</span>
-            </header>
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col min-h-screen w-full">
+              {/* Mobile Header (Hidden on Desktop) */}
+              <header className="md:hidden bg-white h-14 flex items-center px-4 border-b border-premium-border shadow-sm shrink-0">
+                <span className="text-xl font-bold tracking-tight text-[#ea580c]">YUKTI</span>
+              </header>
 
-            <main className="flex-1 overflow-y-auto bg-warm-bg">
-              {children}
-            </main>
+              <main className="flex-1 w-full bg-[#fdfbf6]">
+                {children}
+              </main>
+            </div>
+            
+            <CopilotOverlay />
           </div>
-          
-          <CopilotOverlay />
         </StoreProvider>
       </body>
     </html>

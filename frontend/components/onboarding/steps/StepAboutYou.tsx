@@ -6,7 +6,6 @@ export interface AboutYouData {
   age: string;
   gender: string;
   category: string;
-  income: string;
 }
 
 interface StepAboutYouProps {
@@ -110,28 +109,6 @@ export function StepAboutYou({ data, updateData, onNext, onBack }: StepAboutYouP
                   </button>
                 )
               })}
-            </div>
-          </div>
-
-          {/* Annual Family Income */}
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-ink flex items-center">
-              Annual Family Income <span className="text-[#ea580c] ml-1">*</span>
-            </label>
-            <div className="flex flex-wrap gap-3">
-              {['Below ₹1L', '₹1-3L', '₹3-5L', '₹5-8L', '₹8L+'].map(option => (
-                <label key={option} className={`flex items-center px-4 py-2.5 rounded-xl border cursor-pointer transition-colors ${data.income === option ? 'border-forest bg-forest-tint/30 text-forest-deep font-bold' : 'border-premium-border hover:bg-cream text-ink font-medium'}`}>
-                  <input 
-                    type="radio" 
-                    name="income" 
-                    value={option}
-                    className="mr-2.5 w-4 h-4 accent-forest"
-                    checked={data.income === option}
-                    onChange={() => updateData({ income: option })}
-                  />
-                  <span className="text-sm">{option}</span>
-                </label>
-              ))}
             </div>
           </div>
         </div>

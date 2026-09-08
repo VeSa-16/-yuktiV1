@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Menu, X, ArrowRight, ChevronDown, Leaf } from 'lucide-react';
+import Link from 'next/link';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function HeroNavbar({ onGetStarted }: { onGetStarted: () => void }) {
@@ -11,17 +12,24 @@ export function HeroNavbar({ onGetStarted }: { onGetStarted: () => void }) {
         <div className="flex justify-between items-center h-20">
           
           {/* Logo */}
-          <div className="flex-shrink-0 flex items-center">
-            <Leaf className="w-8 h-8 text-[#ea580c] mr-2" fill="currentColor" />
-            <span className="font-display font-bold text-3xl text-forest-deep tracking-tight mt-1">YUKTI</span>
-          </div>
+          <Link href="/" className="flex-shrink-0 flex items-center group">
+            <img
+              src="/india-emblem.png"
+              alt="Government of India"
+              className="h-12 w-12 object-contain mr-3 transition-transform group-hover:scale-105"
+            />
+            <div className="flex flex-col justify-center">
+              <span className="font-display font-bold text-3xl text-forest-deep tracking-tight leading-none group-hover:text-[#ea580c] transition-colors">YUKTI</span>
+              <span className="text-[10px] font-bold text-ink-soft uppercase tracking-[0.2em] mt-1">Initiative by Government of India</span>
+            </div>
+          </Link>
 
           {/* Desktop Center Nav */}
           <div className="hidden md:flex space-x-8">
-            <a href="#" className="text-saffron font-bold text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron rounded">Home</a>
-            <a href="#how-it-works" className="text-ink-soft hover:text-ink font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron rounded">How It Works</a>
-            <a href="#about" className="text-ink-soft hover:text-ink font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron rounded">About</a>
-            <a href="#support" className="text-ink-soft hover:text-ink font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron rounded">Support</a>
+            <Link href="/" className="text-saffron font-bold text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron rounded">Home</Link>
+            <Link href="/how-it-works" className="text-ink-soft hover:text-ink font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron rounded">How It Works</Link>
+            <Link href="/about" className="text-ink-soft hover:text-ink font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron rounded">About</Link>
+            <Link href="/support" className="text-ink-soft hover:text-ink font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron rounded">Support</Link>
           </div>
 
           {/* Desktop Right Nav */}
@@ -63,10 +71,10 @@ export function HeroNavbar({ onGetStarted }: { onGetStarted: () => void }) {
             className="md:hidden absolute top-24 left-4 right-4 bg-white rounded-2xl border border-premium-border shadow-card z-40"
           >
             <div className="px-4 pt-2 pb-6 space-y-2 flex flex-col">
-              <a href="#" className="block px-3 py-3 rounded-md text-base font-bold text-saffron">Home</a>
-              <a href="#how-it-works" className="block px-3 py-3 rounded-md text-base font-medium text-ink hover:bg-cream">How It Works</a>
-              <a href="#about" className="block px-3 py-3 rounded-md text-base font-medium text-ink hover:bg-cream">About</a>
-              <a href="#support" className="block px-3 py-3 rounded-md text-base font-medium text-ink hover:bg-cream">Support</a>
+              <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 rounded-md text-base font-bold text-saffron">Home</Link>
+              <Link href="/how-it-works" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 rounded-md text-base font-medium text-ink hover:bg-cream">How It Works</Link>
+              <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 rounded-md text-base font-medium text-ink hover:bg-cream">About</Link>
+              <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 rounded-md text-base font-medium text-ink hover:bg-cream">Support</Link>
               
               <div className="pt-4 mt-2 border-t border-premium-border-strong flex justify-between items-center px-3">
                 <button className="flex items-center text-ink-soft text-sm font-bold bg-cream px-3 py-2 rounded-lg border border-premium-border">

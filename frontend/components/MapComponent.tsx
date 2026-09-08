@@ -19,6 +19,8 @@ const createIcon = (color: string) => {
 interface Competitor {
   name: string;
   distance_km: number;
+  lat?: number;
+  lon?: number;
 }
 
 interface MapComponentProps {
@@ -57,13 +59,21 @@ export default function MapComponent({ lat, lng, radiusKm, showCompetitors, show
       </Marker>
       
       {showCompetitors && competitors.map((comp, idx) => {
-        // Generate deterministic fake coordinates around center based on distance
-        const angle = (idx * (360 / Math.max(1, competitors.length))) * (Math.PI / 180);
-        const distLat = (comp.distance_km / 111) * Math.cos(angle);
-        const distLng = (comp.distance_km / (111 * Math.cos(lat * (Math.PI / 180)))) * Math.sin(angle);
+        let compLat = lat;
+        let compLng = lng;
+        
+        if (comp.lat && comp.lon) {
+          compLat = comp.lat;
+          compLng = comp.lon;
+        } else {
+          // Generate deterministic fake coordinates if real ones are missing
+          const angle = (idx * (360 / Math.max(1, competitors.length))) * (Math.PI / 180);
+          compLat = lat + (comp.distance_km / 111) * Math.cos(angle);
+          compLng = lng + (comp.distance_km / (111 * Math.cos(lat * (Math.PI / 180)))) * Math.sin(angle);
+        }
         
         return (
-          <Marker key={idx} position={[lat + distLat, lng + distLng]} icon={redIcon}>
+          <Marker key={idx} position={[compLat, compLng]} icon={redIcon}>
             <Popup>{comp.name}<br/>{comp.distance_km.toFixed(1)} km away</Popup>
           </Marker>
         );

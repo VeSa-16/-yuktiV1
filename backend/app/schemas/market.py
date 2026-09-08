@@ -18,6 +18,10 @@ class MarketRequest(BaseModel):
     session_id: str
     location_id: str
     category_id: str
+    category_name: Optional[str] = None
+    budget: Optional[int] = None
+    experience: Optional[str] = None
+    idea_details: Optional[str] = None
 
 class MarketResponse(BaseModel):
     location_id: str
