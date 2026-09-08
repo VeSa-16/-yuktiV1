@@ -14,7 +14,9 @@ from app.engines.financial_engine import (
 )
 from app.engines.scheme_engine import match_scheme
 from app.engines.scoring_engine import compute_all_dimensions
-from app.engines.market_intelligence import run_full_market_analysis
+# NOTE: run_full_market_analysis is intentionally NOT imported here.
+# Dimension scores are computed purely from financial metrics to avoid
+# triggering the expensive Gemini + Overpass pipeline on every /recommend call.
 
 data_layer = DataRetrieval()
 
@@ -74,16 +76,22 @@ def compute_full_financials(
     loan_amount = compute_loan_amount(project_cost, scheme_max)
     contribution = project_cost - loan_amount
 
-    # Store loan product
-    loan = LoanProduct(
-        id=uid(),
-        session_id=session_id,
-        project_cost=project_cost,
-        loan_amount=loan_amount,
-        beneficiary_contribution=contribution,
-        matched_scheme_id=None,  # not linking to DB scheme row for now
-    )
-    db.add(loan)
+    # Upsert loan product — update existing row to prevent duplicates on re-calculation
+    loan = db.query(LoanProduct).filter(LoanProduct.session_id == session_id).first()
+    if loan:
+        loan.project_cost = project_cost
+        loan.loan_amount = loan_amount
+        loan.beneficiary_contribution = contribution
+    else:
+        loan = LoanProduct(
+            id=uid(),
+            session_id=session_id,
+            project_cost=project_cost,
+            loan_amount=loan_amount,
+            beneficiary_contribution=contribution,
+            matched_scheme_id=None,
+        )
+        db.add(loan)
 
     # 2. Cost profile for financial calcs
     cost_result = data_layer.get_cost_profile(location_id, category_id) if category_id else {"value": None}
@@ -133,18 +141,29 @@ def compute_full_financials(
 
     roi = compute_roi(net_profit * 12, project_cost)
 
-    # Store projection
-    projection = FinancialProjection(
-        id=uid(),
-        session_id=session_id,
-        monthly_revenue=monthly_revenue,
-        monthly_opex=monthly_opex,
-        net_profit=net_profit,
-        break_even_units=break_even,
-        dscr=dscr,
-        roi=roi,
-    )
-    db.add(projection)
+    # Upsert projection — update existing row to prevent duplicates on re-calculation
+    projection = db.query(FinancialProjection).filter(
+        FinancialProjection.session_id == session_id
+    ).first()
+    if projection:
+        projection.monthly_revenue = monthly_revenue
+        projection.monthly_opex = monthly_opex
+        projection.net_profit = net_profit
+        projection.break_even_units = break_even
+        projection.dscr = dscr
+        projection.roi = roi
+    else:
+        projection = FinancialProjection(
+            id=uid(),
+            session_id=session_id,
+            monthly_revenue=monthly_revenue,
+            monthly_opex=monthly_opex,
+            net_profit=net_profit,
+            break_even_units=break_even,
+            dscr=dscr,
+            roi=roi,
+        )
+        db.add(projection)
     db.commit()
 
     # 5. Extended financial computations
@@ -251,21 +270,29 @@ def get_base_state(db: DBSession, session_id: str) -> dict:
 
 
 
-def _default_dimension_scores(dscr: float, roi: float, break_even: float, monthly_revenue: float, location_id: str, category_id: str, category_name: str) -> dict:
-    try:
-        market_data = run_full_market_analysis(location_id, category_id, category_name)
-        comp_count = market_data["competitors"]["value"].get("count", 0)
-        pop = market_data["market_reach"]["value"].get("consumer_base", 1000) if market_data["market_reach"]["value"] else 1000
-        threats_count = len(market_data["threats"]["value"].get("risk_factors", []))
-        overall_confidence = market_data["overall_confidence"]
-    except Exception:
-        comp_count = 2
-        pop = 5000
-        threats_count = 1
-        overall_confidence = "low"
+def _default_dimension_scores(
+    dscr: float, roi: float, break_even: float, monthly_revenue: float,
+    location_id: str = "", category_id: str = "", category_name: str = ""
+) -> dict:
+    """
+    Compute dimension scores purely from already-available financial metrics.
 
+    IMPORTANT: This function intentionally does NOT call run_full_market_analysis.
+    Doing so would trigger the full Gemini + Overpass pipeline on every /recommend
+    and /simulate request, adding 10-120 seconds of latency per call.
+
+    Market-derived signals (comp_count, population) use conservative defaults
+    that produce reasonable scores. The /analyze-market endpoint handles the
+    full market intelligence when the user explicitly navigates to that page.
+    """
     net_margin = (roi / 12) if roi > 0 else 0
-    monthly_units = monthly_revenue / 100 # Approx
+    monthly_units = monthly_revenue / 100  # Approximate unit volume
+
+    # Conservative market defaults — better than triggering 120s AI call
+    comp_count = 2       # assume moderate competition
+    pop = 5000           # assume modest addressable population
+    threats_count = 1    # assume one moderate risk
+    overall_confidence = "medium"
 
     return compute_all_dimensions(
         roi=roi,

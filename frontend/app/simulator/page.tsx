@@ -34,38 +34,24 @@ export default function SimulatorPage() {
       return;
     }
 
+    const controller = new AbortController();
+
     const fetchBase = async () => {
       try {
         const res = await api.getRecommendation({
           session_id: state.sessionId!
-        });
+        }, controller.signal);
         setBaseParams(res);
         setLoading(false);
       } catch (err: unknown) {
-        console.warn("API failed, falling back to prototype mock data:", err);
-        setBaseParams({
-          session_id: state.sessionId!,
-          yukti_score: 84,
-          raw_score: 84,
-          confidence_multiplier: 1.0,
-          verdict: "Strong Opportunity",
-          dimension_scores: {
-            financial_viability: 89,
-            repayment_capacity: 92,
-            market_opportunity: 88,
-            capital_efficiency: 91,
-            risk_exposure: 68
-          },
-          dscr: 2.1,
-          roi: 35.5,
-          next_steps: ["Proceed with loan application", "Finalize location"],
-          confidence: "High"
-        });
+        if ((err as any)?.code === "REQUEST_CANCELLED") return;
+        setError("Could not load base financial parameters. Please complete financial planning first.");
         setLoading(false);
       }
     };
 
     fetchBase();
+    return () => controller.abort();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.sessionId, state.categoryId]);
 
@@ -79,25 +65,7 @@ export default function SimulatorPage() {
       });
       setSimResults(res);
     } catch (err: unknown) {
-      console.warn("Simulation API failed, falling back to mock calculation:", err);
-      
-      // Simple mock calculation based on the baseParams and multipliers
-      const mockEmi = 2051;
-      const mockRevenue = 45000 * simParams.demand_multiplier * simParams.price_multiplier;
-      const mockOpex = 18000 * simParams.cost_multiplier;
-      const mockNetProfit = mockRevenue - mockOpex;
-      const mockDscr = mockNetProfit > 0 ? mockNetProfit / mockEmi : 0;
-      const mockRoi = mockNetProfit > 0 ? (mockNetProfit * 12) / 150000 * 100 : 0; // Assuming 150k project cost
-
-      setSimResults({
-        emi: mockEmi,
-        dscr: mockDscr,
-        break_even_units: 350 * simParams.cost_multiplier,
-        verdict: mockDscr >= 1.0 ? "Safe" : "At Risk",
-        net_profit: mockNetProfit,
-        simulated_roi: mockRoi,
-        survives_stress: mockDscr >= 1.0
-      });
+      console.error("Simulation API failed:", err);
     } finally {
       setSimLoading(false);
     }

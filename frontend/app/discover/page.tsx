@@ -194,7 +194,7 @@ export default function DiscoverPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 pb-20 animate-in fade-in duration-500 bg-[#fcfbf8] min-h-screen">
       <TopHeader />
       
-      <div className="mb-6">
+      <div className="mb-6 border-b border-premium-border pb-6">
         <h1 className="text-[32px] font-bold text-forest-deep tracking-tight mb-2">
           Find Your Opportunity
         </h1>

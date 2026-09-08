@@ -65,40 +65,24 @@ export default function ScorePage() {
       return;
     }
 
+    const controller = new AbortController();
+
     const fetchScore = async () => {
       try {
-        const res = await api.getRecommendation({ session_id: state.sessionId! });
+        const res = await api.getRecommendation({ session_id: state.sessionId! }, controller.signal);
         setData(res);
       } catch (err: unknown) {
-        console.warn("API failed, falling back to prototype mock data:", err);
-        setData({
-          session_id: state.sessionId!,
-          yukti_score: 84,
-          raw_score: 84,
-          confidence_multiplier: 1.0,
-          verdict: "Strong Opportunity",
-          dimension_scores: {
-            financial_viability: 89,
-            repayment_capacity: 92,
-            market_opportunity: 88,
-            capital_efficiency: 91,
-            risk_exposure: 68
-          },
-          dscr: 2.1,
-          roi: 35.5,
-          next_steps: [
-            "Proceed with formal loan application under PMEGP", 
-            "Finalize location lease in Solapur South",
-            "Begin procurement of specified E-Rickshaw models"
-          ],
-          confidence: "High"
-        });
+        if ((err as any)?.code === "REQUEST_CANCELLED") return;
+        setError("Could not compute YUKTI Score. Please complete financial planning first.");
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchScore();
+    return () => controller.abort();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.sessionId]);
 

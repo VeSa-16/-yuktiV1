@@ -1,7 +1,15 @@
 """Market Intelligence orchestrator — fully async with concurrent data fetching."""
 import asyncio
+import hashlib
 import httpx
 import logging
+from typing import Optional
+try:
+    from cachetools import TTLCache
+    _market_cache: TTLCache = TTLCache(maxsize=64, ttl=1800)  # 30 min TTL
+except ImportError:
+    # If cachetools is not installed, create a simple dict fallback (no TTL)
+    _market_cache = {}  # type: ignore
 from app.data_layer.retrieval import DataRetrieval
 from app.engines.market_intelligence.market_reach import estimate_market_reach
 from app.engines.market_intelligence.competitor_density import estimate_competitor_density
@@ -14,6 +22,7 @@ from app.api_clients.gemini_client import GeminiClient
 
 logger = logging.getLogger(__name__)
 data_layer = DataRetrieval()
+# Single module-level Gemini singleton — avoids creating a new client per request
 gemini = GeminiClient()
 
 
@@ -146,13 +155,13 @@ async def run_full_market_analysis_async(location_id: str, category_id: str, cat
     # Context string to inject into AI prompts
     user_context = f"User Budget: {budget}. Experience: {experience}. Details: {idea_details}." if budget else ""
 
-    gemini = GeminiClient()
+    gemini_client = gemini  # Use the module-level singleton, not a new instance
     
     # ─── Phase 2: AI inferences in parallel ───────────────────────────────────
     gap_result, swot_result, threats_result = await asyncio.gather(
-        analyze_opportunity_gaps_async(consumer_base, comp_count, category_name, gemini, confidence="Medium", user_context=user_context),
-        generate_swot_async(category_name, comp_count, None, pricing_result, cost_value, demographics, gemini, confidence=overall_confidence, user_context=user_context),
-        assess_threats_async(comp_count, None, category_name, pricing_result, gemini, confidence=overall_confidence, user_context=user_context),
+        analyze_opportunity_gaps_async(consumer_base, comp_count, category_name, gemini_client, confidence="Medium", user_context=user_context),
+        generate_swot_async(category_name, comp_count, None, pricing_result, cost_value, demographics, gemini_client, confidence=overall_confidence, user_context=user_context),
+        assess_threats_async(comp_count, None, category_name, pricing_result, gemini_client, confidence=overall_confidence, user_context=user_context),
     )
 
     # ─── Phase 3: Assemble response ───────────────────────────────────────────
@@ -211,6 +220,28 @@ async def run_full_market_analysis_async(location_id: str, category_id: str, cat
         "threats": threats,
         "overall_confidence": overall_confidence.lower(),
     }
+
+
+async def run_full_market_analysis_async_cached(
+    location_id: str, category_id: str, category_name: str,
+    budget: int = None, experience: str = None, idea_details: str = None
+) -> dict:
+    """Cache-aware wrapper around run_full_market_analysis_async.
+    Results are cached in-memory for 30 minutes per (location_id, category_id).
+    User-specific context (budget, experience) is NOT part of the cache key
+    to maximize hit rate — the base market data is the same for all users.
+    """
+    cache_key = f"{location_id}:{category_id}"
+    if cache_key in _market_cache:
+        logger.info("Market analysis cache HIT for %s", cache_key)
+        return _market_cache[cache_key]
+
+    logger.info("Market analysis cache MISS for %s — running full analysis", cache_key)
+    result = await run_full_market_analysis_async(
+        location_id, category_id, category_name, budget, experience, idea_details
+    )
+    _market_cache[cache_key] = result
+    return result
 
 
 def run_full_market_analysis(location_id: str, category_id: str, category_name: str) -> dict:

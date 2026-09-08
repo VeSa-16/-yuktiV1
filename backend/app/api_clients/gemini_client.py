@@ -3,11 +3,21 @@ import json
 import logging
 import os
 import asyncio
+import hashlib
 from typing import Dict, Any, Optional
 from dotenv import load_dotenv
 
 load_dotenv()
 logger = logging.getLogger(__name__)
+
+# In-memory prompt response cache — eliminates duplicate Gemini calls for
+# identical prompts (e.g., same category cost profile asked multiple times).
+# Keyed on SHA256 of prompt string. Max 256 entries, no TTL (process lifetime).
+_prompt_cache: Dict[str, Any] = {}
+_PROMPT_CACHE_MAX_SIZE = 256
+
+def _cache_key(prompt: str) -> str:
+    return hashlib.sha256(prompt.encode()).hexdigest()[:16]
 
 class GeminiClient:
     """
@@ -40,9 +50,13 @@ class GeminiClient:
         return None
 
     def generate_json(self, prompt: str, schema: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
-        """Synchronous Gemini JSON generation with retry on 503."""
+        """Synchronous Gemini JSON generation with retry on 503 and prompt-level caching."""
         if not self.api_key:
             return None
+        key = _cache_key(prompt)
+        if key in _prompt_cache:
+            logger.debug("Gemini prompt cache HIT (sync)")
+            return _prompt_cache[key]
         for attempt in range(2):
             try:
                 with httpx.Client(timeout=7.0) as client:
@@ -51,7 +65,10 @@ class GeminiClient:
                         json=self._build_payload(prompt, schema)
                     )
                     response.raise_for_status()
-                    return self._parse_response(response.json())
+                    result = self._parse_response(response.json())
+                    if result and len(_prompt_cache) < _PROMPT_CACHE_MAX_SIZE:
+                        _prompt_cache[key] = result
+                    return result
             except httpx.HTTPStatusError as e:
                 if e.response.status_code == 503 and attempt < 2:
                     import time
@@ -66,9 +83,13 @@ class GeminiClient:
         return None
 
     async def generate_json_async(self, prompt: str, schema: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
-        """Async Gemini JSON generation with retry on 503."""
+        """Async Gemini JSON generation with retry on 503 and prompt-level caching."""
         if not self.api_key:
             return None
+        key = _cache_key(prompt)
+        if key in _prompt_cache:
+            logger.debug("Gemini prompt cache HIT (async)")
+            return _prompt_cache[key]
         for attempt in range(2):
             try:
                 async with httpx.AsyncClient(timeout=7.0) as client:
@@ -77,7 +98,10 @@ class GeminiClient:
                         json=self._build_payload(prompt, schema)
                     )
                     response.raise_for_status()
-                    return self._parse_response(response.json())
+                    result = self._parse_response(response.json())
+                    if result and len(_prompt_cache) < _PROMPT_CACHE_MAX_SIZE:
+                        _prompt_cache[key] = result
+                    return result
             except httpx.HTTPStatusError as e:
                 if e.response.status_code == 503 and attempt < 2:
                     wait = 0.5

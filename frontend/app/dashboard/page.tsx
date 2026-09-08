@@ -208,9 +208,9 @@ export default function Dashboard() {
       <DashboardHeader />
       
       {/* Main Greeting */}
-      <div className="mb-8">
+      <div className="mb-8 border-b border-premium-border pb-6">
         <h1 className="text-[32px] font-bold text-forest-deep tracking-tight mb-1">
-          Good evening, {displayFirstName}!
+          {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 18 ? 'Good afternoon' : 'Good evening'}, {displayFirstName}!
         </h1>
         <p className="text-ink-soft font-medium text-lg">
           Here's where your business stands in the local market.

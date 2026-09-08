@@ -24,10 +24,21 @@ class ApiError extends Error {
 async function fetchWithTimeout<T>(
   endpoint: string,
   options: RequestInit,
-  timeoutMs: number
+  timeoutMs: number,
+  externalSignal?: AbortSignal
 ): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  // If the caller passes their own signal (e.g. from useEffect cleanup),
+  // wire it up so aborting that signal also aborts this fetch.
+  if (externalSignal) {
+    if (externalSignal.aborted) {
+      clearTimeout(timer);
+      throw new ApiError("REQUEST_CANCELLED", "Request was cancelled.");
+    }
+    externalSignal.addEventListener("abort", () => controller.abort(), { once: true });
+  }
 
   try {
     const res = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -47,7 +58,12 @@ async function fetchWithTimeout<T>(
     return res.json();
   } catch (err: unknown) {
     if (err instanceof Error && err.name === "AbortError") {
-      throw new ApiError("REQUEST_TIMEOUT", "The request timed out. Please try again.");
+      // Distinguish between timeout and user-initiated cancellation
+      const reason = externalSignal?.aborted ? "REQUEST_CANCELLED" : "REQUEST_TIMEOUT";
+      const msg = reason === "REQUEST_CANCELLED"
+        ? "Request was cancelled."
+        : "The request timed out. Please try again.";
+      throw new ApiError(reason, msg);
     }
     throw err;
   } finally {
@@ -55,8 +71,10 @@ async function fetchWithTimeout<T>(
   }
 }
 
+export { ApiError };
+
 export class ApiClient {
-  static async post<T>(endpoint: string, body: unknown, timeoutMs = STANDARD_TIMEOUT_MS): Promise<T> {
+  static async post<T>(endpoint: string, body: unknown, timeoutMs = STANDARD_TIMEOUT_MS, signal?: AbortSignal): Promise<T> {
     return fetchWithTimeout<T>(
       endpoint,
       {
@@ -64,15 +82,17 @@ export class ApiClient {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       },
-      timeoutMs
+      timeoutMs,
+      signal
     );
   }
 
-  static async get<T>(endpoint: string, timeoutMs = STANDARD_TIMEOUT_MS): Promise<T> {
+  static async get<T>(endpoint: string, timeoutMs = STANDARD_TIMEOUT_MS, signal?: AbortSignal): Promise<T> {
     return fetchWithTimeout<T>(
       endpoint,
       { method: "GET" },
-      timeoutMs
+      timeoutMs,
+      signal
     );
   }
 }
@@ -243,27 +263,27 @@ export interface ReportResponse {
 // ─── API methods ─────────────────────────────────────────────────────────────
 
 export const api = {
-  createProfile: (data: { name: string; location_input: string; language: string }) =>
-    ApiClient.post<ProfileResponse>("/profile", data),
+  createProfile: (data: { name: string; location_input: string; language: string }, signal?: AbortSignal) =>
+    ApiClient.post<ProfileResponse>("/profile", data, undefined, signal),
 
-  rankOpportunities: (data: { session_id: string; location_id: string; margin_capital: number }) =>
-    ApiClient.post<RankResponse>("/rank-opportunities", data),
+  rankOpportunities: (data: { session_id: string; location_id: string; margin_capital: number }, signal?: AbortSignal) =>
+    ApiClient.post<RankResponse>("/rank-opportunities", data, undefined, signal),
 
-  analyzeMarket: (data: { session_id: string; location_id: string; category_id: string; category_name?: string; budget?: number; experience?: string; idea_details?: string }) =>
-    ApiClient.post<MarketResponse>("/analyze-market", data, AI_TIMEOUT_MS),
+  analyzeMarket: (data: { session_id: string; location_id: string; category_id: string; category_name?: string; budget?: number; experience?: string; idea_details?: string }, signal?: AbortSignal) =>
+    ApiClient.post<MarketResponse>("/analyze-market", data, AI_TIMEOUT_MS, signal),
 
-  calculateFinance: (data: { session_id: string }) =>
-    ApiClient.post<FinanceResponse>("/calculate-finance", data),
+  calculateFinance: (data: { session_id: string }, signal?: AbortSignal) =>
+    ApiClient.post<FinanceResponse>("/calculate-finance", data, undefined, signal),
 
-  getRecommendation: (data: { session_id: string }) =>
-    ApiClient.post<RecommendResponse>("/recommend", data),
+  getRecommendation: (data: { session_id: string }, signal?: AbortSignal) =>
+    ApiClient.post<RecommendResponse>("/recommend", data, undefined, signal),
 
   simulate: (data: {
     session_id: string;
     revenue_delta_pct: number;
     cost_delta_pct: number;
     tenure_override_years?: number | null;
-  }) => ApiClient.post<SimulateResponse>("/simulate", data),
+  }, signal?: AbortSignal) => ApiClient.post<SimulateResponse>("/simulate", data, undefined, signal),
 
   explain: (data: { session_id: string; question: string; language?: string }) =>
     ApiClient.post<ExplainResponse>("/explain", data, AI_TIMEOUT_MS),

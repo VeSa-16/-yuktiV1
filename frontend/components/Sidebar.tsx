@@ -8,7 +8,7 @@ import {
   FileText, CheckSquare, Folder, HelpCircle, MapPin, ChevronDown, User, 
   BarChart, ListOrdered, FileArchive, Menu, PanelLeftClose
 } from 'lucide-react';
-import { YuktiLogo } from '@/components/YuktiLogo';
+import Image from 'next/image';
 
 const dict: Record<string, Record<string, string>> = {
   EN: {
@@ -114,10 +114,13 @@ export function Sidebar() {
       
       <div className="p-6 pt-8 flex items-center mb-6">
         <Link href="/" className="flex items-center space-x-3 group">
-          <img
+          <Image
             src="/yukti-logo-transparent.png"
             alt="YUKTI Logo"
-            className="h-16 w-16 object-contain -mt-1 transition-transform group-hover:scale-105 drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)]"
+            width={64}
+            height={64}
+            className="object-contain -mt-1 transition-transform group-hover:scale-105 drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)]"
+            priority
           />
           <div className="flex flex-col justify-center">
             <span className="font-display font-bold text-4xl text-forest-deep tracking-tight leading-none group-hover:text-[#ea580c] transition-colors">YUKTI</span>

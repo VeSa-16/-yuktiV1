@@ -29,7 +29,13 @@ def parse_date(date_str):
         return None
 
 def seed_database(db: DBSession):
-    """Insert demo data if tables are empty. Idempotent."""
+    """Insert demo data if tables are empty. Idempotent.
+    Uses a fast single-table check as an early-exit guard to avoid
+    running 8 count queries on every uvicorn --reload in development.
+    """
+    # Fast early-exit: if categories are already seeded, nothing to do
+    if db.query(BusinessCategory).count() > 0:
+        return
     
     # 1. Data Sources
     if db.query(Source).count() == 0:

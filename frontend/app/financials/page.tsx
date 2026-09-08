@@ -2,15 +2,29 @@
 import React, { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
 import { api, FinanceResponse } from "@/lib/api-client";
-import {
-  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, ReferenceLine, LineChart, Line, Cell
-} from "recharts";
+import dynamic from "next/dynamic";
 import {
   IndianRupee, TrendingUp, TrendingDown, AlertTriangle, Loader2,
-  CheckCircle, Info, CreditCard, BarChart3, CalendarDays, Target,
-  ShieldAlert, Wallet, Clock, ArrowRight
+  CheckCircle, CreditCard, BarChart3, CalendarDays, Target,
+  ShieldAlert, Wallet, Clock, ArrowRight, Info
 } from "lucide-react";
+
+// Lazy-load Recharts — it's a heavy library (~100KB gzipped) that shouldn't
+// block the initial page render. Each chart component loads on demand.
+const AreaChart = dynamic(() => import("recharts").then((m) => ({ default: m.AreaChart })), { ssr: false });
+const Area = dynamic(() => import("recharts").then((m) => ({ default: m.Area })), { ssr: false });
+const BarChart = dynamic(() => import("recharts").then((m) => ({ default: m.BarChart })), { ssr: false });
+const Bar = dynamic(() => import("recharts").then((m) => ({ default: m.Bar })), { ssr: false });
+const LineChart = dynamic(() => import("recharts").then((m) => ({ default: m.LineChart })), { ssr: false });
+const Line = dynamic(() => import("recharts").then((m) => ({ default: m.Line })), { ssr: false });
+const XAxis = dynamic(() => import("recharts").then((m) => ({ default: m.XAxis })), { ssr: false });
+const YAxis = dynamic(() => import("recharts").then((m) => ({ default: m.YAxis })), { ssr: false });
+const CartesianGrid = dynamic(() => import("recharts").then((m) => ({ default: m.CartesianGrid })), { ssr: false });
+const Tooltip = dynamic(() => import("recharts").then((m) => ({ default: m.Tooltip })), { ssr: false });
+const ResponsiveContainer = dynamic(() => import("recharts").then((m) => ({ default: m.ResponsiveContainer })), { ssr: false });
+const ReferenceLine = dynamic(() => import("recharts").then((m) => ({ default: m.ReferenceLine })), { ssr: false });
+const Cell = dynamic(() => import("recharts").then((m) => ({ default: m.Cell })), { ssr: false });
+
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
@@ -274,7 +288,11 @@ const PnlTab = ({ data }: { data: FinanceResponse }) => {
 
 const BreakEvenTab = ({ data }: { data: FinanceResponse }) => {
   const dailyUnits = Math.ceil(data.break_even_units / 26);
-  const pct = Math.min(100, Math.round((data.break_even_units / (data.monthly_revenue / 100)) * 100));
+  // Protect against division by zero if monthly_revenue is 0
+  const monthlyUnits = data.monthly_revenue > 0 ? (data.monthly_revenue / 100) : 1;
+  const pct = data.monthly_revenue > 0 
+    ? Math.min(100, Math.round((data.break_even_units / monthlyUnits) * 100))
+    : 0;
 
   return (
     <div className="animate-in fade-in duration-300">
@@ -568,18 +586,26 @@ export default function FinancialsPage() {
   const [data, setData] = useState<FinanceResponse | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
     async function load() {
       if (!sessionId) { setLoading(false); return; }
       try {
-        const res = await api.calculateFinance({ session_id: sessionId });
+        const res = await api.calculateFinance({ session_id: sessionId }, controller.signal);
         setData(res);
       } catch (e: any) {
-        setError(e?.message || "Failed to load financial data.");
+        // Ignore cancellation errors from navigation — they're expected
+        if (e?.code !== "REQUEST_CANCELLED") {
+          setError(e?.message || "Failed to load financial data.");
+        }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     }
     load();
+    // Cancel the fetch if the user navigates away before it completes
+    return () => controller.abort();
   }, [sessionId]);
 
   if (loading) {
@@ -608,7 +634,7 @@ export default function FinancialsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 pb-24 bg-[#fcfbf8] min-h-screen">
       {/* Page Header */}
-      <div className="mb-8">
+      <div className="mb-8 border-b border-premium-border pb-6">
         <h1 className="text-[32px] font-bold text-forest-deep tracking-tight mb-1">Financial Analysis</h1>
         <p className="text-ink-soft font-medium">
           Complete financial model for your business — projections, EMI, P&L, and more.

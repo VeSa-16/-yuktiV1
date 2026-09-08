@@ -417,6 +417,7 @@ export default function MarketIntelligencePage({ params }: { params: { categoryI
   const [data, setData] = useState<MarketResponse | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
     async function fetchData() {
       if (!sessionId || !locationId) {
         setLoading(false);
@@ -435,17 +436,22 @@ export default function MarketIntelligencePage({ params }: { params: { categoryI
           budget: marginCapital || undefined,
           experience: experience || undefined,
           idea_details: ideaDetails || undefined,
-        });
+        }, controller.signal);
         setData(res);
       } catch (err: any) {
+        // Silently ignore navigation cancellations
+        if (err?.code === "REQUEST_CANCELLED") return;
         console.error(err);
         const errorMsg = "Error: " + (err?.message || JSON.stringify(err) || String(err));
         setError(errorMsg);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     }
     fetchData();
+    return () => controller.abort();
   }, [sessionId, locationId, params.categoryId]);
 
   if (loading) {
@@ -509,7 +515,7 @@ export default function MarketIntelligencePage({ params }: { params: { categoryI
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 pb-20 animate-in fade-in duration-500 bg-[#fcfbf8] min-h-screen">
       <TopHeader />
-      <h1 className="text-[32px] font-bold text-forest-deep tracking-tight mb-6">
+      <h1 className="text-[32px] font-bold text-forest-deep tracking-tight mb-6 border-b border-premium-border pb-6">
         Market Intelligence
       </h1>
       
