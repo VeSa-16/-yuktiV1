@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useStore } from '@/lib/store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle2, Circle, FileText, Download, Building, ShieldCheck, ArrowRight } from 'lucide-react';
-import { ProgressStepper } from '@/components/ProgressStepper';
 import { YuktiInsight } from '@/components/YuktiInsight';
 
 export default function DocumentsPage() {
@@ -27,8 +26,6 @@ export default function DocumentsPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8 text-warm-text animate-in fade-in duration-500">
-      <ProgressStepper />
-      
       <div className="mb-8 mt-6 border-b border-warm-border pb-6 flex flex-col md:flex-row justify-between md:items-end">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Financing Readiness</h1>

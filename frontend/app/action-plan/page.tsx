@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useStore } from '@/lib/store';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle2, Circle, Trophy, Calendar, Target, Flag, ArrowRight } from 'lucide-react';
-import { ProgressStepper } from '@/components/ProgressStepper';
 import { YuktiInsight } from '@/components/YuktiInsight';
 
 const planMilestones = [
@@ -60,8 +59,6 @@ export default function ActionPlan() {
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8 text-warm-text animate-in fade-in duration-500">
-      <ProgressStepper />
-      
       <div className="mb-8 mt-6 flex flex-col md:flex-row justify-between md:items-end">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">90-Day Execution Plan</h1>

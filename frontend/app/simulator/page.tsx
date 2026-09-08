@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useStore } from "@/lib/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ProgressStepper } from "@/components/ProgressStepper";
+
 import { api, type RecommendResponse, type SimulateResponse } from "@/lib/api-client";
 import { Loader2, TrendingUp, AlertTriangle, ArrowRight, Settings2, BarChart4, ArrowDown, ArrowUp, Activity } from "lucide-react";
 import { motion } from "framer-motion";
@@ -106,7 +106,6 @@ export default function SimulatorPage() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto mt-10">
-        <ProgressStepper />
         <div className="h-64 flex justify-center items-center">
           <Loader2 size={48} className="animate-spin text-warm-primary" />
         </div>
@@ -125,8 +124,6 @@ export default function SimulatorPage() {
       transition={{ duration: 0.5 }}
       className="max-w-5xl mx-auto p-4 md:p-8 pb-20 font-sans"
     >
-      <ProgressStepper />
-      
       <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-8 gap-4 border-b border-warm-border pb-6 mt-4">
         <div>
           <h1 className="text-3xl font-bold text-warm-text flex items-center">

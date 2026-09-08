@@ -115,13 +115,13 @@ export function Sidebar() {
       <div className="p-6 pt-8 flex items-center mb-6">
         <Link href="/" className="flex items-center space-x-3 group">
           <img
-            src="/india-emblem.png"
-            alt="Government of India"
-            className="h-12 w-12 object-contain transition-transform group-hover:scale-105"
+            src="/yukti-logo-transparent.png"
+            alt="YUKTI Logo"
+            className="h-16 w-16 object-contain -mt-1 transition-transform group-hover:scale-105 drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)]"
           />
           <div className="flex flex-col justify-center">
-            <span className="font-display font-bold text-3xl text-forest-deep tracking-tight leading-none group-hover:text-[#ea580c] transition-colors">YUKTI</span>
-            <span className="text-[10px] font-bold text-ink-soft uppercase tracking-[0.2em] mt-1">Government of India Initiative</span>
+            <span className="font-display font-bold text-4xl text-forest-deep tracking-tight leading-none group-hover:text-[#ea580c] transition-colors">YUKTI</span>
+            <span className="text-xs font-bold text-ink-soft uppercase tracking-[0.2em] mt-1">Government of India Initiative</span>
           </div>
         </Link>
       </div>

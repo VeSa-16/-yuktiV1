@@ -4,6 +4,7 @@ import "./globals.css";
 import { StoreProvider } from "@/lib/store";
 import { CopilotOverlay } from "@/components/CopilotOverlay";
 import { Sidebar } from "@/components/Sidebar";
+import NextTopLoader from 'nextjs-toploader';
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -39,6 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning className={`${fraunces.variable} ${jakarta.variable} font-sans min-h-screen bg-[#fdfbf6] text-ink antialiased flex flex-col`}>
+        <NextTopLoader color="#ea580c" showSpinner={false} shadow="0 0 10px #ea580c,0 0 5px #ea580c" />
         <StoreProvider>
           <div className="flex min-h-screen w-full">
             <Sidebar />
@@ -47,6 +49,11 @@ export default function RootLayout({
             <div className="flex-1 flex flex-col min-h-screen w-full">
               {/* Mobile Header (Hidden on Desktop) */}
               <header className="md:hidden bg-white h-14 flex items-center px-4 border-b border-premium-border shadow-sm shrink-0">
+                <img
+                  src="/yukti-logo-transparent.png"
+                  alt="YUKTI Logo"
+                  className="h-8 w-8 object-contain mr-2 drop-shadow-sm -mt-0.5"
+                />
                 <span className="text-xl font-bold tracking-tight text-[#ea580c]">YUKTI</span>
               </header>
 

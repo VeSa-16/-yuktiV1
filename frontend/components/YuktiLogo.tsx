@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function YuktiLogo({ className = "w-8 h-8" }: { className?: string }) {
+export function YuktiLogo({ className = "w-12 h-12" }: { className?: string }) {
   return (
     <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
       <g transform="translate(5, 5) scale(0.9)">

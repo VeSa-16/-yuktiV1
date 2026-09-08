@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ProgressStepper } from "@/components/ProgressStepper";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SourceTooltip } from "@/components/SourceTooltip";
@@ -47,9 +46,7 @@ export default function CategoryDeepDivePage({ params }: { params: { categoryId:
 
  if (loading) {
  return (
- <div className="max-w-5xl mx-auto mt-10">
- <ProgressStepper />
- <div className="h-64 flex flex-col items-center justify-center space-y-4">
+ <div className="max-w-5xl mx-auto mt-10"> <div className="h-64 flex flex-col items-center justify-center space-y-4">
  <Loader2 size={48} className="animate-spin text-warm-primary" />
  <p className="text-warm-primary font-sans animate-pulse">Gathering market intelligence...</p>
  </div>
@@ -79,10 +76,7 @@ export default function CategoryDeepDivePage({ params }: { params: { categoryId:
  animate={{ opacity: 1, y: 0 }}
  transition={{ duration: 0.5 }}
  className="max-w-5xl mx-auto mt-10 pb-20"
- >
- <ProgressStepper />
- 
- <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-8 gap-4 border-b border-warm-border pb-4">
+ > <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-8 gap-4 border-b border-warm-border pb-4">
  <div>
  <h1 className="text-2xl font-sans text-warm-text tracking-widest uppercase">{data.category_name}</h1>
  <p className="text-warm-primary mt-2 text-xs font-sans">MARKET INTELLIGENCE // LOC: {state.locationName}</p>

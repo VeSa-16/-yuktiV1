@@ -33,7 +33,7 @@ export function YuktiInsight({ title = "YUKTI INSIGHT", message, type = 'termina
       case 'positive': return <TrendingUp size={16} className="mr-2 flex-shrink-0" />;
       case 'warning': return <AlertTriangle size={16} className="mr-2 flex-shrink-0" />;
       case 'terminal':
-      default: return <Bot size={16} className="mr-2 flex-shrink-0" />;
+      default: return <img src="/yukti-logo-transparent.png" alt="YUKTI Insight" className="w-4 h-4 mr-2 object-contain flex-shrink-0" />;
     }
   };
 

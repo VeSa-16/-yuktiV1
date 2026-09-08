@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useStore } from "@/lib/store";
 import { api, type RecommendResponse } from "@/lib/api-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ProgressStepper } from "@/components/ProgressStepper";
 import { ScoreDial } from "@/components/ScoreDial";
 import { VerdictBanner } from "@/components/VerdictBanner";
 import {
@@ -106,7 +105,6 @@ export default function ScorePage() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto mt-10">
-        <ProgressStepper />
         <div className="h-64 flex flex-col items-center justify-center space-y-4">
           <Loader2 size={48} className="animate-spin text-warm-primary" />
           <p className="text-warm-primary font-sans animate-pulse font-medium">
@@ -120,7 +118,6 @@ export default function ScorePage() {
   if (error || !data) {
     return (
       <div className="max-w-4xl mx-auto mt-10 p-4">
-        <ProgressStepper />
         <Card className="border-red-200 bg-red-50 mt-6">
           <CardContent className="p-8 text-center">
             <AlertTriangle className="mx-auto text-red-500 mb-4" size={48} />
@@ -154,8 +151,6 @@ export default function ScorePage() {
       transition={{ duration: 0.4 }}
       className="max-w-5xl mx-auto p-4 md:p-8 pb-20 font-sans text-warm-text"
     >
-      <ProgressStepper />
-
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 border-b border-warm-border pb-4 mt-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">YUKTI Score</h1>

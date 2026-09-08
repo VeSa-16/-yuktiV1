@@ -73,8 +73,8 @@ export function OnboardingFlow({ onCancel, onComplete }: OnboardingFlowProps) {
       <header className="w-full bg-white border-b border-premium-border/50 py-4 px-6 flex justify-between items-center z-10 sticky top-0 shadow-sm">
         <div className="flex items-center cursor-pointer group" onClick={onCancel}>
           <img
-            src="/india-emblem.png"
-            alt="Government of India"
+            src="/yukti-logo-transparent.png"
+            alt="YUKTI Logo"
             className="h-10 w-10 object-contain mr-3 transition-transform group-hover:scale-105"
           />
           <div className="flex flex-col justify-center">

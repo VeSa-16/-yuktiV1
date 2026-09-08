@@ -93,8 +93,8 @@ export function CopilotOverlay() {
             <div className="bg-warm-primary p-4 text-warm-text flex justify-between items-center shadow-sm z-10">
               <div className="flex items-center space-x-2">
                 <img
-                  src="/india-emblem.png"
-                  alt="Government of India"
+                  src="/yukti-logo-transparent.png"
+                  alt="YUKTI Logo"
                   className="h-7 w-7 object-contain"
                 />
                 <div className="flex flex-col justify-center">

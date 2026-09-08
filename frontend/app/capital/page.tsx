@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ProgressStepper } from "@/components/ProgressStepper";
 import { useStore } from "@/lib/store";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
@@ -35,7 +34,6 @@ export default function CapitalPage() {
  className="flex-1 flex flex-col items-center justify-center p-4"
  >
  <div className="w-full max-w-2xl mb-8">
- <ProgressStepper />
  </div>
 
  <motion.div 

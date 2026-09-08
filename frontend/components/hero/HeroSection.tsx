@@ -55,12 +55,12 @@ export function HeroSection({ onStartEntrepreneur }: HeroSectionProps) {
               }}
               className="max-w-2xl relative z-20"
             >
-              <motion.h1 variants={titleVariants} className="font-display font-bold text-4xl lg:text-5xl xl:text-[52px] text-forest-deep leading-tight mb-8 tracking-tight">
+              <motion.h1 variants={titleVariants} className="font-display font-bold text-5xl lg:text-6xl xl:text-[64px] text-forest-deep leading-tight mb-8 tracking-tight">
                 Don’t just start a business.<br />
                 <span className="text-[#ea580c]">Start the right one.</span>
               </motion.h1>
               
-              <motion.h3 variants={titleVariants} className="text-xl md:text-2xl text-forest-deep font-bold mb-3 tracking-tight">
+              <motion.h3 variants={titleVariants} className="text-2xl md:text-3xl text-forest-deep font-bold mb-3 tracking-tight">
                 Before you invest, know if it can work.
               </motion.h3>
 
