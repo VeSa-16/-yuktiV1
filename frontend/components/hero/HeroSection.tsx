@@ -55,11 +55,15 @@ export function HeroSection({ onStartEntrepreneur }: HeroSectionProps) {
               }}
               className="max-w-2xl relative z-20"
             >
-              <motion.h1 variants={titleVariants} className="font-display font-bold text-4xl lg:text-5xl xl:text-[52px] text-forest-deep leading-tight mb-4 tracking-tight">
-                Know what business works.<br />
-                <span className="text-[#ea580c]">Know what</span> it <span className="text-[#ea580c]">takes</span> to <span className="text-[#ea580c]">build it</span>.
+              <motion.h1 variants={titleVariants} className="font-display font-bold text-4xl lg:text-5xl xl:text-[52px] text-forest-deep leading-tight mb-8 tracking-tight">
+                Don’t just start a business.<br />
+                <span className="text-[#ea580c]">Start the right one.</span>
               </motion.h1>
               
+              <motion.h3 variants={titleVariants} className="text-xl md:text-2xl text-forest-deep font-bold mb-3 tracking-tight">
+                Before you invest, know if it can work.
+              </motion.h3>
+
               <motion.p variants={titleVariants} className="text-base text-ink-soft mb-5 font-medium leading-relaxed max-w-lg">
                 YUKTI helps aspiring entrepreneurs discover viable local business opportunities, understand market conditions, and build a practical business plan.
               </motion.p>
