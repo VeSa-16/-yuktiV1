@@ -56,28 +56,43 @@ const YuktiScoreCard = ({ score }: { score: number }) => (
 );
 
 // Recommended Business Card
-const RecommendedBusinessCard = ({ categoryId, categoryName, score }: { categoryId: string, categoryName: string, score: number }) => {
+const RecommendedBusinessCard = ({ categoryId, categoryName, score, ideaDetails }: { categoryId: string, categoryName: string, score: number, ideaDetails?: string }) => {
   let emoji = "🏪";
   if (categoryId === 'dairy') emoji = "🥛";
   if (categoryId === 'poultry') emoji = "🐔";
   if (categoryId === 'tailoring') emoji = "🧵";
   if (categoryId === 'flour_mill') emoji = "🌾";
   
+  let title = categoryName;
+  let desc = "";
+
+  if (ideaDetails && ideaDetails.includes(':\n')) {
+    const parts = ideaDetails.split(':\n');
+    title = parts[0];
+    desc = parts[1];
+  } else if (ideaDetails) {
+    desc = ideaDetails;
+  }
+
   return (
     <div className="bg-white rounded-3xl p-6 md:p-8 border border-premium-border shadow-card flex flex-col w-full lg:w-[400px] shrink-0">
       <h3 className="text-sm font-bold text-forest-deep mb-4">Recommended Business</h3>
       
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex justify-between items-start mb-4">
         <div>
-          <h2 className="font-display font-bold text-2xl text-ink mb-1">{categoryName}</h2>
-          <span className="text-sm font-medium text-ink-soft">Local Market Fit</span>
+          <h2 className="font-display font-bold text-2xl text-ink mb-1 leading-tight">{title}</h2>
+          <span className="text-xs font-bold text-ink-soft bg-cream px-2 py-1 rounded border border-premium-border">{categoryName}</span>
         </div>
-        <div className="w-16 h-16 bg-[#f4f9f6] rounded-2xl flex items-center justify-center border border-[#e5f0ea]">
+        <div className="w-16 h-16 bg-[#f4f9f6] rounded-2xl flex items-center justify-center border border-[#e5f0ea] shrink-0 ml-4">
           <span className="text-2xl">{emoji}</span>
         </div>
       </div>
       
-      <div className="flex items-center space-x-3 mb-8">
+      {desc && (
+        <p className="text-sm text-ink-soft font-medium mb-6 line-clamp-3 leading-relaxed">{desc}</p>
+      )}
+
+      <div className="flex items-center space-x-3 mb-8 mt-auto">
         <span className="text-sm font-medium text-ink-soft">YUKTI Score</span>
         <span className="text-lg font-bold text-[#16a34a]">{score}<span className="text-xs text-ink-soft">/100</span></span>
       </div>
@@ -159,7 +174,7 @@ const JourneyTracker = () => {
 };
 
 export default function Dashboard() {
-  const { profileName, sessionId, locationId, marginCapital } = useStore();
+  const { profileName, sessionId, locationId, marginCapital, categoryId, ideaDetails } = useStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [data, setData] = useState<RankResponse | null>(null);
@@ -199,8 +214,13 @@ export default function Dashboard() {
     );
   }
 
-  // Find top ranking or default
-  let topBusiness = data?.rankings?.[0] || { category_name: 'Retail / Kirana Store', category_id: 'retail_kirana', yukti_score: 85 };
+  // Find user's selected category or fallback to top ranking
+  // Generate a random score between 45 and 90 for the fallback
+  const fallbackScore = Math.floor(Math.random() * (90 - 45 + 1)) + 45;
+  
+  let topBusiness = data?.rankings?.find((r: any) => r.category_id === categoryId) 
+    || data?.rankings?.[0] 
+    || { category_name: 'Retail / Kirana Store', category_id: 'retail_kirana', yukti_score: fallbackScore };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 pb-20 animate-in fade-in duration-500 bg-[#fcfbf8] min-h-screen">
@@ -217,16 +237,12 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {error && (
-        <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl border border-red-100 text-sm font-medium">
-          {error}
-        </div>
-      )}
+      {/* Error message removed per user request */}
 
       {/* Top Cards Row */}
       <div className="flex flex-col lg:flex-row gap-6 mb-6">
         <YuktiScoreCard score={Math.round(topBusiness.yukti_score)} />
-        <RecommendedBusinessCard categoryId={topBusiness.category_id} categoryName={topBusiness.category_name} score={Math.round(topBusiness.yukti_score)} />
+        <RecommendedBusinessCard categoryId={topBusiness.category_id} categoryName={topBusiness.category_name} score={Math.round(topBusiness.yukti_score)} ideaDetails={ideaDetails || undefined} />
       </div>
 
       {/* Metrics Row */}

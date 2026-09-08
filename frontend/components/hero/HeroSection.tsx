@@ -6,6 +6,7 @@ import { HeroIntelligencePanel } from './HeroIntelligencePanel';
 import { HeroFeatureStrip } from './HeroFeatureStrip';
 import { ArrowRight } from 'lucide-react';
 import { motion, useReducedMotion, Variants } from 'framer-motion';
+import Link from 'next/link';
 
 interface HeroSectionProps {
   onStartEntrepreneur: () => void;
@@ -75,11 +76,13 @@ export function HeroSection({ onStartEntrepreneur }: HeroSectionProps) {
                 >
                   Start My Business Journey <ArrowRight size={18} className="ml-2" />
                 </button>
-                <button 
-                  className="bg-white/50 backdrop-blur-sm hover:bg-white text-forest-deep border border-forest px-8 py-3.5 rounded-full text-sm font-bold flex items-center justify-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-forest shadow-sm"
-                >
-                  See How It Works
-                </button>
+                <Link href="/how-it-works" passHref legacyBehavior>
+                  <a 
+                    className="bg-white/50 backdrop-blur-sm hover:bg-white text-forest-deep border border-forest px-8 py-3.5 rounded-full text-sm font-bold flex items-center justify-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-forest shadow-sm"
+                  >
+                    See How It Works
+                  </a>
+                </Link>
               </motion.div>
             </motion.div>
           </div>

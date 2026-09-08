@@ -3,8 +3,25 @@ import Link from 'next/link';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { usePathname } from 'next/navigation';
+
 export function HeroNavbar({ onGetStarted }: { onGetStarted: () => void }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const getDesktopLinkClass = (path: string) => {
+    const isActive = pathname === path;
+    return `font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron rounded ${
+      isActive ? 'text-saffron font-bold' : 'text-ink-soft hover:text-ink'
+    }`;
+  };
+
+  const getMobileLinkClass = (path: string) => {
+    const isActive = pathname === path;
+    return `block px-3 py-3 rounded-md text-base ${
+      isActive ? 'font-bold text-saffron' : 'font-medium text-ink hover:bg-cream'
+    }`;
+  };
 
   return (
     <nav className="w-full absolute top-0 left-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-premium-border/50">
@@ -26,10 +43,10 @@ export function HeroNavbar({ onGetStarted }: { onGetStarted: () => void }) {
 
           {/* Desktop Center Nav */}
           <div className="hidden md:flex space-x-8">
-            <Link href="/" className="text-saffron font-bold text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron rounded">Home</Link>
-            <Link href="/how-it-works" className="text-ink-soft hover:text-ink font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron rounded">How It Works</Link>
-            <Link href="/about" className="text-ink-soft hover:text-ink font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron rounded">About</Link>
-            <Link href="/support" className="text-ink-soft hover:text-ink font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron rounded">Support</Link>
+            <Link href="/" className={getDesktopLinkClass('/')}>Home</Link>
+            <Link href="/how-it-works" className={getDesktopLinkClass('/how-it-works')}>How It Works</Link>
+            <Link href="/about" className={getDesktopLinkClass('/about')}>About</Link>
+            <Link href="/support" className={getDesktopLinkClass('/support')}>Support</Link>
           </div>
 
           {/* Desktop Right Nav */}
@@ -71,10 +88,10 @@ export function HeroNavbar({ onGetStarted }: { onGetStarted: () => void }) {
             className="md:hidden absolute top-24 left-4 right-4 bg-white rounded-2xl border border-premium-border shadow-card z-40"
           >
             <div className="px-4 pt-2 pb-6 space-y-2 flex flex-col">
-              <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 rounded-md text-base font-bold text-saffron">Home</Link>
-              <Link href="/how-it-works" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 rounded-md text-base font-medium text-ink hover:bg-cream">How It Works</Link>
-              <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 rounded-md text-base font-medium text-ink hover:bg-cream">About</Link>
-              <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 rounded-md text-base font-medium text-ink hover:bg-cream">Support</Link>
+              <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className={getMobileLinkClass('/')}>Home</Link>
+              <Link href="/how-it-works" onClick={() => setIsMobileMenuOpen(false)} className={getMobileLinkClass('/how-it-works')}>How It Works</Link>
+              <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className={getMobileLinkClass('/about')}>About</Link>
+              <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className={getMobileLinkClass('/support')}>Support</Link>
               
               <div className="pt-4 mt-2 border-t border-premium-border-strong flex justify-between items-center px-3">
                 <button className="flex items-center text-ink-soft text-sm font-bold bg-cream px-3 py-2 rounded-lg border border-premium-border">

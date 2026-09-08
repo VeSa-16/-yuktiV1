@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api-client";
 import { useStore } from "@/lib/store";
@@ -10,8 +10,10 @@ export default function ReportPage() {
   const router = useRouter();
   const state = useStore();
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
   const [html, setHtml] = useState("");
   const [error, setError] = useState("");
+  const reportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!state.sessionId) {
@@ -33,7 +35,32 @@ export default function ReportPage() {
     };
 
     fetchReport();
-  }, [state, router]);
+  }, [state.sessionId, router]);
+
+  const handleDownload = async () => {
+    if (!reportRef.current) return;
+    try {
+      setDownloading(true);
+      // Dynamically import html2pdf to avoid Next.js SSR window issues
+      const html2pdf = (await import('html2pdf.js')).default;
+      
+      const opt = {
+        margin:       10,
+        filename:     `YUKTI_DPR_${state.categoryName || 'Report'}.pdf`.replace(/[^a-z0-9]/gi, '_'),
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      await html2pdf().set(opt).from(reportRef.current).save();
+    } catch (err) {
+      console.error("Error generating PDF:", err);
+      alert("Failed to download PDF. Falling back to print dialog.");
+      window.print();
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -54,12 +81,17 @@ export default function ReportPage() {
     <div className="max-w-4xl mx-auto mt-6 pb-20 font-sans">
       <div className="flex justify-between items-center mb-6 border-b border-warm-border pb-4 print:hidden">
         <h1 className="text-3xl font-bold text-warm-text">System Execution Report</h1>
-        <Button onClick={() => window.print()} className="bg-warm-primary hover:bg-orange-600 text-warm-text font-bold text-sm shadow-md transition-all">
-          <Download size={16} className="mr-2" /> Export PDF
+        <Button 
+          onClick={handleDownload} 
+          disabled={downloading}
+          className="bg-warm-primary hover:bg-orange-600 text-warm-text font-bold text-sm shadow-md transition-all"
+        >
+          {downloading ? <Loader2 size={16} className="animate-spin mr-2" /> : <Download size={16} className="mr-2" />}
+          {downloading ? 'Generating PDF...' : 'Export PDF'}
         </Button>
       </div>
       
-      <div className="bg-white text-slate-800 p-8 md:p-16 min-h-[1056px] shadow-lg rounded-2xl border border-warm-border print:shadow-none print:border-none print:p-0">
+      <div ref={reportRef} className="bg-white text-slate-800 p-8 md:p-16 min-h-[1056px] shadow-lg rounded-2xl border border-warm-border print:shadow-none print:border-none print:p-0">
         
         {/* Cover Page */}
         <div className="flex flex-col justify-center min-h-[800px] print:min-h-[100vh] border-b-4 border-warm-primary mb-12 pb-12">
