@@ -311,6 +311,7 @@
       "compFound": "Found {count} competitors within 5km radius."
     },
     "map": {
+      "title": "Catchment & Market Competition Map",
       "legend": {
         "competitors": "Competitors",
         "customers": "Target Clusters",

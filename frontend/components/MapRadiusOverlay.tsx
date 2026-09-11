@@ -25,19 +25,27 @@ export function MapRadiusOverlay({ lat, lng, radiusKm, competitors = [] }: MapPr
   const [showZones, setShowZones] = useState(true);
 
   return (
-    <div className="w-full h-64 rounded-none overflow-hidden border border-warm-border z-0 relative grayscale">
+    <div className="w-full h-full rounded-2xl overflow-hidden border border-warm-border z-0 relative">
       
       {/* Interactive Layer Toggles */}
-      <div className="absolute top-2 right-2 z-[400] flex flex-col gap-2">
+      <div className="absolute top-3 right-3 z-[400] flex flex-col gap-1.5">
         <button 
           onClick={() => setShowCompetitors(!showCompetitors)}
-          className={`px-3 py-1 text-[10px] uppercase font-sans tracking-widest border transition-colors ${showCompetitors ? 'bg-red-600/20 border-red-600 text-red-600' : 'bg-warm-bg/50 border-warm-border text-warm-muted'}`}
+          className={`px-3 py-1.5 rounded-lg text-[11px] font-medium tracking-wide border shadow-sm backdrop-blur-sm transition-all ${
+            showCompetitors 
+              ? 'bg-red-50/95 border-red-400 text-red-700 font-semibold' 
+              : 'bg-white/90 border-slate-300 text-slate-600 hover:bg-white'
+          }`}
         >
           {showCompetitors ? 'Hide Competitors' : 'Show Competitors'}
         </button>
         <button 
           onClick={() => setShowZones(!showZones)}
-          className={`px-3 py-1 text-[10px] uppercase font-sans tracking-widest border transition-colors ${showZones ? 'bg-warm-primary/20 border-warm-primary text-warm-primary' : 'bg-warm-bg/50 border-warm-border text-warm-muted'}`}
+          className={`px-3 py-1.5 rounded-lg text-[11px] font-medium tracking-wide border shadow-sm backdrop-blur-sm transition-all ${
+            showZones 
+              ? 'bg-emerald-50/95 border-emerald-500 text-emerald-700 font-semibold' 
+              : 'bg-white/90 border-slate-300 text-slate-600 hover:bg-white'
+          }`}
         >
           {showZones ? 'Hide Opp. Zones' : 'Show Opp. Zones'}
         </button>

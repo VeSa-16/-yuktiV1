@@ -37,20 +37,32 @@ export default function MapComponent({ lat, lng, radiusKm, showCompetitors, show
   const blueIcon = createIcon('blue');
 
   return (
-    <MapContainer center={[lat, lng]} zoom={12} style={{ height: "100%", width: "100%", backgroundColor: '#000000' }} scrollWheelZoom={false}>
+    <MapContainer center={[lat, lng]} zoom={12} style={{ height: "100%", width: "100%", backgroundColor: '#f8f8f8' }} scrollWheelZoom={false}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        url={`https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=${process.env.NEXT_PUBLIC_CARTO_ACCESS_TOKEN || ''}`}
+        url={`https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${process.env.NEXT_PUBLIC_CARTO_ACCESS_TOKEN}`}
       />
       
-      {/* Core Radius */}
-      <Circle center={[lat, lng]} radius={radiusKm * 1000} pathOptions={{ color: '#00ffff', fillColor: '#00ffff', fillOpacity: 0.05, weight: 1 }} />
+      {/* Core Catchment Radius */}
+      <Circle 
+        center={[lat, lng]} 
+        radius={radiusKm * 1000} 
+        pathOptions={{ color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.08, weight: 2, dashArray: '4, 4' }} 
+      />
       
       {/* Opp Zone (Green Heatmap/Polygon proxy) */}
       {showZones && (
         <>
-          <Circle center={[lat + 0.015, lng + 0.01]} radius={(radiusKm * 1000) * 0.4} pathOptions={{ color: '#16a34a', fillColor: '#16a34a', fillOpacity: 0.2, weight: 0 }} />
-          <Circle center={[lat - 0.02, lng - 0.015]} radius={(radiusKm * 1000) * 0.3} pathOptions={{ color: '#16a34a', fillColor: '#16a34a', fillOpacity: 0.15, weight: 0 }} />
+          <Circle 
+            center={[lat + 0.015, lng + 0.01]} 
+            radius={(radiusKm * 1000) * 0.4} 
+            pathOptions={{ color: '#16a34a', fillColor: '#22c55e', fillOpacity: 0.18, weight: 1.5 }} 
+          />
+          <Circle 
+            center={[lat - 0.02, lng - 0.015]} 
+            radius={(radiusKm * 1000) * 0.3} 
+            pathOptions={{ color: '#16a34a', fillColor: '#22c55e', fillOpacity: 0.15, weight: 1.5 }} 
+          />
         </>
       )}
 
