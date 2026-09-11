@@ -9,21 +9,18 @@ import {
   ShieldAlert, Wallet, Clock, ArrowRight, Info
 } from "lucide-react";
 
-// Lazy-load Recharts — it's a heavy library (~100KB gzipped) that shouldn't
-// block the initial page render. Each chart component loads on demand.
-const AreaChart = dynamic(() => import("recharts").then((m) => ({ default: m.AreaChart })), { ssr: false });
-const Area = dynamic(() => import("recharts").then((m) => ({ default: m.Area })), { ssr: false });
-const BarChart = dynamic(() => import("recharts").then((m) => ({ default: m.BarChart })), { ssr: false });
-const Bar = dynamic(() => import("recharts").then((m) => ({ default: m.Bar })), { ssr: false });
-const LineChart = dynamic(() => import("recharts").then((m) => ({ default: m.LineChart })), { ssr: false });
-const Line = dynamic(() => import("recharts").then((m) => ({ default: m.Line })), { ssr: false });
-const XAxis = dynamic(() => import("recharts").then((m) => ({ default: m.XAxis })), { ssr: false });
-const YAxis = dynamic(() => import("recharts").then((m) => ({ default: m.YAxis })), { ssr: false });
-const CartesianGrid = dynamic(() => import("recharts").then((m) => ({ default: m.CartesianGrid })), { ssr: false });
-const Tooltip = dynamic(() => import("recharts").then((m) => ({ default: m.Tooltip })), { ssr: false });
-const ResponsiveContainer = dynamic(() => import("recharts").then((m) => ({ default: m.ResponsiveContainer })), { ssr: false });
-const ReferenceLine = dynamic(() => import("recharts").then((m) => ({ default: m.ReferenceLine })), { ssr: false });
-const Cell = dynamic(() => import("recharts").then((m) => ({ default: m.Cell })), { ssr: false });
+// Lazy-load standalone chart components — keeping Recharts internal subcomponents
+// statically imported within each component preserves Recharts internal type-matching.
+const CashFlowChart = dynamic(() => import("@/components/financials/CashFlowChart"), {
+  ssr: false,
+  loading: () => <div className="w-full h-80 bg-gray-50 rounded-2xl animate-pulse flex items-center justify-center text-xs text-ink-soft">Loading Charts...</div>
+});
+
+const SeasonalChart = dynamic(() => import("@/components/financials/SeasonalChart"), {
+  ssr: false,
+  loading: () => <div className="w-full h-72 bg-gray-50 rounded-2xl animate-pulse flex items-center justify-center text-xs text-ink-soft">Loading Chart...</div>
+});
+
 
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
@@ -172,49 +169,7 @@ const CashFlowTab = ({ data }: { data: FinanceResponse }) => {
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-premium-border p-6 mb-6">
-        <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={cf} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
-            <defs>
-              <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#16a34a" stopOpacity={0.15} />
-                <stop offset="95%" stopColor="#16a34a" stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ea580c" stopOpacity={0.15} />
-                <stop offset="95%" stopColor="#ea580c" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#6b7280" }} />
-            <YAxis tickFormatter={(v) => fmt(v)} tick={{ fontSize: 11, fill: "#6b7280" }} />
-            <Tooltip
-              formatter={(val: any, name: any) => [fmtFull(val), name]}
-              labelFormatter={(label: any) => `Month: ${label}`}
-            />
-            <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#16a34a" strokeWidth={2} fill="url(#revGrad)" />
-            <Area type="monotone" dataKey="expenses" name="Expenses" stroke="#ea580c" strokeWidth={2} fill="url(#expGrad)" />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-premium-border p-6">
-        <h3 className="font-bold text-forest-deep mb-4">Cumulative Net Cash Flow</h3>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={cf}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#6b7280" }} />
-            <YAxis tickFormatter={(v) => fmt(v)} tick={{ fontSize: 11, fill: "#6b7280" }} />
-            <Tooltip formatter={(val: any) => [fmtFull(val), "Net Cash"]} />
-            <ReferenceLine y={0} stroke="#374151" strokeDasharray="4 2" />
-            <Bar dataKey="net_cash" radius={[4, 4, 0, 0]}>
-              {cf.map((entry, index) => (
-                <Cell key={index} fill={entry.net_cash >= 0 ? "#16a34a" : "#ef4444"} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <CashFlowChart data={cf} />
     </div>
   );
 };
@@ -539,24 +494,7 @@ const SeasonalTab = ({ data }: { data: FinanceResponse }) => {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-premium-border p-6 mb-6">
-        <ResponsiveContainer width="100%" height={280}>
-          <BarChart data={seasonal}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#6b7280" }} />
-            <YAxis tickFormatter={(v) => fmt(v)} tick={{ fontSize: 11, fill: "#6b7280" }} />
-            <Tooltip formatter={(v: any) => [fmtFull(v), "Revenue"]} />
-            <Bar dataKey="revenue" radius={[6, 6, 0, 0]}>
-              {seasonal.map((entry, index) => (
-                <Cell
-                  key={index}
-                  fill={entry.revenue === maxRev ? "#16a34a" : entry.revenue === minRev ? "#ef4444" : entry.index >= 1.0 ? "#6366f1" : "#9ca3af"}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <SeasonalChart data={seasonal} maxRev={maxRev} minRev={minRev} />
 
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
         {seasonal.map((m) => (
