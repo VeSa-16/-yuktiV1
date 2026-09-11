@@ -16,3 +16,14 @@ class ProfileResponse(BaseModel):
     lat: float
     lng: float
     data_richness: str
+
+
+class OnboardingParseRequest(BaseModel):
+    text: str
+
+
+class OnboardingParseResponse(BaseModel):
+    business_category: Optional[str] = None
+    location: Optional[str] = None
+    capital_in_inr: Optional[int] = None
+    experience_level: Optional[str] = None

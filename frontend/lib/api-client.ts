@@ -254,15 +254,47 @@ export interface ExplainResponse {
   data_source: string;
 }
 
+export interface CopilotChatResponse {
+  reply: string;
+}
+
+export interface CopilotExplainResponse {
+  explanation: string;
+}
+
 export interface ReportResponse {
   session_id: string;
   html_content: string;
   generated_at: string;
 }
 
+export interface AnalysisResponse {
+  status: string;
+  data_available: boolean;
+  matched_business: {
+    matched_category_id: string;
+    matched_subcategory: string;
+    confidence: number;
+    reason: string;
+  };
+  market: any;
+  financials: any;
+  scores: {
+    overall: number;
+    dimensions: any;
+  };
+  ai_insights: {
+    rationale: string;
+    recommendations: string[];
+  };
+}
+
 // ─── API methods ─────────────────────────────────────────────────────────────
 
 export const api = {
+  generateAnalysis: (data: any, signal?: AbortSignal) =>
+    ApiClient.post<AnalysisResponse>("/api/analysis/generate", data, AI_TIMEOUT_MS, signal),
+
   createProfile: (data: { name: string; location_input: string; language: string }, signal?: AbortSignal) =>
     ApiClient.post<ProfileResponse>("/profile", data, undefined, signal),
 
@@ -285,9 +317,24 @@ export const api = {
     tenure_override_years?: number | null;
   }, signal?: AbortSignal) => ApiClient.post<SimulateResponse>("/simulate", data, undefined, signal),
 
-  explain: (data: { session_id: string; question: string; language?: string }) =>
-    ApiClient.post<ExplainResponse>("/explain", data, AI_TIMEOUT_MS),
+  copilotChat: (data: { message: string; location_id: string; category_id: string; market_data?: any; financial_data?: any; score_data?: any }) =>
+    ApiClient.post<CopilotChatResponse>("/api/copilot/chat", data, AI_TIMEOUT_MS),
+
+  copilotExplain: (data: { question: string; location_id: string; category_id: string; market_data?: any; financial_data?: any; score_data?: any }) =>
+    ApiClient.post<CopilotExplainResponse>("/api/copilot/explain", data, AI_TIMEOUT_MS),
 
   generateReport: (data: { session_id: string; format?: string }) =>
     ApiClient.post<ReportResponse>("/report", data, AI_TIMEOUT_MS),
+
+  generateBusinessPlan: (data: { location: string; category: string; market_data?: any; financial_data?: any; risk_data?: any }) =>
+    ApiClient.post<any>("/api/business-plan/generate", data, AI_TIMEOUT_MS),
+
+  generateMarketingStrategy: (data: { location: string; category: string; market_data?: any; financial_data?: any; risk_data?: any }) =>
+    ApiClient.post<any>("/api/marketing/generate", data, AI_TIMEOUT_MS),
+
+  analyzeCompetitors: (data: { competitors: any[] }) =>
+    ApiClient.post<any>("/api/competitor/analyze", data, AI_TIMEOUT_MS),
+
+  simulateDynamic: (data: { month: number; cash_balance: number; active_events: string[]; decision: string; scenario_parameters: any }) =>
+    ApiClient.post<any>("/api/simulate/dynamic", data, AI_TIMEOUT_MS),
 };

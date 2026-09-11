@@ -51,7 +51,7 @@ export function VerdictBanner({ verdict }: Props) {
           <div>
             <h4 className="font-semibold text-red-400">Not Recommended</h4>
             <p className="text-sm text-red-100/70 mt-1">
-              High risk of defaulting on loans. Project does not cover its operational costs and EMI.
+              High risk of defaulting on loans. Project does not cover its operational costs and Monthly Installment.
             </p>
           </div>
         </div>

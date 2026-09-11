@@ -1,7 +1,9 @@
 import React from 'react';
 import { Target, MapPin, Calculator, ShieldAlert, User } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export function HelpPanel() {
+  const t = useTranslations('onboarding.helpPanel');
   return (
     <div className="hidden lg:flex flex-col w-[320px] shrink-0 bg-[#f4f9f6] rounded-3xl overflow-hidden border border-[#e5f0ea]">
       {/* Top Graphic Area */}
@@ -24,7 +26,7 @@ export function HelpPanel() {
       {/* Content Area */}
       <div className="p-6 bg-[#f4f9f6] flex-1">
         <h3 className="text-[17px] leading-snug font-bold text-forest-deep mb-6">
-          Your details help us find the best opportunities for you.
+          {t('title')}
         </h3>
         
         <div className="space-y-5">
@@ -33,7 +35,7 @@ export function HelpPanel() {
               <Target size={14} className="text-saffron-deep" />
             </div>
             <p className="text-sm font-medium text-ink-soft leading-tight pt-1">
-              Personalised business recommendations
+              {t('point1')}
             </p>
           </div>
           
@@ -42,7 +44,7 @@ export function HelpPanel() {
               <MapPin size={14} className="text-forest" />
             </div>
             <p className="text-sm font-medium text-ink-soft leading-tight pt-1">
-              Location-based market analysis
+              {t('point2')}
             </p>
           </div>
           
@@ -51,7 +53,7 @@ export function HelpPanel() {
               <Calculator size={14} className="text-ink" />
             </div>
             <p className="text-sm font-medium text-ink-soft leading-tight pt-1">
-              Financial planning & loan guidance
+              {t('point3')}
             </p>
           </div>
           
@@ -60,7 +62,7 @@ export function HelpPanel() {
               <ShieldAlert size={14} className="text-saffron" />
             </div>
             <p className="text-sm font-medium text-ink-soft leading-tight pt-1">
-              Better risk assessment
+              {t('point4')}
             </p>
           </div>
         </div>

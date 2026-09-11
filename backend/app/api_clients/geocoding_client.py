@@ -14,7 +14,7 @@ class GeocodingClient:
     def __init__(self):
         # Nominatim requires a valid user agent
         self.headers = {
-            "User-Agent": "YUKTI-Market-Intelligence/1.0 (contact@yukti.gov.in)"
+            "User-Agent": "YuktiFi-Market-Intelligence/1.0 (contact@yukti.gov.in)"
         }
 
     def get_coordinates(self, query: str) -> Optional[Tuple[float, float]]:

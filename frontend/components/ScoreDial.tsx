@@ -7,7 +7,7 @@ interface Props {
   animate?: boolean;
 }
 
-export function ScoreDial({ score, size = 120, label = "YUKTI Score", animate = true }: Props) {
+export function ScoreDial({ score, size = 120, label = "YuktiFi Score", animate = true }: Props) {
   const strokeWidth = size * 0.08;
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;

@@ -40,6 +40,8 @@ export interface SessionState {
   ideaDetails: string | null;
   dataRichness: "rich" | "sparse" | null;
   opportunities: Opportunity[];
+  analysisResult: any | null;
+  simulationResult: any | null;
   
   // Persistent Profile
   profileName: string;
@@ -67,6 +69,8 @@ const DEFAULT_STATE = {
   ideaDetails: null,
   dataRichness: null,
   opportunities: [] as Opportunity[],
+  analysisResult: null,
+  simulationResult: null,
   profileName: 'Entrepreneur',
   preferredLanguage: 'EN',
   userMode: 'entrepreneur' as const,
@@ -94,8 +98,12 @@ export const useStore = create<SessionState>()(
         marginCapital: null,
         categoryId: null,
         categoryName: null,
+        experience: null,
+        ideaDetails: null,
         dataRichness: null,
-        opportunities: []
+        opportunities: [],
+        analysisResult: null,
+        simulationResult: null,
       })),
 
       saveCurrentPlan: (score = 0) => {
@@ -142,12 +150,19 @@ export const useStore = create<SessionState>()(
   )
 );
 
-// We keep a provider that prevents Next.js hydration crashes 
-// by waiting until the component is mounted on the client to render children.
-// NOTE: We render children immediately but suppress sidebar state differences
-// via suppressHydrationWarning on the body in layout.tsx
 import { useState, useEffect } from "react";
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  if (!isHydrated) {
+    // Return a minimally styled placeholder or null during SSR to prevent hydration mismatch and data loss
+    return <div className="min-h-screen bg-neutral-900" />;
+  }
+
   return <>{children}</>;
 }

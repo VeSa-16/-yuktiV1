@@ -1,5 +1,5 @@
 {
-  "name": "yukti-frontend",
+  "name": "yuktifi-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -16,6 +16,7 @@
     "leaflet": "^1.9.4",
     "lucide-react": "^1.41.0",
     "next": "14.2.5",
+    "next-intl": "^4.14.3",
     "nextjs-toploader": "^3.9.17",
     "react": "^18",
     "react-dom": "^18",

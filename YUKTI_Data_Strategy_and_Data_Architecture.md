@@ -1,28 +1,28 @@
-# YUKTI — Data Strategy & Data Architecture
+# YuktiFi — Data Strategy & Data Architecture
 
-### The authoritative specification for: what data YUKTI uses, where it comes from, how confident we are in it, and how it becomes a number on screen
+### The authoritative specification for: what data YuktiFi uses, where it comes from, how confident we are in it, and how it becomes a number on screen
 
 **Scope:** SIH26091/PSC26091 prototype → stronger college-level build → realistic production system
 **Method:** Every source below was checked against a live web search on 2026-09-06. Sources that could not be verified are explicitly marked `UNVERIFIED — RESEARCH REQUIRED`. Nothing here is a guess dressed up as a fact.
 
 **Tag legend (same convention as the Master Blueprint):**
-`[VERIFIED-EXTERNAL]` confirmed against a real, checked source · `[YUKTI-DESIGN]` our decision, not stated anywhere · `[PROTOTYPE-ASSUMPTION]` synthetic/simplified for the demo · `[FUTURE-PRODUCTION]` out of scope now · `[UNVERIFIED]` flagged, not to be relied on until checked further.
+`[VERIFIED-EXTERNAL]` confirmed against a real, checked source · `[YuktiFi-DESIGN]` our decision, not stated anywhere · `[PROTOTYPE-ASSUMPTION]` synthetic/simplified for the demo · `[FUTURE-PRODUCTION]` out of scope now · `[UNVERIFIED]` flagged, not to be relied on until checked further.
 
 ---
 
 ## Executive Summary
 
-YUKTI's hardest engineering problem is not the financial engine — that is closed-form arithmetic and can be made perfectly correct. It is **data**. The product promises "hyper-local" intelligence — 5–10 km market reach, village-level competitor density, local purchasing power — for a country where the last full population census is from **2011** [VERIFIED-EXTERNAL], where business-registry data is sparse below the district level, and where the most complete free geospatial dataset (OpenStreetMap) has real but uneven coverage of rural India.
+YuktiFi's hardest engineering problem is not the financial engine — that is closed-form arithmetic and can be made perfectly correct. It is **data**. The product promises "hyper-local" intelligence — 5–10 km market reach, village-level competitor density, local purchasing power — for a country where the last full population census is from **2011** [VERIFIED-EXTERNAL], where business-registry data is sparse below the district level, and where the most complete free geospatial dataset (OpenStreetMap) has real but uneven coverage of rural India.
 
-The central finding of this document: **almost nothing YUKTI needs exists natively at true village/5–10 km granularity from an authoritative, current, free source.** What exists is (a) authoritative but coarse (district/block Census, State Statistical Handbooks), (b) granular but incomplete and unauthoritative (OSM points of interest), (c) granular and modelled rather than measured (WorldPop gridded population), or (d) genuinely local but user-supplied and unverifiable (a village resident telling YUKTI "there are three tailors near me").
+The central finding of this document: **almost nothing YuktiFi needs exists natively at true village/5–10 km granularity from an authoritative, current, free source.** What exists is (a) authoritative but coarse (district/block Census, State Statistical Handbooks), (b) granular but incomplete and unauthoritative (OSM points of interest), (c) granular and modelled rather than measured (WorldPop gridded population), or (d) genuinely local but user-supplied and unverifiable (a village resident telling YuktiFi "there are three tailors near me").
 
-YUKTI's data architecture is therefore built around one design law, inherited from the Master Blueprint's Section 8 architecture split and made concrete here:
+YuktiFi's data architecture is therefore built around one design law, inherited from the Master Blueprint's Section 8 architecture split and made concrete here:
 
-> **Every number is tagged with how it was obtained — Known / Estimated / User-provided / AI-inferred / Unavailable — and the tag is shown to the user, not buried in a log.** No dataset is stretched to claim a granularity it does not have. Where genuine village-level data does not exist, YUKTI says so, degrades gracefully to the finest *honest* granularity, and never silently fills the gap with a plausible-sounding number.
+> **Every number is tagged with how it was obtained — Known / Estimated / User-provided / AI-inferred / Unavailable — and the tag is shown to the user, not buried in a log.** No dataset is stretched to claim a granularity it does not have. Where genuine village-level data does not exist, YuktiFi says so, degrades gracefully to the finest *honest* granularity, and never silently fills the gap with a plausible-sounding number.
 
 This document is organized as: (1) what data the product needs, (2) where each piece can actually come from and at what granularity, (3) the pipeline, schema, and confidence system that turns raw sources into trustworthy output, (4) the concrete prototype dataset the team should build for SIH, and (5) a brutal, judge's-eye audit of where this all is genuinely strong and where it is not.
 
-**Headline data credibility score (full justification in Part 16): 54/100** for the "hyper-local" claim as literally stated, rising to a defensible ~80/100 once YUKTI's own confidence-labelling system is counted as part of the product (i.e., YUKTI is not claiming to be more certain than the data supports — which is itself the credibility asset).
+**Headline data credibility score (full justification in Part 16): 54/100** for the "hyper-local" claim as literally stated, rising to a defensible ~80/100 once YuktiFi's own confidence-labelling system is counted as part of the product (i.e., YuktiFi is not claiming to be more certain than the data supports — which is itself the credibility asset).
 
 ---
 
@@ -58,14 +58,14 @@ Every row below was checked directly; access method, granularity, and licensing 
 
 ### 2.1 Government / official sources
 
-| Source | Owner | Data | Granularity | Access | Freshness | License | YUKTI use |
+| Source | Owner | Data | Granularity | Access | Freshness | License | YuktiFi use |
 |---|---|---|---|---|---|---|---|
 | **data.gov.in** (Open Government Data Platform) | NIC, MeitY, Govt. of India [VERIFIED-EXTERNAL] | 1000s of sectoral datasets (agri, MSME, health, etc.) | Mostly district/state; varies by dataset | Public web + registered-user REST API with API key; many resources have **no live API**, only static CSV/XLS downloads [VERIFIED-EXTERNAL] | Highly variable — some daily (Agmarknet feed), many stale for years | Content owned by respective ministries; site itself is a NDSAP-compliant open platform | Primary catalogue to search category-by-category; treat "has an API" as unverified per-dataset until checked |
 | **Census of India 2011** (Registrar General & Census Commissioner) | Govt. of India | Population, households, literacy, occupational structure, amenities (Village Directory) | **Village level exists** (Primary Census Abstract, District Census Handbooks) | Public downloads (censusindia.gov.in), no live query API | **Frozen at 2011** — genuinely the newest full count; Census 2021 was postponed and has not been conducted as of this writing [VERIFIED-EXTERNAL] | Public domain govt data | Best real village-level population/household baseline, but 13+ years stale — must be shown with an explicit "2011 Census, extrapolated" badge, never presented as current |
 | **MOSPI** (Ministry of Statistics & Programme Implementation) | Govt. of India | Household Consumption Expenditure Survey (HCES), National Sample Survey rounds, National Accounts | State/sector, sometimes district in survey microdata | Public reports/microdata downloads; no live API | HCES 2022–23 is the latest round [VERIFIED-EXTERNAL] | Public | Best legitimate basis for a purchasing-power *index* — never household-level income |
 | **Agmarknet / data.gov.in mandi price feed** | Directorate of Marketing & Inspection, Ministry of Agriculture [VERIFIED-EXTERNAL] | Daily wholesale min/max/modal price + arrivals, 300+ commodities, ~4,000+ APMC markets | **Mandi/market level** — genuinely granular for agri commodities | data.gov.in resource page states **no confirmed public API for this specific resource** (API must be requested); a mirror academic tool (CEDA/Ashoka, agmarknet.ceda.ashoka.edu.in) republishes it monthly with downloadable raw files [VERIFIED-EXTERNAL] | Daily at source; CEDA mirror refreshes monthly | Government-sourced, redistributed for research by CEDA — attribute to Agmarknet/DMI | Only genuinely current, near-local, non-modelled dataset in this whole document — use for dairy/agri-linked categories' pricing input |
 | **NSFDC** (National Scheduled Castes Finance & Development Corporation) | MoSJE, Govt. of India [VERIFIED-EXTERNAL] | Scheme rules: Micro Credit Finance (≤₹1.40 lakh project, loan ≤90%/₹1.25 lakh, **6.5%** beneficiary rate, 3-yr tenure incl. 3-month moratorium) and Term Loan (>₹1.40 lakh–₹50 lakh, loan ≤90%/₹45 lakh, **8% (4% CA charge → 8% beneficiary rate on Term Loan tier)**, up to 7-yr tenure) | National scheme, applies uniformly | Static official pages (nsfdc.nic.in, mirrored on devmosje.negd.in) — no API | Confirmed live and matching the Master Blueprint's cited figures at time of check [VERIFIED-EXTERNAL] | Official government scheme text | **This is the single most load-bearing external fact in the entire product** — must be re-verified against nsfdc.nic.in immediately before every demo/submission, not just once |
-| **PMEGP** (Prime Minister's Employment Generation Programme) | Ministry of MSME, via KVIC [VERIFIED-EXTERNAL] | Margin-money subsidy 15–35% of project cost depending on category/area; manufacturing cap ₹50 lakh, service/business cap ₹20 lakh; general category 15%(urban)/25%(rural), special category 25%(urban)/35%(rural) | National scheme | kviconline.gov.in — static guideline pages, online application portal, no public data API | Current scheme cycle runs FY2021-22 to FY2025-26 [VERIFIED-EXTERNAL] | Official govt scheme | A **second**, larger-ticket scheme YUKTI should route to above the NSFDC Term Loan ceiling — see Part 15 flag on the Build Guide's PMEGP figures |
+| **PMEGP** (Prime Minister's Employment Generation Programme) | Ministry of MSME, via KVIC [VERIFIED-EXTERNAL] | Margin-money subsidy 15–35% of project cost depending on category/area; manufacturing cap ₹50 lakh, service/business cap ₹20 lakh; general category 15%(urban)/25%(rural), special category 25%(urban)/35%(rural) | National scheme | kviconline.gov.in — static guideline pages, online application portal, no public data API | Current scheme cycle runs FY2021-22 to FY2025-26 [VERIFIED-EXTERNAL] | Official govt scheme | A **second**, larger-ticket scheme YuktiFi should route to above the NSFDC Term Loan ceiling — see Part 15 flag on the Build Guide's PMEGP figures |
 | **CGTMSE** (Credit Guarantee Fund Trust for Micro & Small Enterprises) | Ministry of MSME + SIDBI | Provides a **credit guarantee to lending banks**, not a direct loan and not itself an "interest rate" product | National | Static official pages | Current | Official | Important correction — see Part 15/18 audit; CGTMSE should not appear in a scheme table with its own "interest_rate_pct" field the way the current Build Guide models it |
 | **Udyam Registration** (MSME registry) | Ministry of MSME | Registered MSME counts, category, investment/turnover bands | Aggregate dashboards public; **individual business-level registry is not openly downloadable/searchable by the public for competitor mapping** [UNVERIFIED — RESEARCH REQUIRED beyond aggregate dashboards] | Aggregate dashboard only, as far as verified here | Live dashboard | Government, but granular records are not confirmed publicly queryable | Cannot be relied on as a competitor-count source without further, dedicated verification; treat as **not realistically available** for the prototype |
 | **NABARD** | Govt. of India (agri/rural finance apex bank) | Rural credit data, All-India Rural Financial Inclusion Survey | State/district in published reports | Report downloads, no live API confirmed | Periodic (survey-based) | Public reports | Background/context source for rural financial-inclusion narrative, not a live feed |
@@ -73,7 +73,7 @@ Every row below was checked directly; access method, granularity, and licensing 
 
 ### 2.2 Geospatial / open sources
 
-| Source | Owner | Data | Granularity | Access | Freshness | License | YUKTI use |
+| Source | Owner | Data | Granularity | Access | Freshness | License | YuktiFi use |
 |---|---|---|---|---|---|---|---|
 | **OpenStreetMap via Overpass API** | OSM Foundation / community [VERIFIED-EXTERNAL] | Shops, amenities, roads, POIs with `shop=*`, `amenity=*`, etc. tags | Point-level **where mapped** — coverage in rural India is real but genuinely uneven | Free public Overpass endpoints (overpass-api.de and mirrors); "be-friendly" usage limits apply, not a formal quota — heavy/parallel/commercial-scale use is expected to move to a self-hosted instance or regional extract [VERIFIED-EXTERNAL] | Near-real-time (community edits), but a given rural area may not have been edited in years | **ODbL 1.0** — attribution required, and any produced database that is a "derivative database" must also be shared under ODbL (share-alike); a *produced work* (e.g. a rendered map, or facts extracted and substantially transformed) has lighter obligations, but this line is genuinely a legal-review item, not something to self-certify [VERIFIED-EXTERNAL] | Best free option for real competitor/POI/road data; **must never be silently assumed complete** — sparse OSM coverage in a village must be shown as "no data," not "zero competitors" |
 | **Geofabrik regional extracts** | Geofabrik GmbH | Pre-packaged OSM country/region `.osm.pbf` downloads | Same underlying OSM data, packaged for bulk/offline use | Free download | Updated daily | Same ODbL obligations as OSM | Better fit than live Overpass calls for an **offline prototype** — download once, query locally |
@@ -96,7 +96,7 @@ Every row below was checked directly; access method, granularity, and licensing 
 
 ---
 
-## PART 4 — Data Reality Check (the matrix that keeps YUKTI honest)
+## PART 4 — Data Reality Check (the matrix that keeps YuktiFi honest)
 
 | Data need | A. Directly available | B. Coarser level only | C. Available via API | D. Derivable | E. Estimable (defensible model) | F. Requires user input | G. Not realistically available |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -145,7 +145,7 @@ def haversine_km(lat1, lon1, lat2, lon2):
     return 2 * R * math.asin(math.sqrt(a))
 ```
 
-**Decision — do we need PostGIS for the prototype? No.** [YUKTI-DESIGN] At prototype scale (a few hundred competitor points, 2–3 demo locations), a Haversine filter over an in-memory or SQLite list is O(n) and instant. PostGIS earns its complexity only once the competitor table has tens of thousands of rows nationally and needs spatial indexes (`GIST`) for sub-second bounding-box queries — that is a **production** decision (Part 20).
+**Decision — do we need PostGIS for the prototype? No.** [YuktiFi-DESIGN] At prototype scale (a few hundred competitor points, 2–3 demo locations), a Haversine filter over an in-memory or SQLite list is O(n) and instant. PostGIS earns its complexity only once the competitor table has tens of thousands of rows nationally and needs spatial indexes (`GIST`) for sub-second bounding-box queries — that is a **production** decision (Part 20).
 
 ### 5.3 Population inside the radius
 Method, in order:
@@ -181,7 +181,7 @@ OSM `highway=*` ways and `amenity=marketplace`/`amenity=bus_station` nodes withi
 
 | Source | Coverage | Accuracy | Freshness | Dedup risk | Category classification | Geo. precision | Legal/licensing |
 |---|---|---|---|---|---|---|---|
-| OSM (Overpass) | Real but genuinely patchy in rural India — good in mapped market towns, thin in small villages | Good where present (community-verified tags) | Variable, edit-dependent | Low (each is a distinct node) | Via OSM `shop=`/`craft=`/`amenity=` tags, needs mapping to YUKTI's own category taxonomy | Point-level, generally accurate | ODbL — attribution + share-alike for derivative databases (Part 2.2) |
+| OSM (Overpass) | Real but genuinely patchy in rural India — good in mapped market towns, thin in small villages | Good where present (community-verified tags) | Variable, edit-dependent | Low (each is a distinct node) | Via OSM `shop=`/`craft=`/`amenity=` tags, needs mapping to YuktiFi's own category taxonomy | Point-level, generally accurate | ODbL — attribution + share-alike for derivative databases (Part 2.2) |
 | Udyam Registration (public) | Aggregate dashboards only, per current verification | N/A at business level | N/A | N/A | N/A | N/A | Not usable for competitor mapping without further, dedicated verification — **flag as UNVERIFIED, do not build a pipeline assuming record-level access exists** |
 | Local directories (Justdial-type) | Better urban than rural | Self-reported by businesses, variable | Variable | Real risk (multiple listings per business) | Directory's own taxonomy, needs mapping | Often only address-level, not coordinate-level | No confirmed public bulk API — commercial partnership or manual lookup only |
 | User-submitted | Whatever the user chooses to report | Unverified by construction | As reported | High if multiple users report the same shop differently | User free-text, needs normalization | User-estimated ("near the temple") | None — must be tagged "User-provided," never elevated to "Known" |
@@ -200,7 +200,7 @@ Deduplication (same name + <50m apart across sources → merge, keep highest-con
         ↓
 Geocoding (only for user-submitted text descriptions without coordinates — reverse-lookup against nearest known landmark)
         ↓
-Category classification (map source-specific tag/free-text → YUKTI's fixed category taxonomy)
+Category classification (map source-specific tag/free-text → YuktiFi's fixed category taxonomy)
         ↓
 Location filtering (Haversine radius test against the query point, Part 5.5)
         ↓
@@ -208,7 +208,7 @@ Confidence scoring (source-based: OSM=Medium, curated-team=Medium/High per field
         ↓
 Competitor dataset (versioned, provenance-tagged — Part 8)
         ↓
-YUKTI Market Intelligence Engine
+YuktiFi Market Intelligence Engine
 ```
 
 ---
@@ -219,12 +219,12 @@ YUKTI Market Intelligence Engine
 
 **What it cannot be assumed to provide:** a complete business census. Rural India's OSM coverage is a product of volunteer mapping activity, which correlates with things like connectivity, local mapping-community presence, and prior humanitarian-mapping campaigns (e.g., post-disaster mapping drives) — **not** with actual settlement size or economic activity. A well-mapped town of 5,000 can show more OSM shop nodes than an under-mapped town of 50,000.
 
-**Feasibility for YUKTI:**
+**Feasibility for YuktiFi:**
 - **Overpass API**: free, no API key, but "be a good citizen" usage limits apply on the public instances rather than a documented hard quota — safe pattern is one query per analysis, cached, not a query-per-page-load [VERIFIED-EXTERNAL].
 - **Download options**: Geofabrik regional `.osm.pbf` extracts, updated daily, are the right choice for **offline** prototype use — download once for the demo region(s), filter locally, no live network dependency on demo day.
 - **Rate limits**: no fixed published number for the main public instance; heavy/parallel/commercial use is explicitly expected to move to a self-hosted Overpass instance [VERIFIED-EXTERNAL] — irrelevant at prototype query volumes, relevant at production scale.
 - **Attribution**: "© OpenStreetMap contributors" must appear wherever OSM-derived data is shown (map view, and arguably the competitor list if it's presented as sourced from OSM).
-- **ODbL / derived-data question**: if YUKTI stores and republishes OSM-derived facts (e.g., "3 grocery shops near Karha") as part of a produced analytical *report* to one end user, this is closer to a "produced work" (lighter obligation) than a redistributed "derivative database." **This distinction should be flagged for legal review before any production launch** (Part 17) — it is not something to self-certify with confidence.
+- **ODbL / derived-data question**: if YuktiFi stores and republishes OSM-derived facts (e.g., "3 grocery shops near Karha") as part of a produced analytical *report* to one end user, this is closer to a "produced work" (lighter obligation) than a redistributed "derivative database." **This distinction should be flagged for legal review before any production launch** (Part 17) — it is not something to self-certify with confidence.
 
 **Prototype vs. production approach:** prototype uses a **static, downloaded, filtered OSM extract** for the 2–3 demo locations, refreshed manually before the demo. Production would run a scheduled Geofabrik-extract ingestion job (Part 25) rather than live Overpass calls per user request, both for cost/rate-limit reasons and for consistent snapshot-based provenance.
 
@@ -246,7 +246,7 @@ Rejecting the blueprint-suggested simple additive formula (village + nearby sett
    with the anchor comparison shown as a cross-check, not summed on top
 ```
 
-**Uncertainty propagation:** the population estimate inherits (a) Census 2011's staleness (a fixed, dateable error — rural populations have grown since 2011, so this is a **conservative under-estimate** in most areas, which is the safer direction for a lending-adjacent product) and (b) WorldPop's modelling error, which the WorldPop project's own documentation does not give as a per-cell confidence interval — so YUKTI reports this as a **Medium-confidence Estimated** figure, never High, and never a false-precision number like "14,382" (rounded to "~14,000" or a banded range).
+**Uncertainty propagation:** the population estimate inherits (a) Census 2011's staleness (a fixed, dateable error — rural populations have grown since 2011, so this is a **conservative under-estimate** in most areas, which is the safer direction for a lending-adjacent product) and (b) WorldPop's modelling error, which the WorldPop project's own documentation does not give as a per-cell confidence interval — so YuktiFi reports this as a **Medium-confidence Estimated** figure, never High, and never a false-precision number like "14,382" (rounded to "~14,000" or a banded range).
 
 ---
 
@@ -258,9 +258,9 @@ There is **no legitimate way** to know an individual household's income from pub
 - District Statistical Handbooks — sometimes carry district-level per-capita income estimates, quality varies by state.
 - Agricultural wage/mandi price data — a legitimate **proxy** for rural cash-flow strength in agriculture-dependent districts, not income itself.
 
-**Design: Estimated Purchasing Power Index (EPPI)** [YUKTI-DESIGN] — a 0–100 composite of (a) state/rural MOSPI MPCE band, (b) district-level proxy indicators where available (literacy/occupational-structure mix from Census as a weak structural proxy), (c) an explicit downward/upward nudge only from *user-reported* local price observations, never invented. This index is always shown with its own confidence badge and a one-line "how we calculated this" disclosure — this is the exact kind of number a skeptical judge will probe (Part 16), so the methodology note must be reachable in the UI, not just in this document.
+**Design: Estimated Purchasing Power Index (EPPI)** [YuktiFi-DESIGN] — a 0–100 composite of (a) state/rural MOSPI MPCE band, (b) district-level proxy indicators where available (literacy/occupational-structure mix from Census as a weak structural proxy), (c) an explicit downward/upward nudge only from *user-reported* local price observations, never invented. This index is always shown with its own confidence badge and a one-line "how we calculated this" disclosure — this is the exact kind of number a skeptical judge will probe (Part 16), so the methodology note must be reachable in the UI, not just in this document.
 
-**What YUKTI explicitly does NOT do:** claim to know *this specific household's* purchasing power, or present the EPPI as more precise than a district-level average nudged by weak proxies.
+**What YuktiFi explicitly does NOT do:** claim to know *this specific household's* purchasing power, or present the EPPI as more precise than a district-level average nudged by weak proxies.
 
 ---
 
@@ -393,7 +393,7 @@ Every risk shown in the SWOT/threats section of the report must trace to one of:
 ## PART 16 — Data Provenance
 
 ```text
-Data Point → Source → Source URL → Retrieved At → Effective Date → Transformation → Confidence → YUKTI Output
+Data Point → Source → Source URL → Retrieved At → Effective Date → Transformation → Confidence → YuktiFi Output
 ```
 
 | Field | Lives in |
@@ -429,7 +429,7 @@ Taking the minimum (not an average) is a deliberate, documented methodology choi
 | Data type | Update frequency (researched, not assumed) | Rationale |
 |---|---|---|
 | Government scheme rules | **Re-verify every 30–90 days**, and always immediately before any public demo/submission | Highest-stakes category; NSFDC/PMEGP rates and thresholds can change with budget cycles |
-| Mandi prices (Agmarknet) | Daily at source; prototype snapshot refreshed weekly is acceptable | Genuinely fast-moving, but YUKTI's use case (regional benchmark) tolerates a short lag |
+| Mandi prices (Agmarknet) | Daily at source; prototype snapshot refreshed weekly is acceptable | Genuinely fast-moving, but YuktiFi's use case (regional benchmark) tolerates a short lag |
 | Competitor data (OSM) | Monthly re-extract for production; static for prototype demo window | OSM rural edits are infrequent enough that daily polling has no benefit and wastes Overpass "be-friendly" budget |
 | Population/households (Census-based) | Effectively **static until the next full Census** (frozen at 2011 as of this writing) | No update cadence exists for us to follow — this is a structural staleness, not a policy failure, and must be communicated as such |
 | WorldPop grids | New vintage roughly per major WorldPop release cycle (multi-year) | Modelled, not measured — treat any single vintage as "current enough" for a Medium-confidence estimate |
@@ -470,11 +470,11 @@ Taking the minimum (not an average) is a deliberate, documented methodology choi
                         ↓
              ┌──────────┴──────────┐
              ↓                     ↓
-       YUKTI ENGINES            AI LAYER
+       YuktiFi ENGINES            AI LAYER
              │                     │
              └──────────┬──────────┘
                         ↓
-                    YUKTI API
+                    YuktiFi API
                         ↓
                      FRONTEND
 ```
@@ -489,7 +489,7 @@ Taking the minimum (not an average) is a deliberate, documented methodology choi
 |---|---|---|
 | **Prototype** | SQLite (matches Build Guide Section 10/11 exactly) + flat JSON seed files | Zero-setup, perfectly reproducible demo, no server dependency — this document does not override the Build Guide's storage choice, it endorses it |
 | **College-level** | PostgreSQL (Supabase, per Build Guide Section 2) | Enables the crowdsourcing form (Master Blueprint Section 9.2) and multi-location scaling without a schema rewrite |
-| **Production** | PostgreSQL **+ PostGIS** extension for spatial indexing at national scale, object storage for raw source snapshots (audit trail), no data warehouse or vector database | A data warehouse is unjustified until analytical query volume across many tables/users demands it; a vector database is unjustified because Part 24 concludes YUKTI does not need RAG in any near-term tier |
+| **Production** | PostgreSQL **+ PostGIS** extension for spatial indexing at national scale, object storage for raw source snapshots (audit trail), no data warehouse or vector database | A data warehouse is unjustified until analytical query volume across many tables/users demands it; a vector database is unjustified because Part 24 concludes YuktiFi does not need RAG in any near-term tier |
 
 ---
 
@@ -663,7 +663,7 @@ scripts/
 
 ## PART 28 — Geospatial Processing (Implementation Choice)
 
-**Chosen: Haversine, in plain Python, no GeoPandas/Shapely/PostGIS dependency for the prototype.** [YUKTI-DESIGN] Justification: the only spatial operations needed are point-to-point distance and point-in-circle membership testing against, at most, a few hundred points — GeoPandas/Shapely would add a non-trivial dependency (GDAL binaries, a common Windows setup pain point per the Build Guide's own PowerShell-first environment) for zero functional gain at this scale. `pyosmium`/`osmium` is still needed for the one-time OSM `.pbf` filtering step (Part 26/27), since that's a genuine binary-format parsing task Haversine can't replace. Production, at national multi-thousand-competitor scale, adds PostGIS purely for its spatial index (`ST_DWithin` queries), not for any formula PostGIS can compute that Haversine cannot.
+**Chosen: Haversine, in plain Python, no GeoPandas/Shapely/PostGIS dependency for the prototype.** [YuktiFi-DESIGN] Justification: the only spatial operations needed are point-to-point distance and point-in-circle membership testing against, at most, a few hundred points — GeoPandas/Shapely would add a non-trivial dependency (GDAL binaries, a common Windows setup pain point per the Build Guide's own PowerShell-first environment) for zero functional gain at this scale. `pyosmium`/`osmium` is still needed for the one-time OSM `.pbf` filtering step (Part 26/27), since that's a genuine binary-format parsing task Haversine can't replace. Production, at national multi-thousand-competitor scale, adds PostGIS purely for its spatial index (`ST_DWithin` queries), not for any formula PostGIS can compute that Haversine cannot.
 
 ---
 
@@ -703,7 +703,7 @@ Heuristic model output (demand_index, EPPI)
 
 ---
 
-## PART 31 — Data → YUKTI Intelligence (worked example)
+## PART 31 — Data → YuktiFi Intelligence (worked example)
 
 ```text
 Population (WorldPop-derived, Medium confidence)
@@ -719,10 +719,10 @@ Business viability (rule-based feasibility engine, per Build Guide Section 14 �
         ↓
 Financial model (project cost = capital ÷ 0.10; loan/EMI — fully deterministic, Build Guide Section 16)
         ↓
-Recommendation (YUKTI Score, Build Guide Section 15 — deterministic composite)
+Recommendation (YuktiFi Score, Build Guide Section 15 — deterministic composite)
 ```
 
-For the **YUKTI Score specifically** (the single most scrutinized number): raw inputs = feasibility sub-scores + market features; transformation = the documented weighted formula (Build Guide Section 15); confidence = the **minimum** of all contributing metrics' confidence (Part 17); final UI output = score + a visible confidence badge + a one-tap breakdown showing each contributing sub-score and its own source.
+For the **YuktiFi Score specifically** (the single most scrutinized number): raw inputs = feasibility sub-scores + market features; transformation = the documented weighted formula (Build Guide Section 15); confidence = the **minimum** of all contributing metrics' confidence (Part 17); final UI output = score + a visible confidence badge + a one-tap breakdown showing each contributing sub-score and its own source.
 
 ---
 
@@ -751,7 +751,7 @@ This mirrors the Master Blueprint Section 8 golden rule directly: the LLM narrat
 |---|---|---|
 | V1 (SIH prototype) | **No** | Scheme rules are 2–3 small structured records (Part 15), not a document corpus — a lookup table beats a vector store on both reliability and simplicity (matches Build Guide Section 20's own conclusion) |
 | College version | **No** | Even broadening to 5–10 schemes across NSFDC/PMEGP/state schemes is still a structured table, not unstructured document retrieval |
-| Production | **Maybe, narrowly** | If YUKTI later ingests full scheme *guideline PDFs* (not just threshold numbers) to answer open-ended eligibility questions in natural language, a small retrieval layer over that specific, versioned document set could be justified — but only for that narrow use, not as YUKTI's general knowledge layer, and only once the structured-table approach has demonstrably run out of headroom |
+| Production | **Maybe, narrowly** | If YuktiFi later ingests full scheme *guideline PDFs* (not just threshold numbers) to answer open-ended eligibility questions in natural language, a small retrieval layer over that specific, versioned document set could be justified — but only for that narrow use, not as YuktiFi's general knowledge layer, and only once the structured-table approach has demonstrably run out of headroom |
 
 **Vector databases are not introduced merely to sound sophisticated** (per this document's own Final Quality Requirement #16) — the current and near-term data is structured and small enough that a relational lookup outperforms embeddings-based retrieval on both accuracy and explainability, which matters more for a financial-decision product than for a general chatbot.
 
@@ -765,7 +765,7 @@ Local SQLite database (pre-seeded, Part 22 dataset)
 + Deterministic engines (financial, scheme, scoring — zero network calls)
 + Optional AI narration (only enhancement layer, never load-bearing)
         ↓
-Offline YUKTI demo
+Offline YuktiFi demo
 ```
 
 **What can be cached locally:** everything in the Part 22 prototype dataset — locations, competitors, market metrics, prices, cost models, schemes, risks. **What must never be a critical live dependency:** the AI narration call. If the Anthropic API is unreachable during judging, the deterministic engines still produce the full numeric report; only the prose narration degrades (to a pre-written fallback template per category, another curated asset), matching the Build Guide's `DEMO_MODE=true` requirement exactly.
@@ -782,7 +782,7 @@ Scheduled ingestion (per Part 27 script, cron/Airflow-style), source monitoring 
 
 | Source | Consideration |
 |---|---|
-| OpenStreetMap | ODbL attribution required everywhere OSM data is shown; share-alike obligation for any "derivative database" — **flag for legal review** whether YUKTI's produced report/analysis counts as a lighter-obligation "produced work" versus a redistributed derivative database, rather than self-certifying |
+| OpenStreetMap | ODbL attribution required everywhere OSM data is shown; share-alike obligation for any "derivative database" — **flag for legal review** whether YuktiFi's produced report/analysis counts as a lighter-obligation "produced work" versus a redistributed derivative database, rather than self-certifying |
 | Government open data (data.gov.in, Census, NSFDC, PMEGP) | Public-domain/government-owned content; still cite ministry ownership per data.gov.in's own stated policy (content is owned by the respective Ministry/Department, not by the platform itself) |
 | WorldPop | CC BY 4.0 — attribution required, commercial use explicitly permitted |
 | Commercial map/business APIs (Google Places etc.) | Caching/redistribution terms are provider-specific and change — **do not build a production caching layer against any commercial API's data without re-reading its current ToS**, not the version referenced during initial research |
@@ -846,7 +846,7 @@ For every major on-screen number, the rehearsed, one-sentence, sourced answer:
 | Project cost | "Purely arithmetic: your stated capital divided by the scheme's 10% contribution requirement — not looked up, calculated live in front of you." |
 | Scheme eligibility | "A rule match against the National Scheduled Castes Finance and Development Corporation's own published thresholds, re-verified against nsfdc.nic.in before this demo." |
 | Risk flags | "A mix of category-general business risk (labelled as such) and anything derived from the market data above — never presented as a location-specific measurement unless it genuinely is one." |
-| Viability/YUKTI Score | "A deterministic weighted formula over the feasibility and market sub-scores above — tap the score to see every contributing number and its own source." |
+| Viability/YuktiFi Score | "A deterministic weighted formula over the feasibility and market sub-scores above — tap the score to see every contributing number and its own source." |
 
 ---
 
@@ -956,21 +956,21 @@ Each phase's definition of done: the relevant JSON/DB tables pass Part 29 valida
 
 **Acting as a skeptical SIH judge, a data scientist, and a government data expert:**
 
-1. **Can YUKTI genuinely claim to be hyper-local?** Partially, and only if it's honest about which parts. Financial calculations are exact. Scheme eligibility is exact. Population/household figures are genuinely village-level, just dated. Competitor counts and demand are the weak point — "hyper-local" there means "the finest granularity we could honestly get to, clearly labelled," not "we know exactly what's happening in your village."
+1. **Can YuktiFi genuinely claim to be hyper-local?** Partially, and only if it's honest about which parts. Financial calculations are exact. Scheme eligibility is exact. Population/household figures are genuinely village-level, just dated. Competitor counts and demand are the weak point — "hyper-local" there means "the finest granularity we could honestly get to, clearly labelled," not "we know exactly what's happening in your village."
 2. **Which outputs can actually be supported by data?** Financial math, scheme thresholds, 2011 village population/household counts, mandi commodity prices, OSM-mapped competitors (where mapped).
 3. **Which outputs are estimates?** Consumer base within a radius, demand index, purchasing power index, cost-model line items, seasonality, most risk flags.
 4. **Which outputs require user input?** Local price corroboration, self-reported competitor sightings, self-declared capital/experience.
-5. **Which outputs should YUKTI refuse to generate?** An exhaustive, confident competitor count for a village with no OSM coverage and no curated data; an individual household income figure; any scheme eligibility claim based on identity-category gating without direct NSFDC/MoSJE partnership (already excluded per Master Blueprint Section 40).
+5. **Which outputs should YuktiFi refuse to generate?** An exhaustive, confident competitor count for a village with no OSM coverage and no curated data; an individual household income figure; any scheme eligibility claim based on identity-category gating without direct NSFDC/MoSJE partnership (already excluded per Master Blueprint Section 40).
 6. **Where are we most likely to be challenged?** The competitor count and demand index — any judge who knows rural India will immediately ask "how do you actually know that." The honest answer (Parts 4, 6, 39) is the defense, not a weakness to hide.
-7. **What data would most improve YUKTI?** A real, even narrow, data partnership with a State Rural Livelihood Mission or SHG federation for even one district — genuine local verification beats any amount of clever modelling of the same coarse public data.
+7. **What data would most improve YuktiFi?** A real, even narrow, data partnership with a State Rural Livelihood Mission or SHG federation for even one district — genuine local verification beats any amount of clever modelling of the same coarse public data.
 8. **What data should we NOT waste time collecting?** Satellite footfall imagery, individual credit history, anything requiring a paid enterprise data partnership before the college/production tier — all correctly already excluded in the Master Blueprint.
 9. **What is the biggest credibility risk?** Presenting an Estimated or curated number with the same visual weight as a Known one. The confidence-tagging system (Part 17) is not a nice UI feature — it is the entire defense against this risk, and it fails completely if implemented inconsistently.
 10. **What is the strongest data-driven differentiator?** The NSFDC/PMEGP scheme grounding (Part 15) combined with a visibly honest confidence system — no surveyed competitor product in the Master Blueprint's own landscape scan (Section 2.2) does either of these, let alone both.
 
 ### DATA CREDIBILITY SCORE: 54/100 (as a literal "hyper-local" claim) → 78/100 (once the confidence-labelling system is judged as part of the product, which is how a real judge should judge it)
 
-**Justification:** the raw local-data availability for rural India is genuinely thin — this is a fact about India's data landscape, not a flaw in this design (Part 4's matrix makes this unambiguous). A score in the 50s on raw data availability is the honest ceiling for *any* team attempting this problem statement with public data alone. What moves the number to a genuinely competitive ~78 is that YUKTI's architecture (Master Blueprint Section 8's layer separation, this document's Part 17 confidence system, Part 39's rehearsed sourcing answers) turns "our local data is imperfect" from a hidden weakness into a demonstrated, disclosed design discipline — which is precisely the differentiator no competing product in the landscape scan offers.
+**Justification:** the raw local-data availability for rural India is genuinely thin — this is a fact about India's data landscape, not a flaw in this design (Part 4's matrix makes this unambiguous). A score in the 50s on raw data availability is the honest ceiling for *any* team attempting this problem statement with public data alone. What moves the number to a genuinely competitive ~78 is that YuktiFi's architecture (Master Blueprint Section 8's layer separation, this document's Part 17 confidence system, Part 39's rehearsed sourcing answers) turns "our local data is imperfect" from a hidden weakness into a demonstrated, disclosed design discipline — which is precisely the differentiator no competing product in the landscape scan offers.
 
 ---
 
-*End of YUKTI Data Strategy & Data Architecture. Every source cited above was checked on 2026-09-06; scheme rates and thresholds in particular should be re-verified against nsfdc.nic.in and kviconline.gov.in immediately before any live demo or submission, since these are exactly the numbers a judge is most likely to test.*
+*End of YuktiFi Data Strategy & Data Architecture. Every source cited above was checked on 2026-09-06; scheme rates and thresholds in particular should be re-verified against nsfdc.nic.in and kviconline.gov.in immediately before any live demo or submission, since these are exactly the numbers a judge is most likely to test.*

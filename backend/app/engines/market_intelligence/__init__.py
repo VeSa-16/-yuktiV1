@@ -18,7 +18,7 @@ from app.engines.market_intelligence.opportunity_gaps import analyze_opportunity
 from app.engines.market_intelligence.swot import generate_swot_async
 from app.engines.market_intelligence.threats import assess_threats_async
 from app.services.data_service import data_service
-from app.api_clients.gemini_client import GeminiClient
+from app.ai.gemini_client import GeminiClient
 
 logger = logging.getLogger(__name__)
 data_layer = DataRetrieval()
@@ -61,7 +61,7 @@ async def _get_competitors_async(location_id: str, category_id: str) -> dict:
     """
     try:
         async with httpx.AsyncClient(
-            headers={"User-Agent": "YUKTI/1.0 (market intelligence; contact@yukti.in)"},
+            headers={"User-Agent": "YuktiFi/1.0 (market intelligence; contact@yukti.in)"},
             timeout=7.0
         ) as client:
             response = await client.post("https://overpass-api.de/api/interpreter", data={"data": query})

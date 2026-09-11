@@ -57,7 +57,7 @@ class AgmarknetClient:
             
     async def _fallback_pricing_async(self, commodity: str) -> Dict[str, float]:
         """Provides heuristic pricing via Gemini AI if API fails or key is missing."""
-        from app.api_clients.gemini_client import GeminiClient
+        from app.ai.gemini_client import GeminiClient
         client = GeminiClient()
         
         prompt = f"""

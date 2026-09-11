@@ -143,13 +143,13 @@ export function WhatIfSlider({ sessionId }: Props) {
                 </p>
               </div>
               <div>
-                <p className="text-slate-400 text-sm mb-1">New EMI</p>
+                <p className="text-slate-400 text-sm mb-1">New Monthly Installment</p>
                 <p className="text-3xl font-bold text-warm-text">
                   {result ? formatCurrency(result.emi) : "..."}
                 </p>
               </div>
               <div>
-                <p className="text-slate-400 text-sm mb-1">DSCR</p>
+                <p className="text-slate-400 text-sm mb-1">Loan Repayment Capacity</p>
                 <p className={`text-2xl font-bold ${result?.dscr >= 1.5 ? "text-emerald-400" : result?.dscr >= 1.0 ? "text-amber-400" : "text-red-400"}`}>
                   {result ? `${result.dscr.toFixed(2)}x` : "..."}
                 </p>

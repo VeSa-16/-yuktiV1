@@ -1,11 +1,12 @@
 """POST /profile — create user + resolve location."""
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session as DBSession
-from app.schemas.profile import ProfileRequest, ProfileResponse
+from app.schemas.profile import ProfileRequest, ProfileResponse, OnboardingParseRequest, OnboardingParseResponse
 from app.core.db import get_db
 from app.models import User, Location
 from app.models.core import uid
 from app.engines.location_service import resolve_location, get_location_metadata
+from app.ai_layer.onboarding_parser import parse_onboarding_text
 
 router = APIRouter()
 
@@ -55,3 +56,17 @@ def create_profile(req: ProfileRequest, db: DBSession = Depends(get_db)):
         lng=meta.get("lng", location.lng),
         data_richness=meta.get("data_richness", location.data_richness),
     )
+
+@router.post("/parse-onboarding", response_model=OnboardingParseResponse)
+async def parse_onboarding(req: OnboardingParseRequest):
+    """
+    Parses unstructured text during onboarding to extract business details.
+    """
+    try:
+        parsed_data = await parse_onboarding_text(req.text)
+        return OnboardingParseResponse(**parsed_data)
+    except Exception as e:
+        # Fallback empty response handled by Pydantic defaults
+        import logging
+        logging.getLogger(__name__).error(f"Error in parse_onboarding route: {e}")
+        return OnboardingParseResponse()

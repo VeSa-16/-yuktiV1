@@ -1,17 +1,18 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 export type Step = {
   id: number;
-  label: string;
+  labelKey: string;
 };
 
 const steps: Step[] = [
-  { id: 1, label: 'About You' },
-  { id: 2, label: 'Location' },
-  { id: 3, label: 'Capital' },
-  { id: 4, label: 'Business' },
-  { id: 5, label: 'Review' },
+  { id: 1, labelKey: 'step_1' },
+  { id: 2, labelKey: 'step_2' },
+  { id: 3, labelKey: 'step_3' },
+  { id: 4, labelKey: 'step_4' },
+  { id: 5, labelKey: 'step_5' },
 ];
 
 interface StepperProps {
@@ -19,6 +20,8 @@ interface StepperProps {
 }
 
 export function Stepper({ currentStep }: StepperProps) {
+  const t = useTranslations('Stepper');
+  
   return (
     <div className="w-full max-w-3xl mx-auto px-4">
       <div className="flex justify-between items-center relative">
@@ -51,7 +54,7 @@ export function Stepper({ currentStep }: StepperProps) {
                   isActive || isCompleted ? 'text-forest' : 'text-ink-soft'
                 }`}
               >
-                {step.label}
+                {t(step.labelKey)}
               </span>
             </div>
           );

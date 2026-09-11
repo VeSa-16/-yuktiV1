@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChevronLeft, ArrowRight, ChevronDown, Lightbulb } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const BUSINESS_IDEAS: Record<string, {title: string, desc: string}[]> = {
   'Retail & Shop': [
@@ -68,29 +69,42 @@ interface StepBusinessProps {
 }
 
 export function StepBusiness({ data, updateData, onNext, onBack }: StepBusinessProps) {
+  const t = useTranslations('onboarding.step4');
+  const tCommon = useTranslations('common');
+  
   const PREDEFINED_INDUSTRIES = [
-    'Retail & Shop', 'Manufacturing', 'Agri-Business', 'Services & Tech',
-    'Food & Beverage', 'Handicrafts & Artisanal', 'Logistics & Delivery', 
-    'Education & Training', 'Healthcare & Wellness', 'Fashion & Apparel'
+    { value: 'Retail & Shop', label: t('indRetail') },
+    { value: 'Manufacturing', label: t('indMfg') },
+    { value: 'Agri-Business', label: t('indAgri') },
+    { value: 'Services & Tech', label: t('indServices') },
+    { value: 'Food & Beverage', label: t('indFood') },
+    { value: 'Handicrafts & Artisanal', label: t('indCrafts') },
+    { value: 'Logistics & Delivery', label: t('indLogistics') },
+    { value: 'Education & Training', label: t('indEdu') },
+    { value: 'Healthcare & Wellness', label: t('indHealth') },
+    { value: 'Fashion & Apparel', label: t('indFashion') }
   ];
-  const isCustomIndustry = data.industry !== '' && !PREDEFINED_INDUSTRIES.includes(data.industry);
+  
+  const predefinedValues = PREDEFINED_INDUSTRIES.map(i => i.value);
+  const isCustomIndustry = data.industry !== '' && !predefinedValues.includes(data.industry);
+  
   return (
-    <div className="flex flex-col h-full bg-white rounded-3xl p-6 sm:p-8 border border-premium-border shadow-card relative">
-      <div className="flex-1">
-        <h2 className="text-[28px] font-bold text-forest-deep mb-2 font-display">Business Interests</h2>
-        <p className="text-ink-soft text-sm font-medium mb-8">
-          What kind of business are you looking to start? We'll match this with local market demand.
+    <div className="flex flex-col h-full bg-white rounded-3xl p-4 sm:p-6 border border-premium-border shadow-card relative overflow-hidden">
+      <div className="flex-1 overflow-y-auto min-h-0 pr-2">
+        <h2 className="text-[28px] font-bold text-forest-deep mb-1 font-display">{t('title')}</h2>
+        <p className="text-ink-soft text-sm font-medium mb-4">
+          {t('subtitle')}
         </p>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           
           <div className="space-y-2">
             <label className="text-sm font-bold text-ink flex items-center">
-              Area of Interest <span className="text-[#ea580c] ml-1">*</span>
+              {t('industry')} <span className="text-[#ea580c] ml-1">*</span>
             </label>
             <div className="relative">
               <select
-                className="w-full rounded-xl border border-premium-border px-4 py-3 text-ink bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest transition-all cursor-pointer font-medium"
+                className="w-full rounded-xl border border-premium-border px-4 py-2 text-ink bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest transition-all cursor-pointer font-medium"
                 value={isCustomIndustry ? 'Other' : data.industry}
                 onChange={(e) => {
                   if (e.target.value === 'Other') {
@@ -100,21 +114,21 @@ export function StepBusiness({ data, updateData, onNext, onBack }: StepBusinessP
                   }
                 }}
               >
-                <option value="" disabled>Select an area of interest...</option>
+                <option value="" disabled>{t('selectIndustry')}</option>
                 {PREDEFINED_INDUSTRIES.map(ind => (
-                  <option key={ind} value={ind}>{ind}</option>
+                  <option key={ind.value} value={ind.value}>{ind.label}</option>
                 ))}
-                <option value="Other">Other (Please specify)</option>
+                <option value="Other">{t('otherSpecify')}</option>
               </select>
-              <ChevronDown className="absolute right-4 top-3.5 text-ink-soft pointer-events-none" size={20} />
+              <ChevronDown className="absolute right-4 top-2.5 text-ink-soft pointer-events-none" size={20} />
             </div>
 
             {isCustomIndustry && (
               <div className="pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
                 <input 
                   type="text"
-                  placeholder="e.g. Handicrafts, Cloud Kitchen, Freelancing..."
-                  className="w-full rounded-xl border border-premium-border px-4 py-3 text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest transition-all"
+                  placeholder={t('otherPlaceholder')}
+                  className="w-full rounded-xl border border-premium-border px-4 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest transition-all"
                   value={data.industry === 'Custom' ? '' : data.industry}
                   onChange={(e) => updateData({ industry: e.target.value })}
                   autoFocus
@@ -126,17 +140,17 @@ export function StepBusiness({ data, updateData, onNext, onBack }: StepBusinessP
               <div className="pt-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
                 <label className="text-sm font-bold text-ink flex items-center">
                   <Lightbulb size={16} className="text-[#ea580c] mr-2" />
-                  Suggested Ideas (Click to auto-fill)
+                  {t('suggestedIdeas')}
                 </label>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                   {BUSINESS_IDEAS[data.industry].map((idea, idx) => (
                     <div 
                       key={idx}
                       onClick={() => updateData({ ideaDetails: `${idea.title}:\n${idea.desc}` })}
-                      className="p-4 border border-premium-border rounded-xl cursor-pointer hover:border-forest hover:bg-forest-tint/10 transition-all text-left group shadow-sm hover:shadow"
+                      className="p-2 border border-premium-border rounded-xl cursor-pointer hover:border-forest hover:bg-forest-tint/10 transition-all text-left group shadow-sm hover:shadow"
                     >
                       <h4 className="text-sm font-bold text-forest-deep mb-1 group-hover:text-forest transition-colors">{idea.title}</h4>
-                      <p className="text-xs text-ink-soft leading-relaxed">{idea.desc}</p>
+                      <p className="text-xs text-ink-soft leading-tight">{idea.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -146,12 +160,12 @@ export function StepBusiness({ data, updateData, onNext, onBack }: StepBusinessP
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-ink flex items-center">
-              Please specify what you want to build in detail
+              {t('idea')}
             </label>
             <textarea 
-              rows={3}
-              placeholder="Describe your business idea, products, target customers, etc."
-              className="w-full rounded-xl border border-premium-border px-4 py-3 text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest transition-all resize-none"
+              rows={2}
+              placeholder={t('ideaPlaceholder')}
+              className="w-full rounded-xl border border-premium-border px-4 py-2 text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest transition-all resize-none"
               value={data.ideaDetails || ''}
               onChange={(e) => updateData({ ideaDetails: e.target.value })}
             />
@@ -159,20 +173,25 @@ export function StepBusiness({ data, updateData, onNext, onBack }: StepBusinessP
           
           <div className="space-y-2 pt-4">
             <label className="text-sm font-bold text-ink flex items-center">
-              Prior Experience in this field <span className="text-[#ea580c] ml-1">*</span>
+              {t('experience')} <span className="text-[#ea580c] ml-1">*</span>
             </label>
-            <div className="flex flex-wrap gap-3">
-              {['None, I am a beginner', '1-3 Years', '3-5 Years', '5+ Years'].map(option => (
-                <label key={option} className={`flex items-center px-4 py-3 rounded-xl border cursor-pointer transition-colors ${data.experience === option ? 'border-forest bg-forest-tint/30 text-forest-deep font-bold' : 'border-premium-border hover:bg-cream text-ink font-medium'}`}>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { value: 'None, I am a beginner', label: t('expNone') },
+                { value: '1-3 Years', label: t('exp1to3') },
+                { value: '3-5 Years', label: t('exp3to5') },
+                { value: '5+ Years', label: t('exp5plus') }
+              ].map(option => (
+                <label key={option.value} className={`flex items-center px-4 py-2 rounded-xl border cursor-pointer transition-colors ${data.experience === option.value ? 'border-forest bg-forest-tint/30 text-forest-deep font-bold' : 'border-premium-border hover:bg-cream text-ink font-medium'}`}>
                   <input 
                     type="radio" 
                     name="experience" 
-                    value={option}
+                    value={option.value}
                     className="mr-3 w-4 h-4 accent-forest"
-                    checked={data.experience === option}
-                    onChange={() => updateData({ experience: option })}
+                    checked={data.experience === option.value}
+                    onChange={() => updateData({ experience: option.value })}
                   />
-                  <span className="text-sm">{option}</span>
+                  <span className="text-sm">{option.label}</span>
                 </label>
               ))}
             </div>
@@ -182,19 +201,19 @@ export function StepBusiness({ data, updateData, onNext, onBack }: StepBusinessP
       </div>
 
       {/* Footer Nav */}
-      <div className="flex items-center justify-between mt-10 pt-6 border-t border-premium-border">
+      <div className="flex items-center justify-between mt-4 pt-4 border-t border-premium-border">
         <button 
           onClick={onBack}
           className="flex items-center text-ink-soft hover:text-ink font-bold text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron rounded px-2 py-1"
         >
-          <ChevronLeft size={18} className="mr-1" /> Back
+          <ChevronLeft size={18} className="mr-1" /> {tCommon('back')}
         </button>
         
         <button 
           onClick={onNext}
-          className="bg-[#ea580c] hover:bg-[#c2410c] text-white px-8 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-saffron"
+          className="bg-[#ea580c] hover:bg-[#c2410c] text-white px-8 py-2 rounded-xl text-sm font-bold flex items-center justify-center shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-saffron"
         >
-          Next: Review <ArrowRight size={18} className="ml-2" />
+          {tCommon('next')} <ArrowRight size={18} className="ml-2" />
         </button>
       </div>
     </div>

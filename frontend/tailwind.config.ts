@@ -48,6 +48,7 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-jakarta)', 'ui-sans-serif', 'system-ui', 'sans-serif'], // Global sans is now Jakarta
         display: ['var(--font-fraunces)', 'ui-serif', 'serif'], // Fraunces for display headings
+        devanagari: ['var(--font-noto-devanagari)', 'var(--font-jakarta)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         'card': '0 4px 20px rgba(34, 29, 23, 0.05)',

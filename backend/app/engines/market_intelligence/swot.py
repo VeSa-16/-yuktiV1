@@ -63,7 +63,7 @@ def generate_swot(
     confidence: str = "Low",
 ) -> dict:
     """Sync fallback for legacy callers."""
-    from app.api_clients.gemini_client import GeminiClient
+    from app.ai.gemini_client import GeminiClient
     import asyncio
     client = GeminiClient()
     return asyncio.run(generate_swot_async(category_name, competitor_count, gap_score, pricing, cost_profile, demographics, client, confidence))

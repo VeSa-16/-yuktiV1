@@ -72,7 +72,7 @@ def assess_threats(
     confidence: str = "Low",
 ) -> dict:
     """Sync fallback for legacy callers."""
-    from app.api_clients.gemini_client import GeminiClient
+    from app.ai.gemini_client import GeminiClient
     import asyncio
     client = GeminiClient()
     return asyncio.run(assess_threats_async(competitor_count, gap_score, category_name, pricing, client, confidence))

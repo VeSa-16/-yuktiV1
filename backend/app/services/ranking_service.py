@@ -18,7 +18,7 @@ data_layer = DataRetrieval()
 def rank_opportunities(location_id: str, margin_capital: float) -> list[dict]:
     """
     Evaluate every available business category for the given location and capital.
-    Returns a ranked list sorted by YUKTI score (descending).
+    Returns a ranked list sorted by YuktiFi score (descending).
     """
     category_ids = data_layer.get_all_category_ids(location_id)
     if not category_ids:
@@ -139,7 +139,7 @@ def rank_opportunities(location_id: str, margin_capital: float) -> list[dict]:
             "net_profit": net_profit,
             "dimension_scores": dimension_scores,
             "highlights": highlights,
-            "note": f"YUKTI Score: {score_result.final_score}/100",
+            "note": f"YuktiFi Score: {score_result.final_score}/100",
         })
 
     # Sort by score descending

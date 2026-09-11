@@ -1,4 +1,4 @@
-# YUKTI — Prototype Starter Code
+# YuktiFi — Prototype Starter Code
 
 Working skeleton for every file in the structure doc. The **deterministic engines, scheme engine, recommendation engine, and boundary-value tests are fully implemented and runnable** — these are the judge-critical pieces (Section 17.1, Section 40). The market-intelligence, AI-layer, and report modules are implemented as clear, wired-together stubs — enough to run end-to-end on curated demo data, with `# TODO` marking where real data/prompts replace placeholders.
 
@@ -738,7 +738,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import routes_finance, routes_schemes, routes_simulate
 # TODO: import routes_profile, routes_rank, routes_market, routes_recommend, routes_explain, routes_report
 
-app = FastAPI(title="YUKTI API")
+app = FastAPI(title="YuktiFi API")
 
 app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"],

@@ -1,3 +1,5 @@
+import json
+from pathlib import Path
 from typing import Optional
 from app.services.data_service import data_service
 from app.api_clients import (
@@ -14,6 +16,40 @@ class DataRetrieval:
         self.overpass = OverpassClient()
         self.agmarknet = AgmarknetClient()
         
+        # Load local combined data
+        processed_path = Path(__file__).resolve().parent.parent.parent / "data" / "processed" / "solapur_combined.json"
+        if processed_path.exists():
+            with open(processed_path, 'r', encoding='utf-8') as f:
+                self.local_data = json.load(f)
+        else:
+            self.local_data = {"categories": {}}
+
+    def get_category_data(self, location_id: str, category_id: str) -> dict:
+        # Strict enforcement: we only have detailed data for Solapur currently.
+        if not location_id or "solapur" not in location_id.lower() and "mh_sol" not in location_id.lower():
+            return {}
+        return self.local_data.get("categories", {}).get(category_id, {})
+        
+    def get_market_data(self, location_id: str, category_id: str) -> dict:
+        cat_data = self.get_category_data(location_id, category_id)
+        if cat_data and "competitor_market_data" in cat_data:
+            return cat_data["competitor_market_data"]
+        return {}
+
+    def get_financial_data(self, location_id: str, category_id: str) -> dict:
+        cat_data = self.get_category_data(location_id, category_id)
+        if not cat_data:
+            return {}
+        return {
+            "pricing_margins": cat_data.get("pricing_margins", {}),
+            "initial_setup_costs": cat_data.get("initial_setup_costs", {}),
+            "monthly_running_costs": cat_data.get("monthly_running_costs", {}),
+            "unit_economics": cat_data.get("unit_economics", {})
+        }
+        
+    def get_all_categories(self) -> list[str]:
+        return list(self.local_data.get("categories", {}).keys())
+
     def _parse_location(self, location_id: str):
         try:
             if "," in location_id:
@@ -79,47 +115,11 @@ class DataRetrieval:
         }
 
     def get_cost_profile(self, location_id: str, category_id: str) -> dict:
-        from app.api_clients.gemini_client import GeminiClient
-        client = GeminiClient()
-        
-        prompt = f"""
-        Estimate realistic unit economics for a small business in India in the category '{category_id}'.
-        Output ONLY a JSON object exactly matching this schema, with no other text.
-        Schema:
-        {{
-            "fixed_cost_monthly": integer (e.g. rent, salaries, utilities),
-            "variable_cost_per_unit": integer (e.g. raw material cost per item or service),
-            "selling_price_per_unit": integer (e.g. average selling price to customer),
-            "estimated_monthly_revenue": integer,
-            "estimated_monthly_units": integer,
-            "assumption_note": string (brief explanation of the business model assumed)
-        }}
-        """
-        
-        fallback = {
-            "fixed_cost_monthly": 15000,
-            "variable_cost_per_unit": 50,
-            "selling_price_per_unit": 150,
-            "estimated_monthly_revenue": 45000,
-            "estimated_monthly_units": 300,
-            "assumption_note": "Fallback estimates used due to AI timeout."
-        }
-        
-        result = client.generate_json(prompt)
-        prof = result if result else fallback
-        confidence = "High" if result else "Low"
-
         return {
-            "value": {
-                "fixed_cost_monthly": prof.get("fixed_cost_monthly", fallback["fixed_cost_monthly"]),
-                "variable_cost_per_unit": prof.get("variable_cost_per_unit", fallback["variable_cost_per_unit"]),
-                "selling_price_per_unit": prof.get("selling_price_per_unit", fallback["selling_price_per_unit"]),
-                "estimated_monthly_revenue": prof.get("estimated_monthly_revenue", fallback["estimated_monthly_revenue"]),
-                "estimated_monthly_units": prof.get("estimated_monthly_units", fallback["estimated_monthly_units"]),
-            },
-            "confidence": confidence,
-            "data_origin": "Gemini 2.5 AI Estimation",
-            "note": prof.get("assumption_note", "No assumptions provided."),
+            "value": None,
+            "confidence": "Low",
+            "data_origin": "Unknown",
+            "note": "AI Estimation disabled for fallback values to prevent fake data."
         }
 
     def get_all_category_ids(self, location_id: str) -> list[str]:

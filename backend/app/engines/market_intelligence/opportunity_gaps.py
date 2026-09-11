@@ -70,7 +70,7 @@ def analyze_opportunity_gaps(
     confidence: str = "Low",
 ) -> dict:
     """Sync fallback for legacy callers."""
-    from app.api_clients.gemini_client import GeminiClient
+    from app.ai.gemini_client import GeminiClient
     import asyncio
     client = GeminiClient()
     return asyncio.run(analyze_opportunity_gaps_async(consumer_base, competitor_count, category_name, client, confidence))

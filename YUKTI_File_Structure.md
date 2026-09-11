@@ -1,4 +1,4 @@
-# YUKTI — Prototype File Structure
+# YuktiFi — Prototype File Structure
 
 Monorepo, two deployable services (Next.js frontend + FastAPI backend), matching the architecture in Section 22 and the API/DB design in Sections 23–24 of the blueprint. Every folder below is annotated with **which blueprint section it implements** and **what NOT to put there** — the "LLM never does arithmetic" rule (Section 8) is enforced structurally by keeping `engines/` pure-Python/deterministic and isolating the AI layer into its own package that can only call engines, never replace them.
 
@@ -70,7 +70,7 @@ yukti/
 │   │   │   ├── financial_engine.py             # Section 14/15/17 — PC/loan formulas, EMI, DSCR,
 │   │   │   │                                   #   break-even, ROI, boundary-value logic (17.1)
 │   │   │   ├── scheme_engine.py                # Section 16 — pure rule-table lookup, NEVER LLM
-│   │   │   ├── recommendation_engine.py        # Section 12/13 — hard gates, YUKTI Score, verdict banding
+│   │   │   ├── recommendation_engine.py        # Section 12/13 — hard gates, YuktiFi Score, verdict banding
 │   │   │   │
 │   │   │   └── simulation_engine.py            # Section 15 — recalculation chain for What-If sliders
 │   │   │

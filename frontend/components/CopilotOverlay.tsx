@@ -11,7 +11,7 @@ export function CopilotOverlay() {
   const [query, setQuery] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [messages, setMessages] = useState<{role: "user"|"ai", content: string, source?: string}[]>([
-    { role: "ai", content: "Hi! I'm your YUKTI AI Assistant. Ask me anything about your business plan or financial numbers.", source: "template" }
+    { role: "ai", content: "Hi! I'm your YuktiFi AI Assistant. Ask me anything about your business plan or financial numbers.", source: "template" }
   ]);
   const [loading, setLoading] = useState(false);
 
@@ -54,8 +54,12 @@ export function CopilotOverlay() {
     setLoading(true);
 
     try {
-      const res = await api.explain({ session_id: state.sessionId, question: userMsg });
-      setMessages(prev => [...prev, { role: "ai", content: res.explanation, source: res.data_source }]);
+      const res = await api.copilotChat({ 
+        message: userMsg, 
+        location_id: state.locationId || "Solapur", 
+        category_id: state.categoryId || "unknown" 
+      });
+      setMessages(prev => [...prev, { role: "ai", content: res.reply, source: "copilot" }]);
     } catch (error) {
       setMessages(prev => [...prev, { role: "ai", content: "I'm sorry, I encountered an error while analyzing that.", source: "error" }]);
     } finally {
@@ -94,11 +98,11 @@ export function CopilotOverlay() {
               <div className="flex items-center space-x-2">
                 <img
                   src="/yukti-logo-transparent.png"
-                  alt="YUKTI Logo"
+                  alt="YuktiFi Logo"
                   className="h-7 w-7 object-contain"
                 />
                 <div className="flex flex-col justify-center">
-                  <span className="font-bold text-base leading-tight">YUKTI Copilot</span>
+                  <span className="font-bold text-base leading-tight">YuktiFi Copilot</span>
                   <span className="text-[6px] font-bold uppercase tracking-[0.1em] opacity-80 mt-0.5">Government of India Initiative</span>
                 </div>
               </div>
@@ -144,10 +148,10 @@ export function CopilotOverlay() {
                   Translate to Hindi
                 </button>
                 <button 
-                  onClick={() => setQuery("How can I improve my DSCR?")}
+                  onClick={() => setQuery("How can I improve my Loan Repayment Capacity?")}
                   className="whitespace-nowrap text-xs font-bold px-3 py-1.5 bg-white text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 transition-colors border border-warm-border rounded-full shadow-sm"
                 >
-                  Improve DSCR
+                  Improve Loan Repayment Capacity
                 </button>
               </div>
               <div className="p-4 flex items-center space-x-3 bg-white">

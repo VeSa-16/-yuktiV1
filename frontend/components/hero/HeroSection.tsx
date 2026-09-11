@@ -7,13 +7,15 @@ import { HeroFeatureStrip } from './HeroFeatureStrip';
 import { ArrowRight } from 'lucide-react';
 import { motion, useReducedMotion, Variants } from 'framer-motion';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 interface HeroSectionProps {
   onStartEntrepreneur: () => void;
   onStartAdvisor: () => void;
 }
 
-export function HeroSection({ onStartEntrepreneur }: HeroSectionProps) {
+export function HeroSection({ onStartEntrepreneur, onStartAdvisor }: HeroSectionProps) {
+  const t = useTranslations('Landing');
   const shouldReduceMotion = useReducedMotion();
 
   const titleVariants: Variants = {
@@ -39,7 +41,7 @@ export function HeroSection({ onStartEntrepreneur }: HeroSectionProps) {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#fdfbf6] to-transparent z-0 pointer-events-none" />
       </div>
 
-      <HeroNavbar onGetStarted={onStartEntrepreneur} />
+      <HeroNavbar onGetStarted={onStartAdvisor} />
 
       {/* Main Hero Content */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex flex-col justify-center z-10 pt-20 pb-2">
@@ -57,16 +59,16 @@ export function HeroSection({ onStartEntrepreneur }: HeroSectionProps) {
               className="max-w-2xl relative z-20"
             >
               <motion.h1 variants={titleVariants} className="font-display font-bold text-5xl lg:text-6xl xl:text-[64px] text-forest-deep leading-tight mb-8 tracking-tight">
-                Don’t just start a business.<br />
-                <span className="text-[#ea580c]">Start the right one.</span>
+                {t('title_1')}<br />
+                <span className="text-[#ea580c]">{t('title_2')}</span>
               </motion.h1>
               
               <motion.h3 variants={titleVariants} className="text-2xl md:text-3xl text-forest-deep font-bold mb-3 tracking-tight">
-                Before you invest, know if it can work.
+                {t('subtitle')}
               </motion.h3>
 
               <motion.p variants={titleVariants} className="text-base text-ink-soft mb-5 font-medium leading-relaxed max-w-lg">
-                YUKTI helps aspiring entrepreneurs discover viable local business opportunities, understand market conditions, and build a practical business plan.
+                {t('description')}
               </motion.p>
 
               <motion.div variants={titleVariants} className="flex flex-col sm:flex-row gap-3">
@@ -74,13 +76,13 @@ export function HeroSection({ onStartEntrepreneur }: HeroSectionProps) {
                   onClick={onStartEntrepreneur}
                   className="bg-[#ea580c] hover:bg-[#c2410c] text-white px-8 py-3.5 rounded-full text-sm font-bold flex items-center justify-center shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-saffron"
                 >
-                  Start My Business Journey <ArrowRight size={18} className="ml-2" />
+                  {t('start_journey')} <ArrowRight size={18} className="ml-2" />
                 </button>
                 <Link href="/how-it-works" passHref legacyBehavior>
                   <a 
                     className="bg-white/50 backdrop-blur-sm hover:bg-white text-forest-deep border border-forest px-8 py-3.5 rounded-full text-sm font-bold flex items-center justify-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-forest shadow-sm"
                   >
-                    See How It Works
+                    {t('see_how_it_works')}
                   </a>
                 </Link>
               </motion.div>

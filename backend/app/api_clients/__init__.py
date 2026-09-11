@@ -3,13 +3,11 @@ from .overpass_client import OverpassClient
 from .worldpop_client import WorldPopClient
 from .census_client import CensusClient
 from .agmarknet_client import AgmarknetClient
-from .gemini_client import GeminiClient
 
 __all__ = [
     "GeocodingClient",
     "OverpassClient",
     "WorldPopClient",
     "CensusClient",
-    "AgmarknetClient",
-    "GeminiClient"
+    "AgmarknetClient"
 ]

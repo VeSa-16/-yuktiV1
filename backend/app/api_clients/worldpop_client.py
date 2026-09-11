@@ -12,7 +12,7 @@ class WorldPopClient:
     """
     
     # WorldPop global mosaiced population data endpoint (e.g. wpgp)
-    # The true API might require complex bounding boxes, but for YUKTI 
+    # The true API might require complex bounding boxes, but for YuktiFi 
     # we'll build a simplified proxy that uses available WorldPop metadata or falls back gracefully.
     BASE_URL = "https://www.worldpop.org/rest/data/pop"
 

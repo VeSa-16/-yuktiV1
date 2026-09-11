@@ -8,7 +8,9 @@ from app.core.config import settings
 from app.core.seed import seed_database
 from app.api import (
     routes_profile, routes_rank, routes_market, routes_recommend,
-    routes_explain, routes_report, routes_finance, routes_schemes, routes_simulate
+    routes_explain, routes_report, routes_finance, routes_schemes, routes_simulate,
+    routes_copilot, routes_business_plan, routes_marketing, routes_competitor,
+    routes_analysis, routes_locations
 )
 
 logger = logging.getLogger("yukti")
@@ -24,11 +26,11 @@ async def lifespan(app: FastAPI):
             seed_database(db)
         finally:
             db.close()
-    logger.info("YUKTI backend started successfully.")
+    logger.info("YuktiFi backend started successfully.")
     yield
 
 
-app = FastAPI(title="YUKTI API", lifespan=lifespan)
+app = FastAPI(title="YuktiFi API", lifespan=lifespan)
 
 # Parse comma-separated CORS origins safely
 _cors_raw = settings.cors_origins
@@ -70,6 +72,12 @@ app.include_router(routes_report.router)
 app.include_router(routes_finance.router)
 app.include_router(routes_schemes.router)
 app.include_router(routes_simulate.router)
+app.include_router(routes_copilot.router, prefix="/api/copilot", tags=["copilot"])
+app.include_router(routes_business_plan.router, prefix="/api/business-plan", tags=["business-plan"])
+app.include_router(routes_marketing.router, prefix="/api/marketing", tags=["marketing"])
+app.include_router(routes_competitor.router, prefix="/api/competitor", tags=["competitor"])
+app.include_router(routes_analysis.router, prefix="/api/analysis", tags=["analysis"])
+app.include_router(routes_locations.router, prefix="/api/locations", tags=["locations"])
 
 
 @app.get("/health")

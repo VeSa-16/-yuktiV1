@@ -282,3 +282,181 @@ class FinancialSnapshot:
     break_even_units: float
     net_profit: float
     roi: float
+
+from typing import Dict, Any, Optional
+import logging
+
+logger = logging.getLogger(__name__)
+
+CONTRIBUTION_PCT = 0.10   # Beneficiary contribution (NSFDC/PMEGP scheme rule)
+FINANCING_PCT = 0.90      # Scheme financing share
+
+# NSFDC scheme rules (verified against nsfdc.nic.in)
+NSFDC_MICRO_CREDIT = {
+    "max_project_cost": 140000,
+    "max_loan": 125000,
+    "rate_pct": 6.5,
+    "tenure_months": 36,
+    "moratorium_months": 3
+}
+NSFDC_TERM_LOAN = {
+    "max_project_cost": 5000000,
+    "max_loan": 4500000,
+    "rate_pct": 8.0,
+    "tenure_months": 84,
+    "moratorium_months": 6
+}
+
+
+def _normalize_financial_data(setup_costs: Dict, pricing_margins: Dict, monthly_costs: Dict, unit_economics: Dict) -> Dict:
+    """
+    Map real solapur_combined.json field names into a clean normalized schema.
+    
+    JSON fields actually present:
+    - initial_setup_costs.total_setup_cost
+    - monthly_running_costs.total_fixed_costs
+    - pricing_margins.average_margin_percentage
+    - unit_economics.expected_monthly_revenue
+    - unit_economics.variable_costs
+    - unit_economics.net_operating_income
+    """
+    # Setup cost
+    total_setup = setup_costs.get("total_setup_cost")
+    if total_setup is None:
+        logger.warning("[FINANCIAL] total_setup_cost missing from dataset — cannot compute project cost")
+        return {"financial_data_available": False, "reason": "total_setup_cost missing from dataset"}
+
+    # Monthly fixed costs
+    total_fixed = monthly_costs.get("total_fixed_costs")
+    if total_fixed is None:
+        logger.warning("[FINANCIAL] total_fixed_costs missing from dataset")
+        return {"financial_data_available": False, "reason": "total_fixed_costs missing from dataset"}
+
+    # Margin
+    margin_pct_raw = pricing_margins.get("average_margin_percentage")
+    if margin_pct_raw is None:
+        logger.warning("[FINANCIAL] average_margin_percentage missing from dataset")
+        return {"financial_data_available": False, "reason": "average_margin_percentage missing from dataset"}
+    margin_pct = float(margin_pct_raw) / 100.0
+
+    # Unit economics
+    expected_revenue = unit_economics.get("expected_monthly_revenue")
+    variable_costs = unit_economics.get("variable_costs")
+    net_operating_income = unit_economics.get("net_operating_income")
+
+    if expected_revenue is None or variable_costs is None or net_operating_income is None:
+        logger.warning("[FINANCIAL] unit_economics fields missing from dataset")
+        return {"financial_data_available": False, "reason": "unit_economics incomplete in dataset"}
+
+    return {
+        "financial_data_available": True,
+        "startup_cost": float(total_setup),
+        "monthly_fixed_cost": float(total_fixed),
+        "gross_margin_pct": margin_pct,
+        "expected_monthly_revenue": float(expected_revenue),
+        "monthly_variable_cost": float(variable_costs),
+        "net_operating_income": float(net_operating_income),
+    }
+
+
+def _select_scheme(project_cost: float) -> Dict:
+    """Select NSFDC scheme tier based on project cost."""
+    if project_cost <= NSFDC_MICRO_CREDIT["max_project_cost"]:
+        return {**NSFDC_MICRO_CREDIT, "scheme_name": "NSFDC Micro Credit Finance"}
+    else:
+        return {**NSFDC_TERM_LOAN, "scheme_name": "NSFDC Term Loan"}
+
+
+def run_financial_engine(
+    user_capital: float,
+    setup_costs: Dict[str, Any],
+    pricing_margins: Dict[str, Any],
+    monthly_costs: Dict[str, Any],
+    unit_economics: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """
+    Deterministically calculates financial feasibility based on user capital 
+    and REAL JSON dataset values. NEVER invents numbers.
+    """
+    if unit_economics is None:
+        unit_economics = {}
+
+    normalized = _normalize_financial_data(setup_costs, pricing_margins, monthly_costs, unit_economics)
+
+    if not normalized.get("financial_data_available"):
+        return {
+            "financial_data_available": False,
+            "reason": normalized.get("reason", "Dataset fields missing"),
+        }
+
+    startup_cost = normalized["startup_cost"]
+    monthly_fixed = normalized["monthly_fixed_cost"]
+    gross_margin_pct = normalized["gross_margin_pct"]
+    expected_revenue = normalized["expected_monthly_revenue"]
+    monthly_variable = normalized["monthly_variable_cost"]
+    net_operating_income = normalized["net_operating_income"]
+
+    # Project cost = max of actual dataset setup cost and user's capital / 10%
+    # We use the dataset's total_setup_cost as the definitive project cost
+    project_cost = startup_cost
+
+    # Beneficiary contribution is user_capital (capped at 10% of project cost)
+    own_contribution = min(user_capital, project_cost * CONTRIBUTION_PCT)
+    potential_loan = project_cost * FINANCING_PCT
+
+    # Select scheme
+    scheme = _select_scheme(project_cost)
+    loan_amount = min(potential_loan, scheme["max_loan"])
+
+    # EMI
+    annual_rate = scheme["rate_pct"]
+    tenure = scheme["tenure_months"]
+    moratorium = scheme["moratorium_months"]
+    monthly_rate = (annual_rate / 100) / 12
+    repayment_months = tenure - moratorium
+    if monthly_rate == 0:
+        emi = loan_amount / repayment_months
+    else:
+        emi = loan_amount * monthly_rate * (1 + monthly_rate) ** repayment_months / ((1 + monthly_rate) ** repayment_months - 1)
+    emi = round(emi, 2)
+
+    # DSCR = NOI / EMI
+    dscr = round(net_operating_income / emi, 2) if emi > 0 else 999.0
+
+    # ROI
+    annual_net = net_operating_income * 12
+    roi_pct = round((annual_net / project_cost) * 100, 1) if project_cost > 0 else 0.0
+
+    # Break-even (approximate) — monthly_fixed / gross_margin_pct
+    break_even_revenue = round(monthly_fixed / gross_margin_pct) if gross_margin_pct > 0 else None
+
+    capital_sufficient = user_capital >= (project_cost * CONTRIBUTION_PCT)
+
+    logger.info(
+        "[FINANCIAL] project_cost=%.0f loan=%.0f emi=%.0f NOI=%.0f DSCR=%.2f ROI=%.1f%% scheme=%s",
+        project_cost, loan_amount, emi, net_operating_income, dscr, roi_pct, scheme["scheme_name"]
+    )
+
+    return {
+        "financial_data_available": True,
+        "project_cost": round(project_cost),
+        "user_capital": round(user_capital),
+        "own_contribution": round(own_contribution),
+        "loan_amount": round(loan_amount),
+        "scheme": scheme["scheme_name"],
+        "interest_rate_pct": annual_rate,
+        "tenure_months": tenure,
+        "moratorium_months": moratorium,
+        "emi": round(emi),
+        "monthly_revenue": round(expected_revenue),
+        "monthly_opex": round(monthly_fixed + monthly_variable),
+        "monthly_fixed_cost": round(monthly_fixed),
+        "monthly_variable_cost": round(monthly_variable),
+        "net_profit": round(net_operating_income),
+        "gross_margin_pct": round(gross_margin_pct * 100, 1),
+        "dscr": dscr,
+        "roi_pct": roi_pct,
+        "break_even_monthly_revenue": break_even_revenue,
+        "capital_sufficient": capital_sufficient,
+    }
+

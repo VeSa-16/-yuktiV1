@@ -5,7 +5,7 @@ from typing import List, Dict, Any
 
 logger = logging.getLogger(__name__)
 
-# Map YUKTI category_ids to Overpass specific key-value pairs
+# Map YuktiFi category_ids to Overpass specific key-value pairs
 CATEGORY_TAG_MAP = {
     "retail_kirana": '["shop"="convenience"]',
     "dairy": '["shop"="dairy"]',
@@ -40,7 +40,7 @@ class OverpassClient:
         """
         
         try:
-            with httpx.Client(headers={"User-Agent": "YUKTI/1.0 (market intelligence; contact@yukti.in)"}) as client:
+            with httpx.Client(headers={"User-Agent": "YuktiFi/1.0 (market intelligence; contact@yukti.in)"}) as client:
                 response = client.post(self.BASE_URL, data={"data": query}, timeout=5.0)
                 response.raise_for_status()
                 data = response.json()
