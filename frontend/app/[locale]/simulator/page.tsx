@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 
 import { api, type RecommendResponse, type SimulateResponse } from "@/lib/api-client";
 import { Loader2, TrendingUp, AlertTriangle, ArrowRight, Settings2, BarChart4, ArrowDown, ArrowUp, Activity } from "lucide-react";
-import { motion } from "framer-motion";
 import { YuktiFiInsight } from "@/components/YuktiFiInsight";
 import { useTranslations, useLocale } from "next-intl";
 
