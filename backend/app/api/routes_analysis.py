@@ -129,6 +129,7 @@ async def generate_analysis(req: AnalysisRequest):
         pricing_margins=financial_margin,
         monthly_costs=financial_costs,
         unit_economics=unit_economics,
+        category_id=category_id,
     )
 
     logger.info(

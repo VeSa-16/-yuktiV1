@@ -543,31 +543,29 @@ export default function FinancialsPage() {
     loan_amount: financials.loan_amount,
     beneficiary_contribution: financials.user_capital,
     emi: financials.emi,
-    rate: 10,
-    tenure_months: 60,
-    moratorium_months: 0,
-    monthly_revenue: financials.monthly_revenue_target,
+    rate: financials.interest_rate_pct || 10,
+    tenure_months: financials.tenure_months || 60,
+    moratorium_months: financials.moratorium_months || 0,
+    monthly_revenue: financials.monthly_revenue || financials.monthly_revenue_target,
     monthly_opex: financials.monthly_opex,
     net_profit: financials.net_profit,
     roi: financials.roi_pct,
     dscr: financials.dscr,
-    break_even_units: 500, // placeholder if not in unified response
-    scheme: {
-      scheme_name: "Standard Business Loan",
-      explanation: "General SME financing based on typical market rates.",
-      source_url: ""
-    },
-    cashflow_projection: [],
+    break_even_units: financials.break_even_monthly_revenue ? Math.round(financials.break_even_monthly_revenue / 100) : 500,
+    scheme: typeof financials.scheme === "string" 
+      ? { scheme_name: financials.scheme, explanation: "Matched government loan scheme based on project cost and eligibility.", source_url: "" }
+      : (financials.scheme || { scheme_name: "Standard Business Loan", explanation: "General SME financing based on typical market rates.", source_url: "" }),
+    cashflow_projection: financials.cashflow_projection || [],
     pnl_statement: {
-      revenue: financials.monthly_revenue_target,
-      cogs: financials.monthly_revenue_target * (1 - (financials.gross_margin_pct / 100)),
-      gross_profit: financials.monthly_revenue_target * (financials.gross_margin_pct / 100),
+      revenue: financials.monthly_revenue || financials.monthly_revenue_target,
+      cogs: (financials.monthly_revenue || financials.monthly_revenue_target) * (1 - (financials.gross_margin_pct / 100)),
+      gross_profit: (financials.monthly_revenue || financials.monthly_revenue_target) * (financials.gross_margin_pct / 100),
       operating_expenses: financials.monthly_opex,
       ebit: financials.net_profit + financials.emi,
       tax: 0,
       net_profit: financials.net_profit,
       gross_margin_pct: financials.gross_margin_pct,
-      net_margin_pct: Math.round((financials.net_profit / financials.monthly_revenue_target) * 100) || 0
+      net_margin_pct: Math.round((financials.net_profit / (financials.monthly_revenue || financials.monthly_revenue_target)) * 100) || 0
     },
     working_capital: {
       monthly_working_capital: financials.monthly_opex,
@@ -581,8 +579,9 @@ export default function FinancialsPage() {
       payable_days: 0,
       recommended_buffer: financials.monthly_opex * 2
     },
-    revenue_scenarios: null,
-    seasonal_revenue: []
+    revenue_scenarios: financials.revenue_scenarios || null,
+    seasonal_revenue: financials.seasonal_revenue || [],
+    payback_period: financials.payback_period || null
   };
 
   return (

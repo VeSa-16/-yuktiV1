@@ -372,7 +372,8 @@ def run_financial_engine(
     setup_costs: Dict[str, Any],
     pricing_margins: Dict[str, Any],
     monthly_costs: Dict[str, Any],
-    unit_economics: Optional[Dict[str, Any]] = None
+    unit_economics: Optional[Dict[str, Any]] = None,
+    category_id: str = "retail_kirana"
 ) -> Dict[str, Any]:
     """
     Deterministically calculates financial feasibility based on user capital 
@@ -432,6 +433,36 @@ def run_financial_engine(
 
     capital_sufficient = user_capital >= (project_cost * CONTRIBUTION_PCT)
 
+    monthly_opex = monthly_fixed + monthly_variable
+
+    # Extended computations for projections & visualizations
+    cashflow_projection = compute_cashflow_projection(
+        monthly_revenue=expected_revenue,
+        monthly_opex=monthly_opex,
+        emi=emi,
+        moratorium_months=moratorium,
+        category_id=category_id,
+        num_months=12,
+    )
+    seasonal_revenue = compute_seasonal_revenue(
+        monthly_revenue=expected_revenue,
+        category_id=category_id,
+    )
+    revenue_scenarios = compute_revenue_scenarios(
+        monthly_revenue=expected_revenue,
+        monthly_opex=monthly_opex,
+        emi=emi,
+        total_investment=project_cost,
+    )
+    payback_period = compute_payback_period(
+        monthly_revenue=expected_revenue,
+        monthly_opex=monthly_opex,
+        emi=emi,
+        total_investment=project_cost,
+        moratorium_months=moratorium,
+        category_id=category_id,
+    )
+
     logger.info(
         "[FINANCIAL] project_cost=%.0f loan=%.0f emi=%.0f NOI=%.0f DSCR=%.2f ROI=%.1f%% scheme=%s",
         project_cost, loan_amount, emi, net_operating_income, dscr, roi_pct, scheme["scheme_name"]
@@ -449,7 +480,7 @@ def run_financial_engine(
         "moratorium_months": moratorium,
         "emi": round(emi),
         "monthly_revenue": round(expected_revenue),
-        "monthly_opex": round(monthly_fixed + monthly_variable),
+        "monthly_opex": round(monthly_opex),
         "monthly_fixed_cost": round(monthly_fixed),
         "monthly_variable_cost": round(monthly_variable),
         "net_profit": round(net_operating_income),
@@ -458,5 +489,9 @@ def run_financial_engine(
         "roi_pct": roi_pct,
         "break_even_monthly_revenue": break_even_revenue,
         "capital_sufficient": capital_sufficient,
+        "cashflow_projection": cashflow_projection,
+        "seasonal_revenue": seasonal_revenue,
+        "revenue_scenarios": revenue_scenarios,
+        "payback_period": payback_period,
     }
 
