@@ -45,40 +45,32 @@ async def match_business_category(
     """
     gemini = GeminiClient()
     
-    # Deterministic check
     explicit_category = CATEGORY_MAP.get(area_of_interest)
     
+    # Fast path: If the user selected a known category from the UI, skip Gemini entirely to save time.
     if explicit_category:
-        prompt = f"""
-        You are a business categorization expert for YUKTI (a business intelligence platform).
-        The user has provided the following inputs for their new business idea:
-        - Area of Interest: {area_of_interest} (Deterministic Category: {explicit_category})
-        - Suggested Idea Template: {suggested_idea}
-        - Detailed Idea Description: {detailed_idea}
-        - Prior Experience: {experience}
+        return {
+            "matched_category_id": explicit_category,
+            "matched_subcategory": "general",
+            "confidence": 1.0,
+            "reason": f"User explicitly selected {area_of_interest}."
+        }
 
-        The top-level category is ALREADY DETERMINED as '{explicit_category}'.
-        Do NOT change it.
-        
-        Determine a 'subcategory' based on the user's detailed description (e.g., 'grocery', 'tailoring', 'dairy').
-        Provide a 1-sentence explanation of how this idea fits the category.
-        Return a strict JSON object with this schema, and nothing else.
-        """
-    else:
-        prompt = f"""
-        You are a business categorization expert for YUKTI (a business intelligence platform).
-        The user has provided the following inputs for their new business idea:
-        - Area of Interest: {area_of_interest}
-        - Suggested Idea Template: {suggested_idea}
-        - Detailed Idea Description: {detailed_idea}
-        - Prior Experience: {experience}
+    # Only call Gemini if the user provided a custom/unstructured idea
+    prompt = f"""
+    You are a business categorization expert for YUKTI (a business intelligence platform).
+    The user has provided the following inputs for their new business idea:
+    - Area of Interest: {area_of_interest}
+    - Suggested Idea Template: {suggested_idea}
+    - Detailed Idea Description: {detailed_idea}
+    - Prior Experience: {experience}
 
-        You must map this idea to ONE of the following EXACT allowed category IDs:
-        {', '.join(ALLOWED_CATEGORIES)}
+    You must map this idea to ONE of the following EXACT allowed category IDs:
+    {', '.join(ALLOWED_CATEGORIES)}
 
-        Also determine a 'subcategory' based on the user's detailed description.
-        Return a strict JSON object with this schema, and nothing else.
-        """
+    Also determine a 'subcategory' based on the user's detailed description.
+    Return a strict JSON object with this schema, and nothing else.
+    """
     
     schema = {
         "type": "OBJECT",
@@ -106,14 +98,10 @@ async def match_business_category(
     result = await gemini.generate_json_async(prompt, schema=schema)
     
     if result:
-        # Enforce the deterministic category if it was set
-        if explicit_category:
-            result["matched_category_id"] = explicit_category
-            
         # Fallback validation
         if result.get("matched_category_id") not in ALLOWED_CATEGORIES:
             logger.warning(f"Gemini hallucinated category: {result.get('matched_category_id')}")
-            result["matched_category_id"] = explicit_category or ALLOWED_CATEGORIES[0]
+            result["matched_category_id"] = ALLOWED_CATEGORIES[0]
             
         return result
         

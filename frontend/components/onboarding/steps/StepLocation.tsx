@@ -19,23 +19,35 @@ export function StepLocation({ data, updateData, onNext, onBack }: StepLocationP
   const t = useTranslations('onboarding.step2');
   const tCommon = useTranslations('common');
   
-  const [states, setStates] = useState<{id: string, name: string}[]>([]);
+  const STATES = [
+    { id: "MH", name: "Maharashtra" },
+    { id: "GJ", name: "Gujarat" },
+    { id: "KA", name: "Karnataka" }
+  ];
+
+  const DISTRICTS: Record<string, { id: string, name: string }[]> = {
+    "MH": [
+      { id: "MH_SOL", name: "Solapur" },
+      { id: "MH_PUN", name: "Pune" },
+      { id: "MH_NSK", name: "Nashik" }
+    ],
+    "GJ": [
+      { id: "GJ_AMD", name: "Ahmedabad" },
+      { id: "GJ_SUR", name: "Surat" }
+    ],
+    "KA": [
+      { id: "KA_BLR", name: "Bangalore" },
+      { id: "KA_MYS", name: "Mysore" }
+    ]
+  };
+
+  const [states, setStates] = useState<{id: string, name: string}[]>(STATES);
   const [districts, setDistricts] = useState<{id: string, name: string}[]>([]);
   const [selectedStateId, setSelectedStateId] = useState<string>('');
   
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/locations/states`)
-      .then(res => res.json())
-      .then(data => setStates(data))
-      .catch(err => console.error("Failed to load states:", err));
-  }, []);
-
-  useEffect(() => {
     if (selectedStateId) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/locations/districts?state_id=${selectedStateId}`)
-        .then(res => res.json())
-        .then(data => setDistricts(data))
-        .catch(err => console.error("Failed to load districts:", err));
+      setDistricts(DISTRICTS[selectedStateId] || []);
     } else {
       setDistricts([]);
     }
