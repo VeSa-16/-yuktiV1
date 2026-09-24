@@ -2,7 +2,7 @@ import React from 'react';
 import { Bot, Sparkles, TrendingUp, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export type InsightType = 'info' | 'positive' | 'warning' | 'terminal';
+export type InsightType = 'info' | 'positive' | 'warning' | 'terminal' | 'success' | 'danger';
 
 interface YuktiFiInsightProps {
   title?: string;
@@ -18,9 +18,12 @@ export function YuktiFiInsight({ title = "YuktiFi INSIGHT", message, type = 'ter
       case 'info':
         return 'bg-blue-500/10 border-blue-500/30 text-blue-400';
       case 'positive':
+      case 'success':
         return 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400';
       case 'warning':
         return 'bg-amber-500/10 border-amber-500/30 text-amber-400';
+      case 'danger':
+        return 'bg-red-500/10 border-red-500/30 text-red-400';
       case 'terminal':
       default:
         return 'bg-warm-bg border-warm-primary/30 text-warm-primary shadow-[0_0_15px_rgba(0,255,255,0.1)]';
@@ -30,8 +33,10 @@ export function YuktiFiInsight({ title = "YuktiFi INSIGHT", message, type = 'ter
   const getIcon = () => {
     switch (type) {
       case 'info': return <Sparkles size={16} className="mr-2 flex-shrink-0" />;
-      case 'positive': return <TrendingUp size={16} className="mr-2 flex-shrink-0" />;
-      case 'warning': return <AlertTriangle size={16} className="mr-2 flex-shrink-0" />;
+      case 'positive':
+      case 'success': return <TrendingUp size={16} className="mr-2 flex-shrink-0" />;
+      case 'warning':
+      case 'danger': return <AlertTriangle size={16} className="mr-2 flex-shrink-0" />;
       case 'terminal':
       default: return <img src="/yukti-logo-transparent.png" alt="YuktiFi Insight" className="w-4 h-4 mr-2 object-contain flex-shrink-0" />;
     }
