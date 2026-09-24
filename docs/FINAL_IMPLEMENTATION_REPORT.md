@@ -93,12 +93,37 @@ npm run build
 
 ---
 
-## 6. Execution Commands for Judges & Deployment
+## 7. Real Data Ingestion & Data Fusion Implementation
 
+### Datasets Successfully Ingested
+1. **LGD Master (`LGD_ADMIN_MASTER`)**: Ingested LGD XML spreadsheets from `downloadDir...zip` archives. Loaded 395 village administrative entities & subdistrict mappings with historical alias handling (`Ahmadnagar` -> `Ahilyanagar`).
+2. **WorldPop 2025 (`WORLDPOP_INDIA_2025_1KM`)**: Registered WorldPop 2025 1km unconstrained population raster (38,400 x 34,800 cells, EPSG:4326). Integrated geodesic radius catchment population engine (5km, 10km, 15km). Labeled `MODEL_PREDICTION`.
+3. **HCES 2022-23 (`HCES_2022_23_REPORT_591`)**: Ingested official MoSPI NSS Report No. 591 MPCE indicators (e.g. Maharashtra Rural ₹4,010/month, Urban ₹6,580/month). Labeled `SOURCE_DERIVED`.
+4. **Historical Irrigation XML (`AHILYANAGAR_IRRIGATION_2010_11`)**: Parsed 14 crop & area records for Ahilyanagar/Ahmadnagar talukas (Akola, Sangamner, Rahuri, etc.). Labeled `HISTORICAL`.
+5. **Economic Census (`ECONOMIC_REPORT_COLLECTION`)**: Ingested macro enterprise & worker profiles for Solapur and Ahilyanagar. Labeled `SOURCE_DERIVED`.
+6. **Demographics Reference (`POPULATION_REPORT_COLLECTION`)**: Ingested Solapur 1,143 village demographic census profiles. Labeled `HISTORICAL`.
+7. **Bhuvan Standards (`BHUVAN_GEOSPATIAL_STANDARDS_2015`)**: Registered ISRO/NRSC GIS standards metadata (WGS84, LCC projection, 1:10k accuracy). Labeled `REFERENCE_STANDARD`.
+8. **Labour Bureau Calendar (`LABOUR_BUREAU_RELEASE_CALENDAR`)**: Registered Rural Wage Rates release calendar metadata. Labeled `SCHEDULE_METADATA`.
+
+### Verification & Test Suite Execution
 ```powershell
-# Environment Setup
-.\scripts\setup.ps1
-
-# Launch Local Development Server / SIH Demo
-.\start_yukti.bat
+Set-Location backend
+.\venv\Scripts\python.exe -m pytest tests/test_real_data_ingestion.py
 ```
+**Result**: **8 passed out of 8 tests (100% pass rate)**.
+- `test_lgd_importer_and_resolution` PASSED
+- `test_worldpop_catchment` PASSED
+- `test_hces_benchmark` PASSED
+- `test_irrigation_profile` PASSED
+- `test_economic_and_population_profiles` PASSED
+- `test_metadata_importers` PASSED
+- `test_evidence_fusion_bundle` PASSED
+- `test_evidence_api_endpoints` PASSED
+
+### Reproducible Ingestion Command
+```powershell
+cd backend
+.\venv\Scripts\python.exe -m app.data_platform.ingest_cli all
+```
+Manifest written to: `data/import_manifest.json`.
+

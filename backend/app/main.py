@@ -10,8 +10,9 @@ from app.api import (
     routes_profile, routes_rank, routes_market, routes_recommend,
     routes_explain, routes_report, routes_finance, routes_schemes, routes_simulate,
     routes_copilot, routes_business_plan, routes_marketing, routes_competitor,
-    routes_analysis, routes_locations
+    routes_analysis, routes_locations, routes_evidence
 )
+
 
 logger = logging.getLogger("yukti")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -83,6 +84,8 @@ app.include_router(routes_marketing.router, prefix="/api/marketing", tags=["mark
 app.include_router(routes_competitor.router, prefix="/api/competitor", tags=["competitor"])
 app.include_router(routes_analysis.router, prefix="/api/analysis", tags=["analysis"])
 app.include_router(routes_locations.router, prefix="/api/locations", tags=["locations"])
+app.include_router(routes_evidence.router)
+
 
 # Phase 1 Platform features
 from app.api import routes_health, routes_cashflow, routes_skills
