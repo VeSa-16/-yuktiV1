@@ -42,7 +42,7 @@ export default function ActionPlan() {
   
   // Use dynamically generated plan from backend if available, otherwise fallback to static
   const dynamicPlan = analysisResult?.action_plan || planMilestones;
-  const [milestones, setMilestones] = useState(dynamicPlan);
+  const [milestones, setMilestones] = useState<typeof planMilestones>(dynamicPlan);
 
   const toggleTask = (mId: string, tId: string) => {
     setMilestones(prev => prev.map(m => {
