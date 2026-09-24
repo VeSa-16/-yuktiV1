@@ -27,7 +27,7 @@ export default function AdminSCAView() {
           <CardContent><div className="text-3xl font-black">24</div></CardContent>
         </Card>
         <Card className="border-t-4 border-t-emerald-500">
-          <CardHeader className="pb-2"><CardTitle className="text-sm text-warm-muted uppercase">Loan Ready (Score > 80)</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-sm text-warm-muted uppercase">Loan Ready (Score &gt; 80)</CardTitle></CardHeader>
           <CardContent><div className="text-3xl font-black text-emerald-600">8</div></CardContent>
         </Card>
         <Card className="border-t-4 border-t-red-500">
