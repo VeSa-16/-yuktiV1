@@ -302,7 +302,7 @@ export const api = {
     ApiClient.post<AnalysisResponse>("/api/analysis/generate", data, AI_TIMEOUT_MS, signal),
 
   createProfile: (data: { name: string; location_input: string; language: string }, signal?: AbortSignal) =>
-    ApiClient.post<ProfileResponse>("/profile", data, undefined, signal),
+    ApiClient.post<ProfileResponse>("/profile", data, AI_TIMEOUT_MS, signal),
 
   rankOpportunities: (data: { session_id: string; location_id: string; margin_capital: number }, signal?: AbortSignal) =>
     ApiClient.post<RankResponse>("/rank-opportunities", data, AI_TIMEOUT_MS, signal),
