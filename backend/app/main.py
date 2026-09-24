@@ -30,8 +30,13 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="YuktiFi API", lifespan=lifespan)
+from slowapi.errors import RateLimitExceeded
+from slowapi import _rate_limit_exceeded_handler
+from app.core.security import limiter
 
+app = FastAPI(title="YuktiFi API", lifespan=lifespan)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # Parse comma-separated CORS origins safely
 _cors_raw = settings.cors_origins
 if _cors_raw == "*":
@@ -79,6 +84,22 @@ app.include_router(routes_competitor.router, prefix="/api/competitor", tags=["co
 app.include_router(routes_analysis.router, prefix="/api/analysis", tags=["analysis"])
 app.include_router(routes_locations.router, prefix="/api/locations", tags=["locations"])
 
+# Phase 1 Platform features
+from app.api import routes_health, routes_cashflow, routes_skills
+app.include_router(routes_health.router, tags=["health"])
+app.include_router(routes_cashflow.router, tags=["cashflow"])
+app.include_router(routes_skills.router, tags=["skills"])
+
+# Phase 2 Platform features
+from app.api import routes_insurance, routes_benchmarking, routes_tracker, routes_exit
+app.include_router(routes_insurance.router, tags=["insurance"])
+app.include_router(routes_benchmarking.router, tags=["benchmarking"])
+app.include_router(routes_tracker.router, tags=["tracker"])
+app.include_router(routes_exit.router, tags=["exit"])
+
+# Phase 3 Platform features
+from app.api import routes_compliance
+app.include_router(routes_compliance.router, tags=["compliance"])
 
 @app.get("/health")
 def health_check():

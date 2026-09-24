@@ -113,6 +113,25 @@ const OverviewTab = ({ data }: { data: FinanceResponse }) => {
                 {scheme.explanation}
               </p>
             )}
+            {scheme?.eligibility_evidence && (
+              <div className="mb-4 bg-black/20 border border-white/20 p-3 rounded-xl max-w-2xl">
+                <div className="flex items-center gap-2 mb-1">
+                  <ShieldAlert size={14} className="text-[#fde047]" />
+                  <span className="text-xs font-bold text-white/90">Eligibility Reasoning</span>
+                </div>
+                <p className="text-sm text-white/80 leading-snug">
+                  {scheme.eligibility_evidence}
+                </p>
+                <div className="mt-3 pt-3 border-t border-white/10 flex flex-col gap-1">
+                  <p className="text-[10px] text-white/60 uppercase tracking-wider font-bold">
+                    Last Verified: Sept 2026 • Source: Official Gov Portal
+                  </p>
+                  <p className="text-[10px] text-white/60 uppercase tracking-wider font-bold">
+                    ⚠️ Caveat: Final approval rests exclusively with the issuing authority/lender.
+                  </p>
+                </div>
+              </div>
+            )}
             {scheme?.source_url && (
               <a 
                 href={scheme.source_url}
@@ -120,7 +139,7 @@ const OverviewTab = ({ data }: { data: FinanceResponse }) => {
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-5 py-2.5 bg-white text-forest-deep rounded-xl font-bold text-sm hover:bg-[#fcfbf8] transition-colors shadow-sm"
               >
-                Apply for this Scheme <ArrowRight size={16} className="ml-2" />
+                Verify Scheme Guidelines <ArrowRight size={16} className="ml-2" />
               </a>
             )}
           </div>

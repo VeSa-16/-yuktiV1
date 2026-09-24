@@ -118,6 +118,12 @@ export function StepLocation({ data, updateData, onNext, onBack }: StepLocationP
             </div>
           </div>
         </div>
+        
+        <div className="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-200">
+          <p className="text-xs font-bold text-amber-800 flex items-center">
+            <span className="mr-2">ℹ️</span> Demo coverage area: Solapur District, Maharashtra
+          </p>
+        </div>
       </div>
 
       {/* Footer Nav */}

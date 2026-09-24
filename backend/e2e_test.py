@@ -1,4 +1,4 @@
-import requests
+import httpx
 import json
 import time
 
@@ -9,7 +9,7 @@ def run_test():
     
     # 1. Profile Creation
     print("1. Creating Profile...")
-    res = requests.post(f"{BASE_URL}/profile", json={
+    res = httpx.post(f"{BASE_URL}/profile", json={
         "name": "Test User",
         "location_input": "Solapur",
         "language": "en"
@@ -22,7 +22,7 @@ def run_test():
     
     # 2. Ranking Opportunities
     print("2. Ranking Opportunities...")
-    res = requests.post(f"{BASE_URL}/rank-opportunities", json={
+    res = httpx.post(f"{BASE_URL}/rank-opportunities", json={
         "session_id": session_id,
         "location_id": location_id,
         "margin_capital": 50000
@@ -34,7 +34,7 @@ def run_test():
     
     # 3. Market Intelligence
     print(f"3. Fetching Market Intelligence for {top_cat}...")
-    res = requests.post(f"{BASE_URL}/analyze-market", json={
+    res = httpx.post(f"{BASE_URL}/analyze-market", json={
         "session_id": session_id,
         "location_id": location_id,
         "category_id": top_cat
@@ -45,7 +45,7 @@ def run_test():
     
     # 4. Recommendation / Score
     print(f"4. Generating Score/Recommendation for {top_cat}...")
-    res = requests.post(f"{BASE_URL}/recommend", json={
+    res = httpx.post(f"{BASE_URL}/recommend", json={
         "session_id": session_id
     })
     res.raise_for_status()
@@ -54,7 +54,7 @@ def run_test():
     
     # 5. Financial Calculation
     print("5. Calculating Financials...")
-    res = requests.post(f"{BASE_URL}/calculate-finance", json={
+    res = httpx.post(f"{BASE_URL}/calculate-finance", json={
         "session_id": session_id
     })
     res.raise_for_status()
@@ -63,14 +63,14 @@ def run_test():
     
     # 6. Scheme Matching
     print("6. Matching Schemes...")
-    res = requests.get(f"{BASE_URL}/schemes")
+    res = httpx.get(f"{BASE_URL}/schemes")
     res.raise_for_status()
     schemes = res.json()
     print(f"Found {len(schemes)} eligible schemes.\n")
     
     # 7. Simulation
     print("7. Running What-If Simulation (-20% Demand, +10% Cost)...")
-    res = requests.post(f"{BASE_URL}/simulate", json={
+    res = httpx.post(f"{BASE_URL}/simulate", json={
         "session_id": session_id,
         "revenue_delta_pct": -20.0,
         "cost_delta_pct": 10.0,

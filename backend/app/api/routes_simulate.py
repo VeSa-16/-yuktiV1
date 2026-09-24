@@ -63,8 +63,14 @@ async def simulate_dynamic(req: SimulatorRequest):
         "required": ["narrative", "advice"]
     }
     
-    ai_resp = await gemini.generate_json_async(prompt, schema=schema)
-    explanation = "No explanation available."
+    ai_resp = None
+    try:
+        ai_resp = await gemini.generate_json_async(prompt, schema=schema)
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"[GEMINI] Simulation AI fallback offline mode: {e}")
+        
+    explanation = "The system computed the financial impact based on the deterministic engine. (Offline mode active — detailed AI narrative unavailable)."
     if ai_resp:
         explanation = f"{ai_resp.get('narrative', '')}\n\nAdvice: {ai_resp.get('advice', '')}"
         

@@ -129,9 +129,20 @@ export default function DocumentsPage() {
                 </div>
               </div>
 
-              <button className="w-full bg-warm-primary hover:bg-warm-primary/90 text-warm-text font-bold py-3 rounded-lg flex items-center justify-center transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled={readinessScore < 100}>
-                Begin Application <ArrowRight size={16} className="ml-2" />
-              </button>
+              <div className="space-y-2">
+                <button 
+                  className="w-full bg-warm-primary hover:bg-warm-primary/90 text-warm-text font-bold py-3 rounded-lg flex items-center justify-center transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed" 
+                  disabled={readinessScore < 100}
+                  title={readinessScore < 100 ? "Complete all required checklist items to enable" : "Begin Application"}
+                >
+                  Begin Application <ArrowRight size={16} className="ml-2" />
+                </button>
+                {readinessScore < 100 && (
+                  <p className="text-xs text-center text-warm-muted">
+                    Complete all required checklist items to enable.
+                  </p>
+                )}
+              </div>
             </CardContent>
           </Card>
 

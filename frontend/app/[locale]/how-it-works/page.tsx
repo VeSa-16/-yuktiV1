@@ -33,8 +33,8 @@ export default function HowItWorksPage() {
       step: "04",
       icon: <Rocket className="w-7 h-7 text-[#ea580c]" />,
       title: "Launch & Grow",
-      description: "Export a bank-ready Detailed Project Report (Detailed Project Report), track your implementation milestones on your dashboard, and get connected to verified local mentors and suppliers.",
-      highlights: ["1-Click Bank-Ready Detailed Project Report PDF", "Government scheme registration", "Verified local vendor network"]
+      description: "Export a bank-ready Detailed Project Report (Detailed Project Report), track your implementation milestones on your dashboard, and get connected to registered local mentors and suppliers.",
+      highlights: ["1-Click Bank-Ready Detailed Project Report PDF", "Government scheme registration", "Registered local vendor network"]
     }
   ];
 
@@ -110,7 +110,7 @@ export default function HowItWorksPage() {
           <div className="relative z-10 max-w-xl text-center sm:text-left">
             <h3 className="text-2xl font-bold font-display mb-2 text-amber-100">Ready to start your business evaluation?</h3>
             <p className="text-white/80 text-sm sm:text-base">
-              It takes less than 3 minutes to discover verified micro-business opportunities tailored to your district.
+              It takes less than 3 minutes to discover evidence-based micro-business opportunities tailored to your district.
             </p>
           </div>
           <Link

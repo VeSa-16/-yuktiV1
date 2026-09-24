@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Float, ForeignKey, DateTime
+from sqlalchemy import Column, String, Float, ForeignKey, DateTime, JSON
 from datetime import datetime
 from app.core.db import Base
 from app.models.core import uid
@@ -18,3 +18,5 @@ class MarketMetric(Base):
     effective_date = Column(DateTime)
     retrieved_at = Column(DateTime, default=datetime.utcnow)
     transformation_note = Column(String)
+    evidence_json = Column(JSON)
+

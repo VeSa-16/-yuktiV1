@@ -2,11 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from '@/lib/store';
 import { api, RankResponse } from '@/lib/api-client';
-import { Bell, ChevronDown, ArrowRight, Home, IndianRupee, ShieldAlert, Wallet, MapPin, Check, Loader2 } from 'lucide-react';
+import { Bell, ChevronDown, ArrowRight, Home, IndianRupee, ShieldAlert, Wallet, MapPin, Check, Loader2, ShieldCheck, ShieldQuestion } from 'lucide-react';
 import Link from 'next/link';
 import { LocationUnavailableState } from '@/components/LocationUnavailableState';
 import { useTranslations } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { EvidenceDrawer } from '@/components/EvidenceDrawer';
+import { CompareAlternatives } from '@/components/CompareAlternatives';
+import { PeerBenchmark } from '@/components/PeerBenchmark';
 
 // Simple Top Navigation for Dashboard
 const DashboardHeader = () => (
@@ -19,13 +22,30 @@ const DashboardHeader = () => (
 );
 
 // Large YuktiFi Score Card
-const YuktiFiScoreCard = ({ score }: { score: number }) => {
+const YuktiFiScoreCard = ({ scores }: { scores: any }) => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const t = useTranslations('dashboard.scoreCard');
+  const score = scores?.overall ?? 0;
+  const isAbstained = scores?.verdict?.is_abstained ?? false;
+  const coveragePct = scores?.coverage_pct ?? 0;
+  const confidence = scores?.confidence ?? "LOW";
+  const evidenceList = scores?.evidence ?? [];
+
   let verdict = t('verdicts.weak');
   let color = 'text-[#ea580c]';
-  if (score >= 80) { verdict = t('verdicts.strong'); color = 'text-[#16a34a]'; }
-  else if (score >= 60) { verdict = t('verdicts.moderate'); color = 'text-[#ea580c]'; }
-  else if (score < 40) { verdict = t('verdicts.risky'); color = 'text-red-500'; }
+  
+  if (isAbstained) {
+    verdict = "Insufficient Evidence";
+    color = "text-slate-500";
+  } else if (score >= 80) { 
+    verdict = t('verdicts.strong'); color = 'text-[#16a34a]'; 
+  } else if (score >= 60) { 
+    verdict = t('verdicts.moderate'); color = 'text-[#ea580c]'; 
+  } else if (score < 40) { 
+    verdict = t('verdicts.risky'); color = 'text-red-500'; 
+  }
+
+  const dashoffset = isAbstained ? 263.89 : 263.89 - (263.89 * score) / 100;
 
   return (
     <div className="bg-white rounded-3xl p-6 md:p-8 border border-premium-border shadow-card flex flex-col md:flex-row items-center md:items-start gap-8 flex-1">
@@ -36,31 +56,58 @@ const YuktiFiScoreCard = ({ score }: { score: number }) => {
           <circle 
             cx="50" cy="50" r="42" 
             fill="none" 
-            stroke="#16a34a" 
+            stroke={isAbstained ? "#cbd5e1" : (score >= 80 ? "#16a34a" : (score >= 60 ? "#ea580c" : "#ef4444"))} 
             strokeWidth="12" 
             strokeDasharray="263.89" 
-            strokeDashoffset={263.89 - (263.89 * score) / 100} 
+            strokeDashoffset={dashoffset} 
             strokeLinecap="round" 
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-display font-bold text-4xl text-forest-deep leading-none -ml-1">{score}</span>
-          <span className="text-xs font-bold text-ink-soft mt-1">/100</span>
+          {isAbstained ? (
+            <span className="font-display font-bold text-2xl text-slate-500 leading-none">N/A</span>
+          ) : (
+            <>
+              <span className="font-display font-bold text-4xl text-forest-deep leading-none -ml-1">{score}</span>
+              <span className="text-xs font-bold text-ink-soft mt-1">/100</span>
+            </>
+          )}
         </div>
       </div>
       
       <div className="flex flex-col justify-center h-full">
         <h3 className="font-bold text-lg text-forest-deep mb-1">{t('title')}</h3>
-        <div className={`${color} font-bold text-xl mb-3`}>{verdict}</div>
-        <p className="text-sm font-medium text-ink-soft mb-6 max-w-sm leading-relaxed">
-          {t('desc')}
+        <div className={`${color} font-bold text-xl mb-1`}>{verdict}</div>
+        
+        <div className="flex flex-wrap items-center gap-2 mb-3 text-xs font-medium bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-full inline-flex self-start">
+          <span className="text-slate-600">Coverage: {Math.round(coveragePct)}%</span>
+          <span className="text-slate-300">|</span>
+          <span className={`flex items-center gap-1 ${confidence === 'HIGH' ? 'text-emerald-600' : confidence === 'MEDIUM' ? 'text-amber-600' : 'text-red-600'}`}>
+             {confidence === 'HIGH' && <ShieldCheck className="w-3 h-3" />}
+             {confidence === 'MEDIUM' && <ShieldAlert className="w-3 h-3" />}
+             {confidence === 'LOW' && <ShieldQuestion className="w-3 h-3" />}
+             Conf: {confidence}
+          </span>
+        </div>
+
+        <p className="text-sm font-medium text-ink-soft mb-4 max-w-sm leading-relaxed">
+          {isAbstained ? "We do not have sufficient local market data to score this accurately." : t('desc')}
         </p>
-        <Link href="/market-intelligence/custom">
-          <button className="self-start px-6 py-2.5 rounded-xl border border-[#ea580c] text-[#ea580c] font-bold text-sm flex items-center hover:bg-[#fff5f0] transition-colors">
-            {t('viewDetails')} <ArrowRight size={16} className="ml-2" />
+        <div className="flex gap-3 mt-auto">
+          <Link href="/market-intelligence/custom">
+            <button className="px-5 py-2 rounded-xl border border-[#ea580c] text-[#ea580c] font-bold text-sm flex items-center hover:bg-[#fff5f0] transition-colors">
+              {t('viewDetails')} <ArrowRight size={16} className="ml-2" />
+            </button>
+          </Link>
+          <button 
+            onClick={() => setDrawerOpen(true)}
+            className="px-5 py-2 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm hover:bg-slate-200 transition-colors"
+          >
+            View Evidence
           </button>
-        </Link>
+        </div>
       </div>
+      <EvidenceDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} evidenceList={evidenceList} />
     </div>
   );
 };
@@ -87,8 +134,11 @@ const RecommendedBusinessCard = ({ categoryId, categoryName, score, ideaDetails 
   }
 
   return (
-    <div className="bg-white rounded-3xl p-6 md:p-8 border border-premium-border shadow-card flex flex-col w-full lg:w-[400px] shrink-0">
-      <h3 className="text-sm font-bold text-forest-deep mb-4">{t('title')}</h3>
+    <div className="bg-white rounded-3xl p-6 md:p-8 border-2 border-[#16a34a] shadow-card flex flex-col w-full lg:w-[400px] shrink-0 relative">
+      <div className="absolute -top-3 left-6 bg-[#16a34a] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-sm">
+        Primary Recommendation
+      </div>
+      <h3 className="text-sm font-bold text-forest-deep mb-4 mt-2">{t('title')}</h3>
       
       <div className="flex justify-between items-start mb-4">
         <div>
@@ -230,7 +280,7 @@ export default function Dashboard() {
   }
 
   // Destructure real data from unified analysis payload (new API shape: business, not matched_business)
-  const { market, financials, scores, ai_insights, business: matchedBusiness, matched_business, data_available, location: locationData } = analysisResult;
+  const { market, financials, scores, ai_insights, pricing_intelligence, business: matchedBusiness, matched_business, data_available, location: locationData, alternatives } = analysisResult;
   const resolvedBusiness = matchedBusiness || matched_business;
   
   // Explicit null check — never use a fake fallback score
@@ -261,15 +311,41 @@ export default function Dashboard() {
           </div>
 
           {/* Top Cards Row */}
-          <div className="flex flex-col lg:flex-row gap-6 mb-6">
-            <YuktiFiScoreCard score={yuktiScore ?? 0} />
+          <div className="flex flex-col xl:flex-row gap-6 mb-6">
+            <YuktiFiScoreCard scores={scores} />
             <RecommendedBusinessCard 
               categoryId={resolvedBusiness?.matched_category_id || categoryId} 
               categoryName={targetBusinessName} 
               score={yuktiScore ?? 0} 
               ideaDetails={ideaDetails || undefined} 
             />
+            {pricing_intelligence && (
+              <div className="bg-white rounded-3xl p-6 md:p-8 border border-premium-border shadow-card flex flex-col w-full xl:w-[350px] shrink-0">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-xl">💰</span>
+                  <h3 className="text-xs font-bold text-forest-deep uppercase tracking-widest">Pricing Intelligence</h3>
+                </div>
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="text-3xl font-display font-bold text-[#ea580c] mb-4">{pricing_intelligence.suggested_price_range}</div>
+                  <div className="text-sm font-medium text-ink-soft bg-[#fff5f0] p-4 rounded-xl border border-[#fed7aa] leading-relaxed">
+                    {pricing_intelligence.price_rationale}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
+
+          {alternatives && alternatives.length > 0 && (
+            <CompareAlternatives 
+              primaryIdea={{
+                category_id: resolvedBusiness?.matched_category_id || categoryId,
+                score: yuktiScore ?? 0,
+                dscr: financials?.dscr || 0,
+                roi_pct: financials?.roi_pct || 0
+              }}
+              alternatives={alternatives}
+            />
+          )}
 
           {/* AI Insights & Rationale */}
           <div className="mb-6 bg-white rounded-3xl p-6 md:p-8 border border-premium-border shadow-card relative overflow-hidden">
@@ -300,6 +376,11 @@ export default function Dashboard() {
             <MetricCard title={t('metrics.finViability')} status={scores?.dimensions?.financial_viability != null ? (scores.dimensions.financial_viability > 70 ? t('metrics.status.good') : t('metrics.status.warning')) : t('metrics.status.na')} score={scores?.dimensions?.financial_viability ?? '—'} icon={IndianRupee} colorClass={scores?.dimensions?.financial_viability != null && scores.dimensions.financial_viability > 70 ? "text-[#16a34a]" : "text-[#ea580c]"} />
             <MetricCard title={t('metrics.riskExp')} status={scores?.dimensions?.risk_exposure != null ? (scores.dimensions.risk_exposure > 70 ? t('metrics.status.low') : t('metrics.status.high')) : t('metrics.status.na')} score={scores?.dimensions?.risk_exposure ?? '—'} icon={ShieldAlert} colorClass={scores?.dimensions?.risk_exposure != null && scores.dimensions.risk_exposure > 70 ? "text-[#16a34a]" : "text-[#ea580c]"} />
             <MetricCard title={t('metrics.capEff')} status={scores?.dimensions?.capital_efficiency != null ? (scores.dimensions.capital_efficiency > 70 ? t('metrics.status.excellent') : t('metrics.status.fair')) : t('metrics.status.na')} score={scores?.dimensions?.capital_efficiency ?? '—'} icon={Wallet} colorClass="text-[#16a34a]" />
+          </div>
+
+          {/* Peer Benchmarking */}
+          <div className="mb-6">
+            <PeerBenchmark />
           </div>
 
           {/* Journey Tracker Row */}

@@ -59,6 +59,7 @@ export interface BusinessData {
   industry: string;
   experience: string;
   ideaDetails: string;
+  compareAlternatives?: boolean;
 }
 
 interface StepBusinessProps {
@@ -195,6 +196,21 @@ export function StepBusiness({ data, updateData, onNext, onBack }: StepBusinessP
                 </label>
               ))}
             </div>
+          </div>
+
+          <div className="space-y-2 pt-4 border-t border-slate-100">
+            <label className="flex items-start cursor-pointer hover:bg-slate-50 p-2 rounded-xl transition-colors">
+              <input 
+                type="checkbox"
+                className="mt-1 mr-3 w-4 h-4 accent-forest"
+                checked={data.compareAlternatives || false}
+                onChange={(e) => updateData({ compareAlternatives: e.target.checked })}
+              />
+              <div>
+                <div className="text-sm font-bold text-ink">Consider similar businesses?</div>
+                <div className="text-xs text-ink-soft">Would you like YuktiFi to also evaluate alternative business ideas similar to your choice?</div>
+              </div>
+            </label>
           </div>
 
         </div>

@@ -15,7 +15,9 @@ from app.engines.market_intelligence import run_full_market_analysis
 data_layer = DataRetrieval()
 
 
-def rank_opportunities(location_id: str, margin_capital: float) -> list[dict]:
+import asyncio
+
+async def rank_opportunities(location_id: str, margin_capital: float) -> list[dict]:
     """
     Evaluate every available business category for the given location and capital.
     Returns a ranked list sorted by YuktiFi score (descending).

@@ -26,6 +26,7 @@ export default function SimulatorPage() {
 
   const [simLoading, setSimLoading] = useState(false);
   const [error, setError] = useState("");
+  const [exitAdvice, setExitAdvice] = useState<any>(null);
 
   const t = useTranslations('simulator');
 
@@ -52,6 +53,23 @@ export default function SimulatorPage() {
         language: locale
       });
       state.updateState({ simulationResult: res });
+      
+      const dscr = res.financials?.dscr || 0;
+      if (dscr < 1.0) {
+        try {
+          const drop = (1 - simParams.demand_multiplier * simParams.price_multiplier) * 100;
+          const advice = await api.getExitAdvice({
+            revenue_drop_pct: drop > 0 ? drop : 0,
+            current_dscr: dscr,
+            category: state.categoryName || "Business"
+          });
+          setExitAdvice(advice);
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        setExitAdvice(null);
+      }
     } catch (err: unknown) {
       console.error("Simulation API failed:", err);
     } finally {
@@ -255,6 +273,27 @@ export default function SimulatorPage() {
                     : t('results.riskDesc', { dscr: simDscr.toFixed(2) })
                   }
                 />
+
+                {exitAdvice && (
+                  <div className="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-6">
+                    <h4 className="font-bold text-amber-900 mb-2 flex items-center">
+                      <AlertTriangle size={18} className="mr-2 text-amber-500" />
+                      Exit & Restructuring Advisor
+                    </h4>
+                    <p className="text-sm text-amber-800 mb-4">{exitAdvice.action}</p>
+                    <div className="space-y-3">
+                      {exitAdvice.options.map((opt: any, i: number) => (
+                        <div key={i} className="bg-white p-4 rounded-lg border border-amber-100 shadow-sm">
+                          <div className="flex justify-between items-start mb-1">
+                            <h5 className="font-bold text-warm-primary">{opt.title}</h5>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-600 bg-amber-100 px-2 py-1 rounded">{opt.type}</span>
+                          </div>
+                          <p className="text-sm text-warm-text/80">{opt.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
           </CardContent>

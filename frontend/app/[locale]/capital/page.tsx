@@ -67,7 +67,7 @@ export default function CapitalPage() {
  <span>Max: ₹5,00,000</span>
  </div>
  
- <Button type="submit" variant="secondary" className="w-full mt-6 py-4" disabled={!marginCapital}>
+ <Button type="submit" variant="secondary" className="w-full mt-6 py-4" disabled={!marginCapital} title={!marginCapital ? "Enter margin capital to proceed" : "Execute Market Analysis"}>
  Execute Market Analysis <ArrowRight size={16} className="ml-2" />
  </Button>
  </form>

@@ -252,12 +252,12 @@ def run_full_market_analysis(location_id: str, category_id: str, category_name: 
             # We're inside an async context (FastAPI), use run_coroutine_threadsafe
             import concurrent.futures
             future = asyncio.ensure_future(
-                run_full_market_analysis_async(location_id, category_id, category_name)
+                run_full_market_analysis_async_cached(location_id, category_id, category_name)
             )
             return asyncio.get_event_loop().run_until_complete(future)
     except Exception:
         pass
-    return asyncio.run(run_full_market_analysis_async(location_id, category_id, category_name))
+    return asyncio.run(run_full_market_analysis_async_cached(location_id, category_id, category_name))
 
 
 def _aggregate_confidence(levels: list) -> str:

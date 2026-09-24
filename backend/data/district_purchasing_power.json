@@ -1,0 +1,8 @@
+{
+  "solapur": { "per_capita_income": 112000, "ppi": 0.87 },
+  "barshi":  { "per_capita_income": 89000,  "ppi": 0.69 },
+  "akkalkot": { "per_capita_income": 76000, "ppi": 0.59 },
+  "pandharpur": { "per_capita_income": 95000, "ppi": 0.74 },
+  "karmala": { "per_capita_income": 82000, "ppi": 0.64 },
+  "mangalwedha": { "per_capita_income": 78000, "ppi": 0.60 }
+}

@@ -6,6 +6,8 @@ import { api, type RecommendResponse } from "@/lib/api-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScoreDial } from "@/components/ScoreDial";
 import { VerdictBanner } from "@/components/VerdictBanner";
+import { FinancialBurdenPanel } from "@/components/FinancialBurdenPanel";
+import { DecisionTrace } from "@/components/DecisionTrace";
 import {
   Loader2,
   ArrowRight,
@@ -106,7 +108,7 @@ export default function ScorePage() {
   const data: any = {
     yukti_score: scores.overall || 50,
     raw_score: scores.overall || 50,
-    confidence: "High",
+    confidence: scores.confidence || "LOW",
     confidence_multiplier: 1.0,
     verdict: scores.overall >= 70 ? "Excellent Opportunity" : scores.overall >= 50 ? "Moderate Potential" : "High Risk",
     dscr: financials.dscr || 0,
@@ -117,16 +119,27 @@ export default function ScorePage() {
       "Run what-if simulations to stress-test your margins"
     ],
     dimension_scores: {
-      financial_viability: scores.financial || 50,
-      repayment_capacity: (financials.dscr / 2) * 100 || 50,
-      market_opportunity: scores.market || 50,
-      capital_efficiency: financials.roi_pct > 0 ? Math.min(100, financials.roi_pct * 2) : 50,
-      risk_exposure: scores.risk || 50,
+      financial_viability: scores.dimensions?.financial_viability || 50,
+      repayment_capacity: scores.dimensions?.repayment_capacity || 50,
+      market_opportunity: scores.dimensions?.market_opportunity || 50,
+      capital_efficiency: scores.dimensions?.capital_efficiency || 50,
+      risk_exposure: scores.dimensions?.risk_exposure || 50,
     }
   };
 
-  const scoreColor =
-    data.yukti_score >= 70
+  const isAbstained = scores.verdict?.is_abstained || false;
+  const loanAmount = financials.loan_amount || 0;
+  const ownCapital = financials.own_contribution || financials.user_capital || Math.max(0, (financials.project_cost || 0) - loanAmount);
+  const fundingGap = financials.funding_gap || 0;
+  const emi = financials.emi || 0;
+  const tenure = financials.tenure_months || 60;
+  const moratorium = financials.moratorium_months || 0;
+  const totalInterest = Math.max(0, (emi * Math.max(0, tenure - moratorium)) - loanAmount);
+  const surplus = financials.net_profit || 0;
+
+  const scoreColor = isAbstained
+    ? "text-slate-500"
+    : data.yukti_score >= 70
       ? "text-emerald-600"
       : data.yukti_score >= 50
       ? "text-amber-600"
@@ -153,9 +166,9 @@ export default function ScorePage() {
           </div>
           <span
             className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
-              data.confidence === "High"
+              data.confidence === "HIGH"
                 ? "bg-emerald-100 text-emerald-800"
-                : data.confidence === "Medium"
+                : data.confidence === "MEDIUM"
                 ? "bg-amber-100 text-amber-800"
                 : "bg-red-100 text-red-800"
             }`}
@@ -176,11 +189,21 @@ export default function ScorePage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center pt-6 pb-6 space-y-4">
-            <ScoreDial score={data.yukti_score} />
-            <div className={`text-5xl font-black ${scoreColor}`}>{data.yukti_score}</div>
-            <div className="text-xs text-warm-muted font-medium">
-              Raw: {data.raw_score} × {(data.confidence_multiplier * 100).toFixed(0)}% confidence
-            </div>
+            <ScoreDial 
+              score={data.yukti_score} 
+              evidenceList={scores?.evidence || []}
+              coveragePct={scores?.coverage_pct || 0}
+              confidence={scores?.confidence || "LOW"}
+              isAbstained={scores?.verdict?.is_abstained}
+            />
+            {!scores?.verdict?.is_abstained && (
+              <>
+                <div className={`text-5xl font-black ${scoreColor}`}>{data.yukti_score}</div>
+                <div className="text-xs text-warm-muted font-medium">
+                  Raw: {data.raw_score} × {(data.confidence_multiplier * 100).toFixed(0)}% confidence
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -247,51 +270,25 @@ export default function ScorePage() {
         </Card>
       </div>
 
-      {/* Dimension Breakdown */}
-      <Card className="border-warm-border shadow-sm bg-warm-surface rounded-2xl overflow-hidden mt-6">
-        <CardHeader className="bg-warm-bg/50 pb-3 border-b border-warm-border">
-          <CardTitle className="text-sm font-bold text-warm-text uppercase tracking-wider">
-            Score Breakdown — Why this score?
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <div className="space-y-5">
-            {Object.entries(data.dimension_scores).map(([key, value]) => {
-              const meta = DIMENSION_META[key];
-              const Icon = meta?.icon;
-              const pct = Math.min(100, Math.max(0, value as number));
-              return (
-                <div key={key}>
-                  <div className="flex justify-between items-center mb-1.5">
-                    <div className="flex items-center space-x-2">
-                      {Icon && <Icon size={14} className="text-warm-primary" />}
-                      <span className="text-sm font-bold text-warm-text">
-                        {meta?.label || key}
-                      </span>
-                    </div>
-                    <span className="text-sm font-bold text-warm-text">{pct.toFixed(0)}/100</span>
-                  </div>
-                  <div className="w-full h-2 bg-warm-border rounded-full">
-                    <div
-                      className={`h-2 rounded-full transition-all ${
-                        pct >= 70
-                          ? "bg-emerald-500"
-                          : pct >= 45
-                          ? "bg-amber-500"
-                          : "bg-red-500"
-                      }`}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                  {meta?.description && (
-                    <p className="text-xs text-warm-muted mt-1">{meta.description}</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <DecisionTrace 
+          verdict={data.verdict}
+          dimensionScores={data.dimension_scores}
+          evidenceList={scores.evidence || []}
+          confidence={data.confidence}
+          isAbstained={isAbstained}
+        />
+        
+        <FinancialBurdenPanel 
+          loanAmount={loanAmount}
+          ownCapital={ownCapital}
+          emi={emi}
+          totalInterest={totalInterest}
+          monthlyOperatingSurplus={surplus}
+          dscr={data.dscr}
+          fundingGap={fundingGap}
+        />
+      </div>
 
       <div className="mt-8 flex justify-end">
         <button

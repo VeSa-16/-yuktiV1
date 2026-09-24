@@ -4,14 +4,16 @@ Purpose: Authoritative analysis after onboarding.
 DO NOT call this from Discover tab — use /rank-opportunities for pre-onboarding discovery.
 """
 import logging
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request, Depends
 from pydantic import BaseModel, Field
 from typing import Dict, Any, Optional
+from app.core.security import limiter, get_api_key
 
 from app.data_layer.retrieval import DataRetrieval
 from app.ai_layer.business_matcher import match_business_category, ALLOWED_CATEGORIES
 from app.engines.financial_engine import run_financial_engine
-from app.engines.scoring_engine import compute_all_dimensions, generate_verdict, generate_next_steps
+from app.engines.scoring_engine import compute_all_dimensions, generate_verdict, generate_next_steps, compute_evidence_coverage
+from app.schemas.evidence import EvidenceRecord, ConfidenceLevelEnum
 from app.ai.gemini_client import GeminiClient
 
 router = APIRouter()
@@ -29,8 +31,10 @@ class AnalysisRequest(BaseModel):
 
 
 @router.post("/generate")
-async def generate_analysis(req: AnalysisRequest):
+@limiter.limit("5/minute")
+async def generate_analysis(request: Request, req: AnalysisRequest, api_key: str = Depends(get_api_key)):
     """
+
     Unified endpoint that takes onboarding input, matches it to the JSON dataset,
     runs deterministic engines, and asks Gemini to provide qualitative insights.
     Gemini failure does NOT destroy the deterministic analysis.
@@ -91,6 +95,10 @@ async def generate_analysis(req: AnalysisRequest):
     category_data  = retrieval.get_category_data(district, category_id)
 
     if not category_data:
+        # Check if the location is out of coverage
+        if district and "solapur" not in district.lower() and "mh_sol" not in district.lower():
+            logger.error("[ANALYSIS] Location '%s' is out of demo coverage", district)
+            raise HTTPException(status_code=400, detail="OUT_OF_COVERAGE")
         logger.error("[ANALYSIS] Category '%s' not found in dataset", category_id)
         raise HTTPException(status_code=404, detail=f"Category '{category_id}' not found in dataset")
 
@@ -123,6 +131,33 @@ async def generate_analysis(req: AnalysisRequest):
 
     logger.info("[FINANCIAL] investment_amount=%.0f", user_capital)
 
+    import copy
+    financial_setup = copy.deepcopy(financial_setup)
+    financial_margin = copy.deepcopy(financial_margin)
+    financial_costs = copy.deepcopy(financial_costs)
+    unit_economics = copy.deepcopy(unit_economics)
+
+    # Apply Simulation What-If Scenario if provided
+    if getattr(req, "mode", None) == "simulation" and getattr(req, "scenario", None):
+        demand_mult = req.scenario.get("demand_multiplier", 1.0)
+        cost_mult = req.scenario.get("cost_multiplier", 1.0)
+        price_mult = req.scenario.get("price_multiplier", 1.0)
+        
+        if "expected_monthly_revenue" in unit_economics:
+            unit_economics["expected_monthly_revenue"] *= (demand_mult * price_mult)
+        if "variable_costs" in unit_economics:
+            unit_economics["variable_costs"] *= (demand_mult * cost_mult)
+        if "total_fixed_costs" in financial_costs:
+            financial_costs["total_fixed_costs"] *= cost_mult
+        
+        # Recalculate NOI based on modified values
+        rev = unit_economics.get("expected_monthly_revenue", 0)
+        vc = unit_economics.get("variable_costs", 0)
+        fc = financial_costs.get("total_fixed_costs", 0)
+        unit_economics["net_operating_income"] = rev - vc - fc
+        
+        logger.info(f"[SIMULATION] Applied multipliers: demand={demand_mult}, cost={cost_mult}, price={price_mult}")
+
     fin_result = run_financial_engine(
         user_capital=user_capital,
         setup_costs=financial_setup,
@@ -130,6 +165,7 @@ async def generate_analysis(req: AnalysisRequest):
         monthly_costs=financial_costs,
         unit_economics=unit_economics,
         category_id=category_id,
+        user_profile=req.profile,
     )
 
     logger.info(
@@ -141,14 +177,67 @@ async def generate_analysis(req: AnalysisRequest):
     )
 
     # ── 5. SCORE ENGINE (data-driven, no hardcoded constants) ─────────────────
+    comp_count_source = "static_dataset"
     comp_count  = int(market_data.get("competitor_count", 0))
-    population  = (
-        market_data.get("market_reach", {}).get("estimated_target_customer_base") or 0
-    )
+
+    # Overpass live lookup
+    loc = req.location or {}
+    village = loc.get('village_or_taluka') or ''
+    dist = loc.get('district') or ''
+    st = loc.get('state') or ''
+    location_str = f"{village} {dist} {st}".strip()
+    
+    if location_str:
+        from app.api_clients.geocoding_client import geocode_location
+        from app.api_clients.overpass_client import query_competitors
+        
+        coords = await geocode_location(location_str)
+        if coords:
+            live_count = await query_competitors(coords[0], coords[1], 5.0, category_id)
+            if live_count is not None:
+                comp_count = live_count
+                comp_count_source = "live_osm"
+                logger.info(f"[OVERPASS] Retrieved live competitor count: {comp_count}")
+
+    from app.engines.demand_model import estimate_consumer_base
+    demand_data = estimate_consumer_base(village, dist)
+    population = demand_data["local_consumer_base_5km"]
+
     risk_level  = risk_rating.get("level", "Medium")
     threats     = qualitative.get("threats", [])
 
     if fin_result.get("financial_data_available"):
+        evidence_list = []
+        market_conf = market_data.get("confidence", "Medium").upper()
+        if market_conf not in ["HIGH", "MEDIUM", "LOW"]: market_conf = "MEDIUM"
+        
+        evidence_list.append(EvidenceRecord(
+            metric="Market Opportunity",
+            value=f"Pop: {population}, Comp: {comp_count}",
+            source="solapur_combined.json",
+            geography=district,
+            resolution="district" if comp_count_source == "static_dataset" else "5km_radius",
+            method="direct lookup" if comp_count_source == "static_dataset" else "live query",
+            confidence=ConfidenceLevelEnum(market_conf),
+            coverage_pct=100.0 if population > 0 else 0.0,
+            data_source=comp_count_source
+        ).dict())
+        
+        evidence_list.append(EvidenceRecord(
+            metric="Financial Viability",
+            value=f"ROI: {fin_result.get('roi_pct', 0)}%, DSCR: {fin_result.get('dscr', 0)}",
+            source="financial_engine.py",
+            geography=district,
+            resolution="district",
+            method="derived estimate",
+            confidence=ConfidenceLevelEnum("HIGH"),
+            coverage_pct=100.0
+        ).dict())
+        
+        cov_result = compute_evidence_coverage(evidence_list)
+        overall_confidence = cov_result["overall_confidence"]
+        coverage_pct = cov_result["coverage_pct"]
+
         scores = compute_all_dimensions(
             roi=fin_result["roi_pct"],
             dscr=fin_result["dscr"],
@@ -157,19 +246,80 @@ async def generate_analysis(req: AnalysisRequest):
             monthly_units=fin_result.get("monthly_revenue") or 1,
             competitor_count=comp_count,
             population=population,
-            overall_confidence=market_data.get("confidence", "Medium"),
+            overall_confidence=overall_confidence,
             threats_count=len(threats),
+            experience=req.business.experience if req.business and hasattr(req.business, "experience") else "None",
         )
         total_score = round(sum(scores.values()) / len(scores)) if scores else None
-        verdict = generate_verdict(total_score) if total_score is not None else None
-        next_steps = generate_next_steps(scores, fin_result, market_data) if scores else []
+        verdict = generate_verdict(total_score, coverage_pct, language=req.language) if total_score is not None else None
+        next_steps = generate_next_steps(scores, fin_result, market_data, language=req.language) if scores else []
     else:
         scores = None
         total_score = None
         verdict = None
         next_steps = []
+        evidence_list = []
+        coverage_pct = 0.0
+        overall_confidence = "LOW"
 
     logger.info("[SCORE] overall=%s dimensions=%s", total_score, scores)
+
+    # ── 5.5 ALTERNATIVES EVALUATION (Step 3) ─────────────────────────────────
+    alternatives = []
+    if req.business.get("compare_alternatives"):
+        ALT_MAP = {
+            "retail_shop": ["food_beverage", "logistics_delivery"],
+            "manufacturing": ["agri_business", "handicrafts_artisanal"],
+            "agri_business": ["food_beverage", "manufacturing"],
+            "services_tech": ["education_training", "retail_shop"],
+            "food_beverage": ["retail_shop", "agri_business"],
+            "handicrafts_artisanal": ["fashion_apparel", "manufacturing"],
+            "logistics_delivery": ["services_tech", "retail_shop"],
+            "education_training": ["services_tech", "healthcare_wellness"],
+            "healthcare_wellness": ["education_training", "services_tech"],
+            "fashion_apparel": ["handicrafts_artisanal", "retail_shop"],
+        }
+        alt_cats = ALT_MAP.get(category_id, ["retail_shop", "food_beverage"])
+        for acat in alt_cats:
+            if acat == category_id: continue
+            acat_data = retrieval.get_category_data(district, acat)
+            if not acat_data: continue
+            
+            afin_res = run_financial_engine(
+                user_capital=user_capital,
+                setup_costs=acat_data.get("initial_setup_costs", {}),
+                pricing_margins=acat_data.get("pricing_margins", {}),
+                monthly_costs=acat_data.get("monthly_running_costs", {}),
+                unit_economics=acat_data.get("unit_economics", {}),
+                category_id=acat,
+                user_profile=req.profile,
+            )
+            
+            amkt_data = acat_data.get("competitor_market_data", {})
+            acomp_count = int(amkt_data.get("competitor_count", 0))
+            apop = amkt_data.get("market_reach", {}).get("estimated_target_customer_base") or 0
+            
+            ascores = compute_all_dimensions(
+                roi=afin_res["roi_pct"],
+                dscr=afin_res["dscr"],
+                net_margin=afin_res["gross_margin_pct"],
+                break_even_units=afin_res.get("break_even_monthly_revenue") or 0,
+                monthly_units=afin_res.get("monthly_revenue") or 1,
+                competitor_count=acomp_count,
+                population=apop,
+                overall_confidence="HIGH",
+                threats_count=0,
+                experience=req.business.experience if req.business and hasattr(req.business, "experience") else "None",
+            )
+            atotal = round(sum(ascores.values()) / len(ascores)) if ascores else 0
+            
+            alternatives.append({
+                "category_id": acat,
+                "score": atotal,
+                "dscr": afin_res.get("dscr", 0),
+                "roi_pct": afin_res.get("roi_pct", 0)
+            })
+
 
     # ── 6. GEMINI REASONING (supplementary — failure does NOT halt analysis) ──
     ai_insights = None
@@ -259,6 +409,27 @@ Return strict JSON: {{"rationale": "...", "recommendations": ["...", "...", "...
         ai_insights["ai_available"] = True
 
     # ── 7. CONSTRUCT FINAL UNIFIED PAYLOAD ────────────────────────────────────
+    from app.engines.action_plan_engine import generate_action_plan
+    action_plan = generate_action_plan(
+        category_id=category_id,
+        category_name=category_data.get("subcategory", "Business"),
+        location_name=district,
+        stage=req.business.get("stage", "Startup"),
+        business_name=req.business.get("name", "Your Business")
+    )
+
+    from app.engines.pricing_engine import compute_adjusted_pricing
+    base_pricing_band = category_data.get("pricing_margins", {}).get("pricing_band", {})
+    base_low = float(base_pricing_band.get("lowest", 0))
+    base_high = float(base_pricing_band.get("highest", 0))
+    pricing_intelligence = compute_adjusted_pricing(
+        base_low=base_low, 
+        base_high=base_high, 
+        location_str=district, 
+        competitor_count=comp_count, 
+        language=req.language
+    )
+
     response = {
         "status": "success",
         "mode": req.mode,
@@ -296,6 +467,8 @@ Return strict JSON: {{"rationale": "...", "recommendations": ["...", "...", "...
             "competitors": market_data.get("competitor_list", []),
             "daily_footfall": market_data.get("daily_footfall"),
             "target_customer_base": population,
+            "target_customer_base_10km": demand_data.get("local_consumer_base_10km"),
+            "demand_model_density": demand_data.get("model_density"),
             "pricing_band": category_data.get("pricing_margins", {}).get("pricing_band", {}),
             "average_margin_pct": category_data.get("pricing_margins", {}).get("average_margin_percentage"),
             "confidence": market_data.get("confidence", "Medium"),
@@ -317,6 +490,9 @@ Return strict JSON: {{"rationale": "...", "recommendations": ["...", "...", "...
             "dimensions": scores,
             "verdict": verdict,
             "next_steps": next_steps,
+            "evidence": evidence_list,
+            "coverage_pct": coverage_pct,
+            "confidence": overall_confidence
         } if total_score is not None else None,
 
         "risk": {
@@ -325,7 +501,13 @@ Return strict JSON: {{"rationale": "...", "recommendations": ["...", "...", "...
             "threats": qualitative.get("threats", []),
         },
 
+        "alternatives": alternatives,
+
         "ai_insights": ai_insights,
+
+        "pricing_intelligence": pricing_intelligence,
+
+        "action_plan": action_plan,
 
         "provenance": [
             {"field": "market", "source": "solapur_combined.json", "source_type": "dataset", "confidence": market_data.get("confidence", "Medium")},

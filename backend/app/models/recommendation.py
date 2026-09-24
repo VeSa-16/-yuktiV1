@@ -12,4 +12,7 @@ class Recommendation(Base):
     verdict = Column(Enum(VerdictEnum))
     dimension_breakdown_json = Column(JSON)
     confidence_multiplier = Column(Float)
+    evidence_json = Column(JSON)
+    evidence_coverage_pct = Column(Float)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+

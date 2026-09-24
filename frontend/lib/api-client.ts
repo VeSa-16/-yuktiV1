@@ -79,7 +79,10 @@ export class ApiClient {
       endpoint,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "X-API-Key": "yukti-demo-key"
+        },
         body: JSON.stringify(body),
       },
       timeoutMs,
@@ -90,7 +93,10 @@ export class ApiClient {
   static async get<T>(endpoint: string, timeoutMs = STANDARD_TIMEOUT_MS, signal?: AbortSignal): Promise<T> {
     return fetchWithTimeout<T>(
       endpoint,
-      { method: "GET" },
+      { 
+        method: "GET",
+        headers: { "X-API-Key": "yukti-demo-key" }
+      },
       timeoutMs,
       signal
     );
@@ -299,16 +305,16 @@ export const api = {
     ApiClient.post<ProfileResponse>("/profile", data, undefined, signal),
 
   rankOpportunities: (data: { session_id: string; location_id: string; margin_capital: number }, signal?: AbortSignal) =>
-    ApiClient.post<RankResponse>("/rank-opportunities", data, undefined, signal),
+    ApiClient.post<RankResponse>("/rank-opportunities", data, AI_TIMEOUT_MS, signal),
 
   analyzeMarket: (data: { session_id: string; location_id: string; category_id: string; category_name?: string; budget?: number; experience?: string; idea_details?: string }, signal?: AbortSignal) =>
     ApiClient.post<MarketResponse>("/analyze-market", data, AI_TIMEOUT_MS, signal),
 
   calculateFinance: (data: { session_id: string }, signal?: AbortSignal) =>
-    ApiClient.post<FinanceResponse>("/calculate-finance", data, undefined, signal),
+    ApiClient.post<FinanceResponse>("/calculate-finance", data, AI_TIMEOUT_MS, signal),
 
   getRecommendation: (data: { session_id: string }, signal?: AbortSignal) =>
-    ApiClient.post<RecommendResponse>("/recommend", data, undefined, signal),
+    ApiClient.post<RecommendResponse>("/recommend", data, AI_TIMEOUT_MS, signal),
 
   simulate: (data: {
     session_id: string;
@@ -337,4 +343,28 @@ export const api = {
 
   simulateDynamic: (data: { month: number; cash_balance: number; active_events: string[]; decision: string; scenario_parameters: any }) =>
     ApiClient.post<any>("/api/simulate/dynamic", data, AI_TIMEOUT_MS),
+
+  getHealthStatus: (data: { monthly_revenue: number; monthly_expenses: number; emi: number }) =>
+    ApiClient.post<any>("/api/health", data),
+
+  getCashflowForecast: (data: { peak_seasons: string[]; lean_season: string; average_monthly_revenue: number }) =>
+    ApiClient.post<any>("/api/cashflow", data),
+
+  getSkillAssessment: (data: { has_accounts_exp: boolean; uses_smartphone: boolean; has_sales_exp: boolean }) =>
+    ApiClient.post<any>("/api/skills", data),
+
+  getInsuranceRecommendations: (data: { category_name: string }) =>
+    ApiClient.post<any>("/api/insurance", data),
+
+  getPeerBenchmarks: (data: { category_name: string; district: string; yukti_score: number }) =>
+    ApiClient.post<any>("/api/benchmarks", data),
+
+  getTrackedSchemes: (data: { applied_scheme_ids: string[] }) =>
+    ApiClient.post<any>("/api/tracker", data),
+
+  getExitAdvice: (data: { revenue_drop_pct: number; current_dscr: number; category: string }) =>
+    ApiClient.post<any>("/api/exit", data),
+
+  getComplianceCalendar: (data: { monthly_revenue: number; business_type: string }) =>
+    ApiClient.post<any>("/api/compliance", data),
 };

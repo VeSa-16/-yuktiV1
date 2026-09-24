@@ -68,7 +68,7 @@ export default function LandingPage() {
         language: "en"
       });
       
-      // Generate full dynamic analysis via the SINGLE authoritative endpoint
+      // Generate full dynamic analysis via the SINGLE unified endpoint
       const resAnalysis = await api.generateAnalysis({
         profile: {
           name: onboardingData.fullName,
@@ -89,7 +89,8 @@ export default function LandingPage() {
           area_of_interest: onboardingData.industry,
           suggested_idea: onboardingData.selectedIdea || "",
           detailed_idea_description: onboardingData.ideaDetails || "",
-          prior_experience: onboardingData.experience
+          prior_experience: onboardingData.experience,
+          compare_alternatives: onboardingData.compareAlternatives || false
         },
         language: locale
       });
@@ -113,9 +114,12 @@ export default function LandingPage() {
       
       clearInterval(stepInterval);
       router.push("/dashboard");
-    } catch (error: unknown) {
+    } catch (error: any) {
       clearInterval(stepInterval);
-      const msg = error instanceof Error ? error.message : "Failed to generate analysis. Please try again.";
+      let msg = error instanceof Error ? error.message : "Failed to generate analysis. Please try again.";
+      if (msg === "OUT_OF_COVERAGE") {
+          msg = "This location isn't in our current demo dataset (covering Solapur district). In production, this would pull from official Census/Overpass APIs.";
+      }
       setProfileError(msg);
       alert(msg);
     } finally {

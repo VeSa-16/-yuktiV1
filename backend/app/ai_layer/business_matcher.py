@@ -1,3 +1,18 @@
+"""
+================================================================================
+YUKTI GENERATIVE AI LAYER: BUSINESS MATCHER
+================================================================================
+
+[ARCHITECTURE BOUNDARY: LLM / NON-DETERMINISTIC]
+This module is explicitly designated as the Generative AI boundary. 
+It uses LLMs (Gemini) solely to translate unstructured user ideas into strict, 
+pre-defined dataset schema categories. IT NEVER COMPUTES FINANCIAL NUMBERS.
+The LLM acts strictly as a semantic router, isolating hallucinations from the 
+deterministic execution engines downstream.
+
+================================================================================
+"""
+
 import logging
 from typing import Dict, Any
 from app.ai.gemini_client import GeminiClient
@@ -95,7 +110,11 @@ async def match_business_category(
         "required": ["matched_category_id", "matched_subcategory", "confidence", "reason"]
     }
     
-    result = await gemini.generate_json_async(prompt, schema=schema)
+    try:
+        result = await gemini.generate_json_async(prompt, schema=schema)
+    except Exception as e:
+        logger.warning(f"[GEMINI] Failed to match business category offline: {e}")
+        result = None
     
     if result:
         # Fallback validation

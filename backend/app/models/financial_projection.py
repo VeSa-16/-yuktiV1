@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Float, ForeignKey
+from sqlalchemy import Column, String, Float, ForeignKey, JSON
 from app.core.db import Base
 from app.models.core import uid
 
@@ -13,3 +13,5 @@ class FinancialProjection(Base):
     break_even_units = Column(Float)
     dscr = Column(Float)
     roi = Column(Float)
+    evidence_json = Column(JSON)
+

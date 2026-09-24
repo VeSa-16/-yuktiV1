@@ -38,8 +38,11 @@ const planMilestones = [
 ];
 
 export default function ActionPlan() {
-  const { categoryName, locationName } = useStore();
-  const [milestones, setMilestones] = useState(planMilestones);
+  const { categoryName, locationName, analysisResult } = useStore();
+  
+  // Use dynamically generated plan from backend if available, otherwise fallback to static
+  const dynamicPlan = analysisResult?.action_plan || planMilestones;
+  const [milestones, setMilestones] = useState(dynamicPlan);
 
   const toggleTask = (mId: string, tId: string) => {
     setMilestones(prev => prev.map(m => {
@@ -71,6 +74,13 @@ export default function ActionPlan() {
           <Flag size={16} className="mr-2" /> Export to PDF
         </button>
       </div>
+
+      <YuktiFiInsight 
+        type="info"
+        title="DYNAMIC ROADMAP"
+        message="Task selection and sequencing are rule-based against your specific business profile. Free-form AI generation was intentionally avoided so the plan stays auditable and deterministic."
+        className="mb-8 rounded-xl !font-sans"
+      />
 
       <div className="bg-warm-surface p-6 rounded-2xl border border-warm-border shadow-sm mb-8 flex flex-col md:flex-row items-center justify-between">
         <div className="flex items-center mb-6 md:mb-0">

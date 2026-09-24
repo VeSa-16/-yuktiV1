@@ -7,42 +7,21 @@ import { YuktiFiInsight } from '@/components/YuktiFiInsight';
 import { motion } from 'framer-motion';
 
 const DUMMY_VENDORS = [
-  {
-    id: 1,
-    name: "Mahindra Automotives (Authorized)",
-    category: "Heavy Machinery",
-    location: "Nagpur MIDC (12 km away)",
-    rating: 4.8,
-    reviews: 124,
-    verified: true,
-    products: ["Commercial Tractors", "Delivery Vans", "Loading Tempos"],
-    deliveryTime: "3-5 Days",
-    estCost: "₹5.5L - ₹12L"
-  },
-  {
-    id: 2,
-    name: "Shree Ganesh Textiles & Looms",
-    category: "Manufacturing",
-    location: "Solapur East (4 km away)",
-    rating: 4.5,
-    reviews: 89,
-    verified: true,
-    products: ["Industrial Sewing Machines", "Cotton Processing Units", "Fabric Cutters"],
-    deliveryTime: "7-10 Days",
-    estCost: "₹45k - ₹2.5L"
-  },
-  {
-    id: 3,
-    name: "TechVision Retail Solutions",
-    category: "Electronics",
-    location: "Pune Central (Dispatch Only)",
-    rating: 4.2,
-    reviews: 56,
-    verified: false,
-    products: ["POS Systems", "Barcode Scanners", "Billing Printers"],
-    deliveryTime: "1-2 Days",
-    estCost: "₹15k - ₹50k"
-  }
+  { id: 1, name: "Mahindra Automotives (Authorized)", category: "Heavy Machinery", location: "Nagpur MIDC (12 km away)", rating: 4.8, reviews: 124, verified: true, products: ["Commercial Tractors", "Delivery Vans", "Loading Tempos"], deliveryTime: "3-5 Days", estCost: "₹5.5L - ₹12L" },
+  { id: 2, name: "Shree Ganesh Textiles & Looms", category: "Manufacturing", location: "Solapur East (4 km away)", rating: 4.5, reviews: 89, verified: true, products: ["Industrial Sewing Machines", "Cotton Processing Units", "Fabric Cutters"], deliveryTime: "7-10 Days", estCost: "₹45k - ₹2.5L" },
+  { id: 3, name: "TechVision Retail Solutions", category: "Electronics", location: "Pune Central (Dispatch Only)", rating: 4.2, reviews: 56, verified: false, products: ["POS Systems", "Barcode Scanners", "Billing Printers"], deliveryTime: "1-2 Days", estCost: "₹15k - ₹50k" },
+  { id: 4, name: "Solapur Dairy Equipment Co.", category: "Dairy Farming", location: "Bale, Solapur (6 km away)", rating: 4.9, reviews: 210, verified: true, products: ["Milking Machines", "Chilling Vats", "Cream Separators"], deliveryTime: "2-4 Days", estCost: "₹25k - ₹4L" },
+  { id: 5, name: "AgriTech Implements", category: "Agriculture", location: "Barshi Road (8 km away)", rating: 4.4, reviews: 75, verified: true, products: ["Drip Irrigation Kits", "Power Tillers", "Sprayers"], deliveryTime: "3-6 Days", estCost: "₹10k - ₹1.5L" },
+  { id: 6, name: "Modern Mill Machinery", category: "Flour Mill", location: "Akkalkot Road (5 km away)", rating: 4.6, reviews: 132, verified: true, products: ["Commercial Atta Chakki", "Grain Grinders", "Spice Pulverizers"], deliveryTime: "5-8 Days", estCost: "₹30k - ₹1.8L" },
+  { id: 7, name: "Sewing Machine Hub", category: "Tailoring", location: "Navi Peth (2 km away)", rating: 4.1, reviews: 44, verified: false, products: ["Usha Sewing Machines", "Overlock Machines", "Embroidery Units"], deliveryTime: "1-3 Days", estCost: "₹8k - ₹35k" },
+  { id: 8, name: "Poultry Tech Solutions", category: "Poultry Farming", location: "Hotgi Road (7 km away)", rating: 4.7, reviews: 92, verified: true, products: ["Incubators", "Feeding Troughs", "Ventilation Systems"], deliveryTime: "4-7 Days", estCost: "₹20k - ₹2L" },
+  { id: 9, name: "Shree Krishna Packaging", category: "Packaging", location: "MIDC Solapur (10 km away)", rating: 4.3, reviews: 68, verified: true, products: ["Sealing Machines", "Corrugated Boxes", "Vacuum Packers"], deliveryTime: "2-5 Days", estCost: "₹5k - ₹80k" },
+  { id: 10, name: "Ramesh Trading Co.", category: "General Retail", location: "Phaltan Galli (1 km away)", rating: 4.0, reviews: 31, verified: false, products: ["Display Racks", "Glass Counters", "Weighing Scales"], deliveryTime: "1-2 Days", estCost: "₹12k - ₹60k" },
+  { id: 11, name: "Livestock Feed Depot", category: "Dairy Farming", location: "Solapur APMC (3 km away)", rating: 4.8, reviews: 185, verified: true, products: ["Cattle Feed", "Mineral Mixtures", "Fodder Cutters"], deliveryTime: "1-2 Days", estCost: "₹2k - ₹25k" },
+  { id: 12, name: "SuperFast Ovens", category: "Food Processing", location: "Bhavani Peth (2.5 km away)", rating: 4.5, reviews: 112, verified: true, products: ["Bakery Ovens", "Dough Mixers", "Display Fridges"], deliveryTime: "5-10 Days", estCost: "₹40k - ₹3L" },
+  { id: 13, name: "GreenHouse Structures Ltd", category: "Agriculture", location: "Pune-Solapur Hwy (15 km away)", rating: 4.7, reviews: 88, verified: true, products: ["Polyhouse Kits", "Shade Nets", "Cooling Pads"], deliveryTime: "10-15 Days", estCost: "₹1L - ₹5L" },
+  { id: 14, name: "ElectroPower Generators", category: "Electronics", location: "Kumbhari (11 km away)", rating: 4.4, reviews: 54, verified: false, products: ["Diesel Generators", "Inverters", "Solar Panels"], deliveryTime: "3-7 Days", estCost: "₹50k - ₹4L" },
+  { id: 15, name: "Jadhav Handlooms", category: "Manufacturing", location: "Main Road (3.5 km away)", rating: 4.9, reviews: 245, verified: true, products: ["Handloom Frames", "Yarn Spinning Wheels", "Dyeing Vats"], deliveryTime: "7-12 Days", estCost: "₹25k - ₹1.5L" }
 ];
 
 export default function Marketplace() {
@@ -55,14 +34,14 @@ export default function Marketplace() {
       <div className="mb-8 mt-6 flex flex-col md:flex-row justify-between md:items-end">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Vendor & Equipment Hub</h1>
-          <p className="text-warm-muted mt-2">Procure machinery from verified local suppliers for your {categoryName || 'Business'}.</p>
+          <p className="text-warm-muted mt-2">Procure machinery from registered local suppliers for your {categoryName || 'Business'}.</p>
         </div>
       </div>
 
       <YuktiFiInsight 
         type="info"
         title="NSFDC SUBSIDY APPLICABLE"
-        message="Vendors with the green 'Verified' badge are pre-approved by the government. Purchasing from them automatically qualifies you for a 5% GST rebate on heavy machinery."
+        message="Vendors with the green 'Registered' badge are recognized by the government. Purchasing from them automatically qualifies you for a 5% GST rebate on heavy machinery."
         className="mb-8 rounded-xl !font-sans"
       />
 
@@ -104,7 +83,7 @@ export default function Marketplace() {
                     </div>
                   </div>
                   {vendor.verified && (
-                    <div className="bg-emerald-50 text-emerald-600 p-1.5 rounded-full" title="NSFDC Verified Vendor">
+                    <div className="bg-emerald-50 text-emerald-600 p-1.5 rounded-full" title="NSFDC Registered Vendor">
                       <ShieldCheck size={18} />
                     </div>
                   )}
