@@ -3,9 +3,10 @@ import { cn } from "@/lib/utils";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline" | "ghost";
+  size?: "sm" | "md" | "lg";
 }
 
-export function Button({ variant = "primary", className, children, ...props }: ButtonProps) {
+export function Button({ variant = "primary", size = "md", className, children, ...props }: ButtonProps) {
   const baseStyles = "inline-flex items-center justify-center rounded-none border border-transparent text-sm font-bold uppercase tracking-wider transition-all duration-100 focus:outline-none disabled:opacity-50 disabled:pointer-events-none active:scale-95";
   
   const variants = {
@@ -15,9 +16,15 @@ export function Button({ variant = "primary", className, children, ...props }: B
     ghost: "bg-transparent hover:bg-warm-surface text-warm-text hover:text-warm-text",
   };
 
+  const sizes = {
+    sm: "px-3 py-1.5 text-xs",
+    md: "px-5 py-2.5",
+    lg: "px-7 py-3.5 text-base",
+  };
+
   return (
     <button 
-      className={cn(baseStyles, variants[variant], "px-5 py-2.5", className)} 
+      className={cn(baseStyles, variants[variant], sizes[size], className)} 
       {...props}
     >
       {children}
