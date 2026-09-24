@@ -1,0 +1,121 @@
+{
+  "catalog_version": "2026-09-24",
+  "principle": "Only claim an integration as live after endpoint verification and a successful ingestion test in the target repository.",
+  "sources": [
+    {
+      "source_id": "data.gov.in",
+      "owner": "National Informatics Centre / respective publisher",
+      "official_url": "https://data.gov.in/",
+      "access": "API for datasets that expose a resource API; downloadable files otherwise",
+      "auth": "API key for registered API access",
+      "temporal_semantics": "dataset-specific",
+      "geographic_semantics": "dataset-specific",
+      "status_for_yukti_pack": "VERIFIED_DOCUMENTATION_NOT_LIVE_TESTED",
+      "fallback": "cached dataset -> last verified -> benchmark/user input -> unavailable",
+      "license_note": "Government Open Data License - India where applicable; verify per resource"
+    },
+    {
+      "source_id": "census-india",
+      "owner": "Office of the Registrar General & Census Commissioner, India",
+      "official_url": "https://censusindia.gov.in/census.website/en/data/api/about",
+      "access": "published aggregate API + bulk Excel/dumps",
+      "auth": "documented API; verify current credential/limits before production use",
+      "temporal_semantics": "published Census years 2001 and 2011 via API",
+      "geographic_semantics": "depends on table",
+      "status_for_yukti_pack": "VERIFIED_DOCUMENTATION_NOT_LIVE_TESTED",
+      "fallback": "stored Census tables",
+      "license_note": "verify current Census terms"
+    },
+    {
+      "source_id": "worldpop-v2",
+      "owner": "WorldPop / University of Southampton",
+      "official_url": "https://api.worldpop.org/v2/",
+      "access": "REST API",
+      "auth": "not required for baseline quota; API key increases limits",
+      "temporal_semantics": "2015-2030; data year must be stored",
+      "geographic_semantics": "100m or 1km, polygon query",
+      "status_for_yukti_pack": "VERIFIED_DOCUMENTATION_NOT_LIVE_TESTED",
+      "fallback": "cached population surface -> Census baseline -> unavailable",
+      "license_note": "verify dataset-specific license/attribution"
+    },
+    {
+      "source_id": "osm-overpass",
+      "owner": "OpenStreetMap ecosystem / public Overpass instances",
+      "official_url": "https://wiki.openstreetmap.org/wiki/Overpass_API",
+      "access": "Overpass read API for small/targeted queries; regional extracts for scale",
+      "auth": "varies by instance",
+      "temporal_semantics": "query-time OSM state",
+      "geographic_semantics": "query polygon/area",
+      "status_for_yukti_pack": "VERIFIED_DOCUMENTATION_NOT_LIVE_TESTED",
+      "fallback": "Geofabrik extract -> cached mapped POIs -> insufficient mapping coverage",
+      "license_note": "ODbL 1.0; attribution/share-alike obligations apply to OSM-derived databases"
+    },
+    {
+      "source_id": "geofabrik-india-osm",
+      "owner": "Geofabrik GmbH / OpenStreetMap contributors",
+      "official_url": "https://download.geofabrik.de/asia/india.html",
+      "access": "daily regional .osm.pbf extracts",
+      "auth": "none",
+      "temporal_semantics": "extract snapshot",
+      "geographic_semantics": "India / zones",
+      "status_for_yukti_pack": "VERIFIED_DOCUMENTATION",
+      "fallback": "older verified extract",
+      "license_note": "ODbL 1.0 and OSM attribution"
+    },
+    {
+      "source_id": "rbi-dbIE",
+      "owner": "Reserve Bank of India",
+      "official_url": "https://dbieold.rbi.org.in/DBIE/",
+      "access": "data portal / downloadable time series",
+      "auth": "varies",
+      "temporal_semantics": "indicator-specific",
+      "geographic_semantics": "national/state/district depending on series",
+      "status_for_yukti_pack": "VERIFIED_DOCUMENTATION",
+      "fallback": "cached downloaded series"
+    },
+    {
+      "source_id": "trai-subscriptions",
+      "owner": "Telecom Regulatory Authority of India",
+      "official_url": "https://www.trai.gov.in/release-publication/reports/telecom-subscriptions-reports",
+      "access": "periodic published reports/downloads",
+      "auth": "none",
+      "temporal_semantics": "monthly reports",
+      "geographic_semantics": "report-defined; do not infer village-level quality",
+      "status_for_yukti_pack": "VERIFIED_DOCUMENTATION",
+      "fallback": "last published report"
+    },
+    {
+      "source_id": "npci-upi",
+      "owner": "NPCI",
+      "official_url": "https://www.npci.org.in/product/upi/product-statistics",
+      "access": "published monthly/daily statistics",
+      "auth": "none",
+      "temporal_semantics": "daily/monthly",
+      "geographic_semantics": "published aggregate level; do not infer village-level adoption",
+      "status_for_yukti_pack": "VERIFIED_DOCUMENTATION",
+      "fallback": "last published aggregate statistic"
+    },
+    {
+      "source_id": "lgd",
+      "owner": "Ministry of Panchayati Raj",
+      "official_url": "https://lgdirectory.gov.in/demo/downloadDirectory.do",
+      "access": "directory downloads",
+      "auth": "portal-dependent",
+      "temporal_semantics": "directory snapshot/modification set",
+      "geographic_semantics": "district/sub-district/village/local body mappings",
+      "status_for_yukti_pack": "VERIFIED_DOCUMENTATION_NOT_LIVE_TESTED",
+      "fallback": "last verified hierarchy snapshot"
+    },
+    {
+      "source_id": "maharashtra-cmegp",
+      "owner": "Government of Maharashtra, Industries Department",
+      "official_url": "https://industry.maharashtra.gov.in/en/cm-dashboard/overview",
+      "access": "dashboard / published information",
+      "auth": "none for public dashboard",
+      "temporal_semantics": "dashboard snapshot",
+      "geographic_semantics": "state-level and scheme-defined views",
+      "status_for_yukti_pack": "VERIFIED_DOCUMENTATION",
+      "fallback": "versioned scheme documents"
+    }
+  ]
+}

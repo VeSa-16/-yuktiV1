@@ -41,14 +41,38 @@ class SchemeMatch:
     rejected_alternative: Optional[str]
     explanation: str
     source_url: Optional[str]
+    scheme_id: Optional[str] = "nsfdc_term"
+    status: str = "ELIGIBLE"
+    version: str = "2026-09-06"
+    effective_from: str = "2026-01-01"
 
 
-def match_scheme(project_cost: float) -> SchemeMatch:
+def match_scheme(project_cost: float, scheme_id: Optional[str] = None) -> SchemeMatch:
+    if scheme_id and "pmegp" in scheme_id.lower():
+        s = SCHEMES["PMEGP"]
+        return SchemeMatch(
+            matched=True,
+            scheme_id="pmegp",
+            scheme_name="PMEGP",
+            status="NEEDS_VERIFICATION",
+            max_loan=min(project_cost * 0.90, s["max_loan"]),
+            rate=s["rate"],
+            tenure_years=s["tenure_years"],
+            moratorium_months=s["moratorium_months"],
+            rejected_alternative=None,
+            explanation="PMEGP scheme requires institutional verification.",
+            source_url=s["source_url"],
+            version="2026-09-06",
+            effective_from="2026-01-01",
+        )
+
     if project_cost <= MICRO_FINANCE_CEILING:
         s = SCHEMES["Micro Credit Finance"]
         return SchemeMatch(
             matched=True,
+            scheme_id="nsfdc_micro",
             scheme_name="Micro Credit Finance",
+            status="ELIGIBLE",
             max_loan=min(project_cost * 0.90, s["max_loan"]),
             rate=s["rate"], tenure_years=s["tenure_years"],
             moratorium_months=s["moratorium_months"],
@@ -58,16 +82,16 @@ def match_scheme(project_cost: float) -> SchemeMatch:
                 f"₹{MICRO_FINANCE_CEILING:,.0f} ceiling, so you're routed to Micro Credit Finance."
             ),
             source_url=s["source_url"],
+            version="2026-09-06",
+            effective_from="2026-01-01",
         )
     elif MICRO_FINANCE_CEILING < project_cost <= TERM_LOAN_CEILING:
-        # Depending on user profile, they might be eligible for PMEGP margin money subsidy.
-        # But we'll default to Term Loan if they want full loan, or PMEGP.
-        # We'll return Term Loan here but could return PMEGP. Let's just return Term Loan.
-        # Wait, the prompt says "The UI will only show NSFDC Micro, NSFDC Term Loan, and PMEGP."
         s = SCHEMES["Term Loan"]
         return SchemeMatch(
             matched=True,
+            scheme_id="nsfdc_term",
             scheme_name="Term Loan",
+            status="ELIGIBLE",
             max_loan=min(project_cost * 0.90, s["max_loan"]),
             rate=s["rate"], tenure_years=s["tenure_years"],
             moratorium_months=s["moratorium_months"],
@@ -78,11 +102,14 @@ def match_scheme(project_cost: float) -> SchemeMatch:
                 f"so you're routed to the Term Loan scheme rather than Micro Credit Finance."
             ),
             source_url=s["source_url"],
+            version="2026-09-06",
+            effective_from="2026-01-01",
         )
     else:
         return SchemeMatch(
-            matched=False, scheme_name=None, max_loan=None, rate=None,
+            matched=False, scheme_id="none", scheme_name=None, max_loan=None, rate=None,
             tenure_years=None, moratorium_months=None, rejected_alternative=None,
+            status="INELIGIBLE",
             explanation=(
                 f"Based on your available margin capital, the resulting project cost of "
                 f"₹{project_cost:,.0f} exceeds the ₹{TERM_LOAN_CEILING:,.0f} ceiling modelled "
@@ -93,4 +120,7 @@ def match_scheme(project_cost: float) -> SchemeMatch:
                 "Channelizing Agency about larger-ticket options."
             ),
             source_url=None,
+            version="2026-09-06",
+            effective_from="2026-01-01",
         )
+

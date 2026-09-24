@@ -13,7 +13,7 @@ by the AI layer strictly after all calculations are complete.
 ================================================================================
 """
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Dict, Any
 
 CONTRIBUTION_PCT = 0.10          # beneficiary contribution
 FINANCING_PCT = 0.90             # scheme financing share
@@ -92,6 +92,86 @@ def compute_roi(net_annual_profit: float, total_investment: float) -> float:
     return round((net_annual_profit / total_investment) * 100, 2)
 
 
+
+def compute_break_even_revenue(monthly_fixed_cost: float, monthly_revenue: float, monthly_variable_cost: float) -> float:
+    """Break-even revenue = Fixed Cost / Contribution Margin Ratio."""
+    if monthly_revenue <= 0:
+        return float("inf")
+    cm_ratio = (monthly_revenue - monthly_variable_cost) / monthly_revenue
+    if cm_ratio <= 0:
+        return float("inf")
+    return round(monthly_fixed_cost / cm_ratio, 2)
+
+
+def build_financial_snapshot(
+    user_capital: float,
+    financial_data: dict[str, float],
+    scheme: dict[str, Any] | None = None,
+    category_id: str = "retail_shop",
+) -> dict[str, Any]:
+    """Build canonical financial snapshot with deterministic formulas."""
+    project_cost = float(financial_data.get("startup_cost", 0.0))
+    required_margin = float(project_cost * CONTRIBUTION_PCT)
+    max_loan = scheme.get("max_loan") if scheme else None
+    loan_requirement = float(compute_loan_amount(project_cost, scheme_max_loan=max_loan))
+    
+    funding_gap = max(0.0, required_margin - user_capital)
+    financing_capacity_project = user_capital / CONTRIBUTION_PCT if CONTRIBUTION_PCT else 0.0
+    financing_capacity_loan = financing_capacity_project * FINANCING_PCT
+    excess_capital_buffer = max(0.0, user_capital - required_margin)
+    capital_sufficient = user_capital >= required_margin
+
+    monthly_revenue = float(financial_data.get("monthly_revenue", 0.0))
+    monthly_variable_cost = float(financial_data.get("monthly_variable_cost", 0.0))
+    gross_profit = round(monthly_revenue - monthly_variable_cost, 2)
+    gross_margin_pct = round((gross_profit / monthly_revenue) * 100, 2) if monthly_revenue else 0.0
+    
+    monthly_fixed_cost = float(financial_data.get("monthly_fixed_cost", 0.0))
+    operating_profit = round(gross_profit - monthly_fixed_cost, 2)
+    operating_margin_pct = round((operating_profit / monthly_revenue) * 100, 2) if monthly_revenue else 0.0
+    annual_operating_profit = round(operating_profit * 12, 2)
+    roi_pct = round((annual_operating_profit / project_cost) * 100, 2) if project_cost else 0.0
+
+    tenure_months = int(scheme.get("tenure_months", 84) if scheme else 84)
+    moratorium_months = int(scheme.get("moratorium_months", 6) if scheme else 6)
+    rate = float(scheme.get("rate", scheme.get("rate_pct", 8.0)) if scheme else 8.0)
+    
+    emi = compute_emi(loan_requirement, rate, tenure_months, moratorium_months)
+    dscr = compute_dscr(operating_profit, emi)
+    break_even_rev = compute_break_even_revenue(monthly_fixed_cost, monthly_revenue, monthly_variable_cost)
+
+    return {
+        "required_project_cost": project_cost,
+        "required_margin": required_margin,
+        "loan_requirement": loan_requirement,
+        "funding_gap": funding_gap,
+        "available_capital": user_capital,
+        "financing_capacity_project": financing_capacity_project,
+        "financing_capacity_loan": financing_capacity_loan,
+        "excess_capital_buffer": excess_capital_buffer,
+        "capital_sufficient": capital_sufficient,
+        "monthly_revenue": monthly_revenue,
+        "monthly_variable_cost": monthly_variable_cost,
+        "gross_profit": gross_profit,
+        "gross_margin_pct": gross_margin_pct,
+        "monthly_fixed_cost": monthly_fixed_cost,
+        "operating_profit": operating_profit,
+        "operating_margin_pct": operating_margin_pct,
+        "annual_operating_profit": annual_operating_profit,
+        "roi_pct": roi_pct,
+        "tenure_months": tenure_months,
+        "moratorium_months": moratorium_months,
+        "emi": emi,
+        "emi_details": {
+            "repayment_months": tenure_months - moratorium_months,
+            "rate_pct": rate,
+        },
+        "dscr": dscr,
+        "break_even_revenue": break_even_rev,
+    }
+
+
+
 # ─── NEW EXTENDED FUNCTIONS ──────────────────────────────────────────────────
 
 def compute_cashflow_projection(
@@ -162,7 +242,8 @@ def compute_pnl_statement(
 
 def compute_working_capital(
     monthly_revenue: float,
-    monthly_opex: float,
+    monthly_opex: float = 0.0,
+    monthly_variable_cost: float = 0.0,
     selling_price_per_unit: float = 100.0,
     variable_cost_per_unit: float = 60.0,
     receivable_days: int = 7,
@@ -173,13 +254,13 @@ def compute_working_capital(
     Working capital requirement.
     WC = (Inventory + Receivables - Payables) expressed in ₹/day terms.
     """
-    daily_revenue = round(monthly_revenue / 30, 2)
-    daily_opex = round(monthly_opex / 30, 2)
-    daily_cogs = round(daily_revenue * 0.45, 2)
+    daily_revenue = round(monthly_revenue / 30, 2) if monthly_revenue else 0.0
+    daily_variable = round(monthly_variable_cost / 30, 2) if monthly_variable_cost else round(daily_revenue * 0.45, 2)
+    daily_opex = round(monthly_opex / 30, 2) if monthly_opex else daily_variable
 
-    inventory_req = round(daily_cogs * inventory_days, 2)
+    inventory_req = round(daily_variable * inventory_days, 2)
     receivables = round(daily_revenue * receivable_days, 2)
-    payables = round(daily_cogs * payable_days, 2)
+    payables = round(daily_variable * payable_days, 2)
 
     net_wc = round(inventory_req + receivables - payables, 2)
     daily_wc = round(daily_opex + daily_revenue * 0.1, 2)   # daily float needed
@@ -188,8 +269,11 @@ def compute_working_capital(
 
     return {
         "daily_cash_needed": daily_wc,
+        "daily_variable_cost": daily_variable,
+        "daily_revenue": daily_revenue,
         "weekly_cash_needed": weekly_wc,
         "monthly_working_capital": net_wc,
+        "inventory": inventory_req,
         "inventory_requirement": inventory_req,
         "receivables": receivables,
         "payables": payables,
@@ -198,6 +282,7 @@ def compute_working_capital(
         "payable_days": payable_days,
         "inventory_days": inventory_days,
     }
+
 
 
 def compute_revenue_scenarios(

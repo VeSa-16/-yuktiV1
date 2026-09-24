@@ -44,15 +44,23 @@ class GeminiClient:
             "generationConfig": generation_config
         }
 
-    def _parse_response(self, data: dict, mime_type: str) -> Any:
+    def _parse_response(self, data: dict, mime_type: str = "text/plain") -> Any:
         content = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
         if not content:
             return None
         if mime_type == "application/json":
+            clean_text = content.strip()
+            if clean_text.startswith("```"):
+                lines = clean_text.splitlines()
+                if lines[0].startswith("```"):
+                    lines = lines[1:]
+                if lines and lines[-1].startswith("```"):
+                    lines = lines[:-1]
+                clean_text = "\n".join(lines).strip()
             try:
-                return json.loads(content)
-            except json.JSONDecodeError:
-                return content
+                return json.loads(clean_text)
+            except (json.JSONDecodeError, TypeError, ValueError):
+                return None
         return content
 
     def generate_json(self, prompt: str, schema: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:

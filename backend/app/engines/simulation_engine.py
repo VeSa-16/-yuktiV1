@@ -32,12 +32,33 @@ def run_simulation(
     project_cost = base_state["principal"] / 0.90
     simulated_roi = compute_roi(net_profit * 12, project_cost)
 
-    score = compute_yukti_score(base_state["dimension_scores"], base_state["confidence_multiplier"], dscr)
+    dimension_scores = dict(
+        base_state.get(
+            "dimension_scores",
+            {
+                "financial_viability": 80,
+                "repayment_capacity": 85,
+                "market_opportunity": 70,
+                "capital_efficiency": 75,
+                "risk_exposure": 80,
+            },
+        )
+    )
+    # Under stress, repayment_capacity and financial_viability adapt to the new DSCR and net profit
+    if dscr < 1.0:
+        dimension_scores["repayment_capacity"] = max(0.0, round(dscr * 40.0, 1))
+        dimension_scores["financial_viability"] = max(0.0, round(dimension_scores["financial_viability"] * 0.5, 1))
+    elif dscr < 1.5:
+        dimension_scores["repayment_capacity"] = 60.0
+    
+    confidence_multiplier = base_state.get("confidence_multiplier", 1.0)
+    score = compute_yukti_score(dimension_scores, confidence_multiplier, dscr)
 
     return {
         "emi": emi,
         "dscr": dscr,
         "net_profit": net_profit,
+        "operating_profit": net_profit,
         "verdict": score.verdict,
         "final_score": score.final_score,
         "simulated_roi": simulated_roi,
