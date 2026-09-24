@@ -31,7 +31,7 @@ export default function AdminSCAView() {
           <CardContent><div className="text-3xl font-black text-emerald-600">8</div></CardContent>
         </Card>
         <Card className="border-t-4 border-t-red-500">
-          <CardHeader className="pb-2"><CardTitle className="text-sm text-warm-muted uppercase">High Risk (DSCR < 1)</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-sm text-warm-muted uppercase">High Risk (DSCR &lt; 1)</CardTitle></CardHeader>
           <CardContent><div className="text-3xl font-black text-red-600">5</div></CardContent>
         </Card>
       </div>
