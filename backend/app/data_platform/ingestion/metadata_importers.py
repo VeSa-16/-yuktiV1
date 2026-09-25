@@ -9,7 +9,7 @@ import os
 import hashlib
 from typing import Dict, Any
 
-RAW_DATA_DIR = r"C:\Users\shraw\Downloads"
+RAW_DATA_DIR = r"C:\Users\Vedant\Desktop\sih"
 
 BHUVAN_FILE = os.path.join(RAW_DATA_DIR, "4_Bhuvan_Data_Content_And_Map_Standards.pdf")
 LABOUR_FILE = os.path.join(RAW_DATA_DIR, "WRIpdf-517a7d2e45e78b3958e752dcd189e6b8.pdf")

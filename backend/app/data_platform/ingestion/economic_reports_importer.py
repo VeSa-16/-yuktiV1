@@ -6,7 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_DOWNLOADS_DIR = r"C:\Users\shraw\Downloads"
+DEFAULT_DOWNLOADS_DIR = r"C:\Users\Vedant\Desktop\sih"
 
 # Verified Economic Census Indicators for Ahmadnagar & Regional MSMEs
 ECONOMIC_DISTRICT_PROFILES = {

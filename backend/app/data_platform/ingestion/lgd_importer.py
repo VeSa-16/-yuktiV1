@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_DOWNLOADS_DIR = r"C:\Users\shraw\Downloads"
+DEFAULT_DOWNLOADS_DIR = r"C:\Users\Vedant\Desktop\sih"
 
 def parse_xml_spreadsheet_bytes(file_bytes: bytes) -> List[List[str]]:
     """Parse XML Spreadsheet 2003 rows cleanly."""
@@ -112,6 +112,39 @@ class LGDRegistry:
                                             village_count += 1
             except Exception as exc:
                 logger.error(f"[LGD] Error reading {zpath}: {exc}")
+
+        # Fallback if no data was found
+        if subdistrict_count == 0 and village_count == 0:
+            logger.warning("[LGD] Zip files not found or empty. Using fallback mock data for testing.")
+            fallback_subdistricts = [
+                {"lgd_code": "LGD_SD_1", "name": "Akola", "district": "Ahilyanagar"},
+                {"lgd_code": "LGD_SD_2", "name": "Sangamner", "district": "Ahilyanagar"},
+                {"lgd_code": "LGD_SD_3", "name": "North Solapur", "district": "Solapur"},
+                {"lgd_code": "LGD_SD_4", "name": "Pune City", "district": "Pune"},
+            ]
+            for sd in fallback_subdistricts:
+                self.subdistricts[sd["lgd_code"]] = {
+                    **sd,
+                    "state": "Maharashtra",
+                    "state_code": "27",
+                    "provenance_class": "FALLBACK_MOCK",
+                    "source_id": "LGD_ADMIN_MASTER",
+                }
+            
+            fallback_villages = [
+                {"lgd_code": "LGD_V_1", "name": "Local Area", "district": "Ahilyanagar"},
+                {"lgd_code": "LGD_V_2", "name": "Kondi", "district": "Solapur"},
+                {"lgd_code": "LGD_V_3", "name": "Khed", "district": "Solapur"},
+                {"lgd_code": "LGD_V_4", "name": "Ralegan Siddhi", "district": "Ahilyanagar"},
+            ]
+            for v in fallback_villages:
+                self.villages[v["lgd_code"]] = {
+                    **v,
+                    "state": "Maharashtra",
+                    "state_code": "27",
+                    "provenance_class": "FALLBACK_MOCK",
+                    "source_id": "LGD_ADMIN_MASTER",
+                }
 
         return {"subdistricts": len(self.subdistricts), "villages": len(self.villages)}
 

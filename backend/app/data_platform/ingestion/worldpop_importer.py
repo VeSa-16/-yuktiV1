@@ -7,7 +7,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_DOWNLOADS_DIR = r"C:\Users\shraw\Downloads"
+DEFAULT_DOWNLOADS_DIR = r"C:\Users\Vedant\Desktop\sih"
 WORLDPOP_RASTER_NAME = "ind_pop_2025_CN_1km_R2025A_UA_v1.tif"
 
 # Solapur benchmark population densities for robust spatial estimation

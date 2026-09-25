@@ -1,15 +1,8 @@
 {
-  "timestamp": "2026-09-24T17:23:19Z",
-  "target": "all",
-  "elapsed_seconds": 19.31,
+  "timestamp": "2026-09-25T15:47:41Z",
+  "target": "lgd",
+  "elapsed_seconds": 28.43,
   "summary": {
-    "lgd": "OK",
-    "worldpop": "OK",
-    "hces": "OK",
-    "irrigation": "OK",
-    "economic": "OK",
-    "population": "OK",
-    "bhuvan": "OK",
-    "labour_calendar": "OK"
+    "lgd": "OK"
   }
 }

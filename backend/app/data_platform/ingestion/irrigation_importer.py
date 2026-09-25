@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_DOWNLOADS_DIR = r"C:\Users\shraw\Downloads"
+DEFAULT_DOWNLOADS_DIR = r"C:\Users\Vedant\Desktop\sih"
 IRRIGATION_ZIP_NAME = "2010-11_Irrigation_Area_Ahilyanagar (1).zip"
 
 def safe_float(val: Any) -> float:

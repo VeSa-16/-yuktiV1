@@ -6,7 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_DOWNLOADS_DIR = r"C:\Users\shraw\Downloads"
+DEFAULT_DOWNLOADS_DIR = r"C:\Users\Vedant\Desktop\sih"
 
 # Verified Published HCES 2022-23 MPCE Indicators (Report No. 591 & Factsheet)
 HCES_STATE_BENCHMARKS = {
