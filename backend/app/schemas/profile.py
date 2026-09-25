@@ -5,9 +5,7 @@ from typing import Optional
 class ProfileRequest(BaseModel):
     name: str
     language: str = "en"
-    location_input: str       # e.g. "Barshi" or "Kalmodi" — village or taluka name
-    taluka: Optional[str] = None    # taluka selected from LGD dropdown (Solapur only)
-    district: Optional[str] = None  # district name (e.g. "Solapur")
+    location_input: str  # e.g. "Solapur" — resolved by location_service
 
 
 class ProfileResponse(BaseModel):

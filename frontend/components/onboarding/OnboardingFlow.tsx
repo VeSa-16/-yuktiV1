@@ -26,7 +26,7 @@ export function OnboardingFlow({ onCancel, onComplete }: OnboardingFlowProps) {
     fullName: '', age: '', gender: '', category: ''
   });
   const [locationData, setLocationData] = useState<LocationData>({
-    state: '', district: '', taluka: '', village: ''
+    state: '', district: '', village: ''
   });
   const [capitalData, setCapitalData] = useState<CapitalData>({
     investment: '', source: ''

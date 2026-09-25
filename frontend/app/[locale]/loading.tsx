@@ -13,6 +13,13 @@ export default function Loading() {
       
       <div className="relative z-10 flex flex-col items-center bg-white/60 backdrop-blur-md border border-[#E7DCC7] p-8 rounded-[2rem] shadow-sm">
         <div className="flex items-center gap-3 mb-6 relative">
+           <Image
+              src="/india-emblem.png"
+              alt="Government of India"
+              width={40}
+              height={40}
+              className="object-contain"
+            />
             <div className="flex flex-col justify-center">
               <span className="font-display font-bold text-2xl text-[#294C38] tracking-tight leading-none">YuktiFi</span>
             </div>

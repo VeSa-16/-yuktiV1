@@ -104,6 +104,9 @@ export default function HowItWorksPage() {
 
         {/* Bottom Callout Banner */}
         <div className="bg-gradient-to-r from-forest-deep via-[#1e4620] to-forest-deep text-white p-8 sm:p-10 rounded-[2.5rem] shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden">
+          <div className="absolute right-0 top-0 bottom-0 opacity-10 pointer-events-none flex items-center pr-6">
+            <Image src="/india-emblem.png" alt="Emblem" width={180} height={180} />
+          </div>
           <div className="relative z-10 max-w-xl text-center sm:text-left">
             <h3 className="text-2xl font-bold font-display mb-2 text-amber-100">Ready to start your business evaluation?</h3>
             <p className="text-white/80 text-sm sm:text-base">
