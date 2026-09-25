@@ -261,7 +261,9 @@ export interface ExplainResponse {
 }
 
 export interface CopilotChatResponse {
-  reply: string;
+  answer: string;
+  sources: Array<{ source: string; page: number }>;
+  grounded: boolean;
 }
 
 export interface CopilotExplainResponse {
@@ -323,8 +325,8 @@ export const api = {
     tenure_override_years?: number | null;
   }, signal?: AbortSignal) => ApiClient.post<SimulateResponse>("/simulate", data, undefined, signal),
 
-  copilotChat: (data: { message: string; location_id: string; category_id: string; market_data?: any; financial_data?: any; score_data?: any }) =>
-    ApiClient.post<CopilotChatResponse>("/api/copilot/chat", data, AI_TIMEOUT_MS),
+  copilotChat: (data: { query: string; language?: string; location_id?: string; category_id?: string; market_data?: any; financial_data?: any; score_data?: any }) =>
+    ApiClient.post<CopilotChatResponse>("/api/copilot/ask", data, AI_TIMEOUT_MS),
 
   copilotExplain: (data: { question: string; location_id: string; category_id: string; market_data?: any; financial_data?: any; score_data?: any }) =>
     ApiClient.post<CopilotExplainResponse>("/api/copilot/explain", data, AI_TIMEOUT_MS),

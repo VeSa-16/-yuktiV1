@@ -129,3 +129,27 @@ class GeminiClient:
                 logger.error(f"Gemini API error (async): {e}")
                 return None
         return None
+
+def generate(prompt: str) -> str:
+    """Synchronous plain-text generation for RAG router."""
+    client = GeminiClient()
+    # We pass mime_type='text/plain' and no schema
+    payload = client._build_payload(prompt, mime_type="text/plain")
+    for attempt in range(2):
+        try:
+            with httpx.Client(timeout=15.0) as http_client:
+                response = http_client.post(
+                    f"{client.base_url}?key={client.api_key}",
+                    json=payload
+                )
+                response.raise_for_status()
+                content = response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                return content
+        except Exception as e:
+            if attempt < 1:
+                import time
+                time.sleep(1)
+                continue
+            logger.error(f"Gemini Text Generate Error: {e}")
+            return "Error generating response from AI."
+    return "Error generating response from AI."

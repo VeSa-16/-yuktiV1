@@ -55,12 +55,19 @@ export function CopilotOverlay() {
 
     try {
       const res = await api.copilotChat({ 
-        message: userMsg, 
+        query: userMsg, 
+        language: "en",
         location_id: state.locationId || "Solapur", 
         category_id: state.categoryId || "unknown" 
       });
-      setMessages(prev => [...prev, { role: "ai", content: res.reply, source: "copilot" }]);
+      let aiResponse = res.answer;
+      if (res.sources && res.sources.length > 0) {
+        const sourceTags = res.sources.map(s => `${s.source.replace(".pdf", "")} (pg ${s.page})`).join(", ");
+        aiResponse += `\n\n[Sources: ${sourceTags}]`;
+      }
+      setMessages(prev => [...prev, { role: "ai", content: aiResponse, source: res.grounded ? "copilot-rag" : "copilot" }]);
     } catch (error) {
+      console.error(error);
       setMessages(prev => [...prev, { role: "ai", content: "I'm sorry, I encountered an error while analyzing that.", source: "error" }]);
     } finally {
       setLoading(false);

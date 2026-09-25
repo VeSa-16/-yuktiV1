@@ -1,8 +1,20 @@
 {
-  "solapur": { "per_capita_income": 112000, "ppi": 0.87 },
-  "barshi":  { "per_capita_income": 89000,  "ppi": 0.69 },
-  "akkalkot": { "per_capita_income": 76000, "ppi": 0.59 },
-  "pandharpur": { "per_capita_income": 95000, "ppi": 0.74 },
-  "karmala": { "per_capita_income": 82000, "ppi": 0.64 },
-  "mangalwedha": { "per_capita_income": 78000, "ppi": 0.60 }
+  "_source": "HCES 2022-23 (MOSPI) + District estimates. Maharashtra rural MPCE = ₹4,122/month, India rural avg = ₹3,773/month.",
+  "_formula": "ppi = local_mpce / india_rural_avg_mpce (3773). Values > 1.0 = above national rural average.",
+  "_verified": "2026-09-25",
+
+  "solapur":       { "per_capita_income": 134000, "ppi": 1.09, "_note": "City — significantly above rural avg" },
+  "solapur north": { "per_capita_income": 130000, "ppi": 1.07 },
+  "solapur south": { "per_capita_income": 128000, "ppi": 1.05 },
+  "barshi":        { "per_capita_income": 103000, "ppi": 0.87, "_note": "Semi-urban taluka HQ" },
+  "pandharpur":    { "per_capita_income": 109000, "ppi": 0.91, "_note": "Pilgrimage town" },
+  "akkalkot":      { "per_capita_income":  88000, "ppi": 0.74, "_note": "Largely rural, below avg" },
+  "karmala":       { "per_capita_income":  94000, "ppi": 0.79 },
+  "mangalwedha":   { "per_capita_income":  90000, "ppi": 0.76 },
+  "mangalvedha":   { "per_capita_income":  90000, "ppi": 0.76 },
+  "mohol":         { "per_capita_income":  95000, "ppi": 0.80 },
+  "malshiras":     { "per_capita_income":  98000, "ppi": 0.82 },
+  "madha":         { "per_capita_income":  92000, "ppi": 0.77 },
+  "sangole":       { "per_capita_income":  89000, "ppi": 0.75 },
+  "akluj":         { "per_capita_income": 101000, "ppi": 0.85, "_note": "Sugar belt town" }
 }

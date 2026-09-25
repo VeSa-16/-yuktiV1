@@ -107,9 +107,43 @@ const MetricBox = ({ icon, title, status, statusColor, iconColor }: any) => (
 );
 
 // 5. Market Snapshot Section
-const MarketSnapshot = ({ assessment, compCount }: any) => {
+const MarketSnapshot = ({ assessment, market, scores }: any) => {
   const t = useTranslations('market.snapshot');
   const tStatus = useTranslations('dashboard.metrics.status');
+  
+  const compCount = market?.competitor_count || market?.competitors?.length || 0;
+  
+  // Helpers to map 0-100 scores to High/Med/Low
+  const getScoreStatus = (score: number = 50, inverse: boolean = false) => {
+    if (inverse) {
+      if (score >= 70) return { label: tStatus('low'), color: 'text-[#16a34a]' };
+      if (score >= 40) return { label: tStatus('medium'), color: 'text-[#ea580c]' };
+      return { label: tStatus('high'), color: 'text-[#ef4444]' };
+    } else {
+      if (score >= 70) return { label: tStatus('high'), color: 'text-[#16a34a]' };
+      if (score >= 40) return { label: tStatus('medium'), color: 'text-[#ea580c]' };
+      return { label: tStatus('low'), color: 'text-[#ef4444]' };
+    }
+  };
+
+  const demandObj = getScoreStatus(scores?.dimensions?.market_opportunity);
+  
+  const compStatus = compCount > 15 ? tStatus('high') : compCount > 5 ? tStatus('medium') : tStatus('low');
+  const compColor = compCount > 15 ? 'text-[#ef4444]' : compCount > 5 ? 'text-[#ea580c]' : 'text-[#16a34a]';
+  
+  // Saturation is inverse of market opportunity
+  const saturationObj = getScoreStatus(scores?.dimensions?.market_opportunity, true);
+  
+  const margin = market?.average_margin_pct || 20;
+  const pricingStatus = margin >= 30 ? tStatus('high') : margin >= 15 ? tStatus('medium') : tStatus('low');
+  const pricingColor = margin >= 30 ? 'text-[#16a34a]' : margin >= 15 ? 'text-[#ea580c]' : 'text-[#ef4444]';
+  
+  // Supply risk is inverse of risk exposure (higher score = safer)
+  const riskObj = getScoreStatus(scores?.dimensions?.risk_exposure, true);
+  
+  const seasons = market?.peak_seasons?.length || 0;
+  const seasonStatus = seasons > 1 ? tStatus('high') : seasons === 1 ? tStatus('medium') : tStatus('low');
+
   return (
     <div className="mb-10">
       <h2 className="text-xl font-bold text-forest-deep mb-4">{t('title')}</h2>
@@ -117,13 +151,13 @@ const MarketSnapshot = ({ assessment, compCount }: any) => {
         
         {/* 7-grid */}
         <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
-          <MetricBox icon={<Target size={20} />} title={t('demand')} status={tStatus('high')} statusColor="text-[#16a34a]" iconColor="text-[#16a34a]" />
-          <MetricBox icon={<Users size={20} />} title={t('competition')} status={compCount > 10 ? tStatus('high') : tStatus('medium')} statusColor="text-[#ea580c]" iconColor="text-[#ea580c]" />
-          <MetricBox icon={<Activity size={20} />} title={t('saturation')} status={tStatus('low')} statusColor="text-[#16a34a]" iconColor="text-[#16a34a]" />
-          <MetricBox icon={<IndianRupee size={20} />} title={t('pricing')} status={tStatus('high')} statusColor="text-[#16a34a]" iconColor="text-[#6366f1]" />
+          <MetricBox icon={<Target size={20} />} title={t('demand')} status={demandObj.label} statusColor={demandObj.color} iconColor="text-[#16a34a]" />
+          <MetricBox icon={<Users size={20} />} title={t('competition')} status={compStatus} statusColor={compColor} iconColor="text-[#ea580c]" />
+          <MetricBox icon={<Activity size={20} />} title={t('saturation')} status={saturationObj.label} statusColor={saturationObj.color} iconColor="text-[#16a34a]" />
+          <MetricBox icon={<IndianRupee size={20} />} title={t('pricing')} status={pricingStatus} statusColor={pricingColor} iconColor="text-[#6366f1]" />
           <MetricBox icon={<MapPin size={20} />} title={t('accessibility')} status={tStatus('high')} statusColor="text-[#16a34a]" iconColor="text-[#16a34a]" />
-          <MetricBox icon={<AlertTriangle size={20} />} title={t('supplyRisk')} status={tStatus('medium')} statusColor="text-[#16a34a]" iconColor="text-[#ea580c]" />
-          <MetricBox icon={<TrendingUp size={20} />} title={t('seasonality')} status={tStatus('low')} statusColor="text-[#16a34a]" iconColor="text-[#16a34a]" />
+          <MetricBox icon={<AlertTriangle size={20} />} title={t('supplyRisk')} status={riskObj.label} statusColor={riskObj.color} iconColor="text-[#ea580c]" />
+          <MetricBox icon={<TrendingUp size={20} />} title={t('seasonality')} status={seasonStatus} statusColor="text-[#ea580c]" iconColor="text-[#16a34a]" />
         </div>
 
         {/* Key Insights Side Panel */}
@@ -138,6 +172,12 @@ const MarketSnapshot = ({ assessment, compCount }: any) => {
               <Crosshair size={14} className="text-[#16a34a] mt-1 mr-2 shrink-0" />
               <span className="text-sm font-medium text-ink">{t('compFound', { count: compCount })}</span>
             </li>
+            {market?.opportunity_gaps?.slice(0, 3).map((gap: string, i: number) => (
+              <li key={i} className="flex items-start">
+                <Crosshair size={14} className="text-[#16a34a] mt-1 mr-2 shrink-0" />
+                <span className="text-sm font-medium text-ink">{gap}</span>
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -233,28 +273,35 @@ const CompetitorAnalysis = ({ competitors }: any) => {
 };
 
 // 8. Customer Insights Section
-const CustomerInsights = ({ consumerBase }: any) => {
+const CustomerInsights = ({ consumerBase, market }: any) => {
   const t = useTranslations('market.customers');
+  
+  const dailyFootfall = market?.daily_footfall;
+  const seasons = market?.peak_seasons?.join(", ") || "Year-round";
+  const lean = market?.lean_season || "None";
+  
   return (
     <div className="animate-in fade-in duration-300 flex flex-col md:flex-row gap-6">
       <div className="flex-1 bg-white border border-premium-border rounded-2xl p-6 shadow-sm">
         <h2 className="text-lg font-bold text-forest-deep mb-6">{t('demographics')}</h2>
         <div className="space-y-4">
           <div className="flex justify-between items-center border-b border-premium-border/50 pb-2">
-            <span className="text-sm font-medium text-ink-soft">{t('ageGroup')}</span>
-            <span className="text-sm font-bold text-ink">25 - 45 years</span>
+            <span className="text-sm font-medium text-ink-soft">Target Audience</span>
+            <span className="text-sm font-bold text-ink">Local Residents & Workers</span>
           </div>
+          {dailyFootfall && (
+            <div className="flex justify-between items-center border-b border-premium-border/50 pb-2">
+              <span className="text-sm font-medium text-ink-soft">Est. Daily Footfall</span>
+              <span className="text-sm font-bold text-ink">{dailyFootfall}</span>
+            </div>
+          )}
           <div className="flex justify-between items-center border-b border-premium-border/50 pb-2">
-            <span className="text-sm font-medium text-ink-soft">{t('income')}</span>
-            <span className="text-sm font-bold text-ink">Middle Income</span>
-          </div>
-          <div className="flex justify-between items-center border-b border-premium-border/50 pb-2">
-            <span className="text-sm font-medium text-ink-soft">{t('useCase')}</span>
-            <span className="text-sm font-bold text-ink">Daily essentials / Utility</span>
+            <span className="text-sm font-medium text-ink-soft">Peak Seasons</span>
+            <span className="text-sm font-bold text-ink capitalize">{seasons}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm font-medium text-ink-soft">{t('peakHours')}</span>
-            <span className="text-sm font-bold text-[#ea580c]">8 AM - 11 AM & 5 PM - 8 PM</span>
+            <span className="text-sm font-medium text-ink-soft">Lean Season</span>
+            <span className="text-sm font-bold text-[#ea580c] capitalize">{lean}</span>
           </div>
         </div>
       </div>
@@ -531,10 +578,10 @@ export default function MarketIntelligencePage({ params }: { params: { categoryI
       <ContextBar categoryName={market?.category_name || "Custom Business"} locationName={locationName || "Selected Location"} score={scoreNum} />
       <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
       
-      {activeTab === "snapshot" && <MarketSnapshot assessment={scoreStr} compCount={compCount} />}
+      {activeTab === "snapshot" && <MarketSnapshot assessment={scoreStr} market={market} scores={scores} />}
       {activeTab === "map" && <MapSection lat={lat} lng={lng} radiusKm={5} competitors={competitors} />}
       {activeTab === "competitors" && <CompetitorAnalysis competitors={competitors} />}
-      {activeTab === "customers" && <CustomerInsights consumerBase={consumerBase} />}
+      {activeTab === "customers" && <CustomerInsights consumerBase={consumerBase} market={market} />}
       {activeTab === "swot" && <SwotAndRisks 
         strengths={market?.strengths} 
         weaknesses={market?.weaknesses} 
