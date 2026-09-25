@@ -24,7 +24,7 @@ def simulate(req: SimulateRequest, db: DBSession = Depends(get_db)):
             req.cost_delta_pct,
             req.tenure_override_years,
         )
-        return SimulateResponse(
+        return StaticSimulateResponse(
             emi=result["emi"],
             dscr=result["dscr"],
             break_even_units=base_state.get("break_even_units", 0),

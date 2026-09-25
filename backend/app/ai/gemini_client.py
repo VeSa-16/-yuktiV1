@@ -79,7 +79,7 @@ class GeminiClient:
                         json=self._build_payload(prompt, schema)
                     )
                     response.raise_for_status()
-                    result = self._parse_response(response.json(), mime_type)
+                    result = self._parse_response(response.json(), mime_type="application/json")
                     if result and len(_prompt_cache) < _PROMPT_CACHE_MAX_SIZE:
                         _prompt_cache[key] = result
                     return result
