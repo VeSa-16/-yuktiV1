@@ -46,7 +46,6 @@ export default function AboutPage() {
         {/* Header Section */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-900/10 text-forest-deep font-semibold text-xs tracking-wider uppercase mb-4">
-            <Image src="/india-emblem.png" alt="Emblem" width={16} height={16} className="object-contain" />
             Official Government Initiative
           </div>
           <h1 className="font-display font-bold text-4xl sm:text-5xl text-forest-deep mb-4 tracking-tight">
@@ -59,9 +58,6 @@ export default function AboutPage() {
 
         {/* Hero Mission Card */}
         <div className="bg-white/80 backdrop-blur-md border border-emerald-900/10 p-8 sm:p-12 rounded-[2.5rem] shadow-sm mb-16 relative overflow-hidden">
-          <div className="absolute right-[-40px] bottom-[-40px] opacity-5 pointer-events-none">
-            <Image src="/india-emblem.png" alt="Ashoka Emblem Watermark" width={320} height={320} />
-          </div>
           
           <div className="max-w-3xl mx-auto text-center relative z-10">
             <div className="w-16 h-16 bg-[#fff5f0] rounded-2xl flex items-center justify-center mx-auto mb-6 border border-[#ea580c]/20">

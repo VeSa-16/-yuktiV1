@@ -15,6 +15,7 @@ from app.engines.financial_engine import run_financial_engine
 from app.engines.scoring_engine import compute_all_dimensions, generate_verdict, generate_next_steps, compute_evidence_coverage
 from app.schemas.evidence import EvidenceRecord, ConfidenceLevelEnum
 from app.ai.gemini_client import GeminiClient
+from app.engines.dynamic_generation import generate_dynamic_business_data
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -90,17 +91,23 @@ async def generate_analysis(request: Request, req: AnalysisRequest, api_key: str
 
     logger.info("[ANALYSIS] Matched category: %s (confidence=%.2f)", category_id, matcher_result.get("confidence", 0))
 
-    # ── 3. RETRIEVE REAL JSON DATA ────────────────────────────────────────────
-    retrieval = DataRetrieval()
-    category_data  = retrieval.get_category_data(district, category_id)
+    # ── 3. GENERATE DYNAMIC FINANCIAL DATA VIA AI ─────────────────────────────
+    # Replaced static JSON dataset with a fully dynamic Gemini-driven financial estimator
+    raw_capital = req.capital.get("investment_amount", 0)
+    try:
+        user_capital = float(raw_capital)
+    except (ValueError, TypeError):
+        user_capital = 0.0
 
-    if not category_data:
-        # Check if the location is out of coverage
-        if district and "solapur" not in district.lower() and "mh_sol" not in district.lower():
-            logger.error("[ANALYSIS] Location '%s' is out of demo coverage", district)
-            raise HTTPException(status_code=400, detail="OUT_OF_COVERAGE")
-        logger.error("[ANALYSIS] Category '%s' not found in dataset", category_id)
-        raise HTTPException(status_code=404, detail=f"Category '{category_id}' not found in dataset")
+    category_data = await generate_dynamic_business_data(
+        area_of_interest=area_of_interest,
+        suggested_idea=suggested_idea,
+        detailed_idea=detailed_idea,
+        experience=prior_experience,
+        district=district,
+        state=req.location.get("state", ""),
+        capital=user_capital
+    )
 
     # Explicitly pull the four sections the financial engine needs
     financial_setup  = category_data.get("initial_setup_costs", {})
@@ -120,12 +127,6 @@ async def generate_analysis(request: Request, req: AnalysisRequest, api_key: str
     )
 
     # ── 4. FINANCIAL ENGINE (deterministic Python math) ───────────────────────
-    raw_capital = req.capital.get("investment_amount", 0)
-    try:
-        user_capital = float(raw_capital)
-    except (ValueError, TypeError):
-        user_capital = 0.0
-
     if user_capital <= 0:
         logger.warning("[FINANCIAL] investment_amount is zero or missing — got: %s", raw_capital)
 
@@ -266,6 +267,8 @@ async def generate_analysis(request: Request, req: AnalysisRequest, api_key: str
 
     # ── 5.5 ALTERNATIVES EVALUATION (Step 3) ─────────────────────────────────
     alternatives = []
+    from app.data_layer.retrieval import DataRetrieval
+    retrieval = DataRetrieval()
     if req.business.get("compare_alternatives"):
         ALT_MAP = {
             "retail_shop": ["food_beverage", "logistics_delivery"],
