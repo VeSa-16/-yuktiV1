@@ -49,6 +49,21 @@ class LGDRegistry:
         subdistrict_count = 0
         village_count = 0
 
+        universal_json_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "sih_universal_data.json")
+        if os.path.exists(universal_json_path):
+            try:
+                import json
+                with open(universal_json_path, "r", encoding="utf-8") as f:
+                    universal_data = json.load(f)
+                if "lgd" in universal_data and "subdistricts" in universal_data["lgd"]:
+                    for sd in universal_data["lgd"].get("subdistricts", []):
+                        self.subdistricts[sd["lgd_code"]] = sd
+                    for v in universal_data["lgd"].get("villages", []):
+                        self.villages[v["lgd_code"]] = v
+                    return {"subdistricts": len(self.subdistricts), "villages": len(self.villages)}
+            except Exception as e:
+                logger.warning(f"[LGD] Failed to load universal json: {e}")
+
         for zpath in [zip1, zip2]:
             if not os.path.exists(zpath):
                 continue
